@@ -64,6 +64,8 @@ services:
 
 
   php-cli:
+    profiles: ["cli"]
+
     container_name: netcinema_php-cli
 
     build:
@@ -83,10 +85,6 @@ services:
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
-    command: ["tail", "-f", "/dev/null"]
-
-    restart: unless-stopped
 
     networks:
       - netcinema
@@ -133,6 +131,8 @@ services:
 
 
   node:
+    profiles: ["cli"]
+
     container_name: netcinema_node
 
     build:
@@ -142,10 +142,6 @@ services:
     volumes:
       - .:/var/www/www-data/netcinema.loc
       - ./logs/node:/var/log/node
-
-    command: ["tail", "-f", "/dev/null"]
-
-    restart: unless-stopped
 
     networks:
       - netcinema
