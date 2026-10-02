@@ -18,6 +18,8 @@ services:
       php-fpm:
         condition: service_healthy
 
+    restart: unless-stopped
+
     networks:
       - netcinema
 
@@ -55,6 +57,8 @@ services:
       retries: 3
       start_period: 5s
 
+    restart: unless-stopped
+
     networks:
       - netcinema
 
@@ -80,6 +84,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+    command: ["tail", "-f", "/dev/null"]
+
+    restart: unless-stopped
+
     networks:
       - netcinema
 
@@ -92,8 +100,8 @@ services:
       dockerfile: mysql/Dockerfile
 
     environment:
-      MYSQL_DATABASE: netcinema
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: ${DB_DATABASE:-netcinema}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
       MYSQL_ROOT_HOST: "%"
 
     volumes:
@@ -111,12 +119,14 @@ services:
           "-h",
           "127.0.0.1",
           "-uroot",
-          "-psecret"
+          "-p${DB_PASSWORD:-secret}"
         ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+
+    restart: unless-stopped
 
     networks:
       - netcinema
@@ -130,7 +140,12 @@ services:
       dockerfile: node/Dockerfile
 
     volumes:
-      - ./logs/node:/var/www/www-data/timers
+      - .:/var/www/www-data/netcinema.loc
+      - ./logs/node:/var/log/node
+
+    command: ["tail", "-f", "/dev/null"]
+
+    restart: unless-stopped
 
     networks:
       - netcinema

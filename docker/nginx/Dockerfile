@@ -6,7 +6,7 @@ RUN apk add --no-cache \
     nano \
     tzdata
 
-RUN adduser -u 82 -S -D -G www-data -g www-data -s /bin/bash www-data
+RUN adduser -u 1000 -S -D -G www-data -g www-data -s /bin/bash www-data
 
 ENV TZ=Europe/Moscow
 
