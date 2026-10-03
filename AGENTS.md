@@ -166,7 +166,7 @@ This is a Laravel application. Read `composer.json` and `package.json` for the e
 
 ## Spelling
 
-- Use US English spelling for all identifiers (PHP method/class/property names, TS/Vue variables and components), comments, docstrings, doc pages, and user-visible strings: `serialize` / `serializer` (not `serialise`), `color` (not `colour`), `initialize` (not `initialise`), `behavior` (not `behaviour`), `organize` / `organization`, `favorite`, `analyze`. Koel's codebase — and PHP's SPL (`JsonSerializable`) — is uniformly American; don't drift British by reflex.
+- Use US English spelling for all identifiers (PHP method/class/property names, TS/Vue variables and components), comments, docstrings, doc pages, and user-visible strings: `serialize` / `serializer` (not `serialise`), `color` (not `colour`), `initialize` (not `initialise`), `behavior` (not `behaviour`), `organize` / `organization`, `favorite`, `analyze`. Codebase — and PHP's SPL (`JsonSerializable`) — is uniformly American; don't drift British by reflex.
 
 ## Self-Explanatory Code
 
