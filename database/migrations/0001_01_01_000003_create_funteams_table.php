@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->index('unq_funteams_on_name');
             $table->string('slug')->unique('unq_funteams_on_slug');
+            $table->timestamps();
         });
     }
 
