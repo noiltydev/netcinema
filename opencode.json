@@ -1,10 +1,18 @@
 {
-  "mcp": {
-    "servers": {
-      "context7": {
-        "type": "remote",
-        "url": "https://mcp.context7.com/mcp"
-      }
+    "mcp": {
+        "servers": {
+            "context7": {
+                "type": "remote",
+                "url": "https://mcp.context7.com/mcp"
+            },
+            "laravel-boost": {
+                "type": "local",
+                "command": [
+                    "php",
+                    "artisan",
+                    "boost:mcp"
+                ]
+            }
+        }
     }
-  }
 }
