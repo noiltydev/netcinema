@@ -7,7 +7,6 @@
 .phpunit.result.cache
 /.codex
 /.cursor
-/.opencode
 /.idea
 /.nova
 /.phpunit.cache
