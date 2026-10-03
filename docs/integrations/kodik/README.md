@@ -34,6 +34,23 @@ https://kodik-api.com/list?token=YOUR_TOKEN_HERE
 - Rotate tokens periodically
 - Use environment variables in server-side integrations
 
+## Quick Start
+
+### 1. Search for a material
+```bash
+curl "https://kodik-api.com/search?token=YOUR_TOKEN&title=Аватар"
+```
+
+### 2. Get material list with filters
+```bash
+curl "https://kodik-api.com/list?token=YOUR_TOKEN&types=anime-serial&year=2023"
+```
+
+### 3. Get available translations
+```bash
+curl "https://kodik-api.com/translations/v2?token=YOUR_TOKEN&types=anime-serial"
+```
+
 ## Endpoints
 
 | Endpoint | Description |
@@ -47,3 +64,4 @@ https://kodik-api.com/list?token=YOUR_TOKEN_HERE
 - [Common Filters](shared/filters.md) — KinoPoisk/Shikimori/MyDramaList filter parameters available on all endpoints
 - [Material Structure](shared/material.md) — Structure of material items in `results[]`
 - [Material Data](shared/material-data.md) — Structure of the `material_data` field (KinoPoisk/Shikimori/MyDramaList info)
+- [Response Envelope](shared/response-envelope.md) — Standard response structure and pagination
