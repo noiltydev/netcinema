@@ -4,7 +4,35 @@ Base URL: `https://kodik-api.com`
 
 ## Authentication
 
-All requests require a `token` parameter. Obtain a token from your Kodik account settings.
+All requests require a valid API token passed as the `token` query parameter.
+
+**Configuration:**
+
+The Kodik API token is configured via environment variables in `config/noilty.php`:
+
+```php
+'kodik' => [
+    'key' => env('KODIK_API_KEY'),
+    'endpoint' => env('KODIK_API_ENDPOINT', 'https://kodik-api.com'),
+],
+```
+
+**Environment Variables:**
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `KODIK_API_KEY` | Yes | — | Your Kodik API token |
+| `KODIK_API_ENDPOINT` | No | `https://kodik-api.com` | API base URL |
+
+**Example:**
+```
+https://kodik-api.com/list?token=YOUR_TOKEN_HERE
+```
+
+**Token security:**
+- Never expose tokens in client-side code
+- Rotate tokens periodically
+- Use environment variables in server-side integrations
 
 ## Endpoints
 
