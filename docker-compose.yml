@@ -1,0 +1,155 @@
+services:
+
+  nginx:
+    container_name: netcinema_nginx
+
+    build:
+      context: docker/nginx
+      dockerfile: Dockerfile
+
+    volumes:
+      - .:/var/www/www-data/netcinema.loc
+      - ./logs/nginx:/var/log/nginx
+
+    ports:
+      - "9000:9000"
+
+    depends_on:
+      php-fpm:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - netcinema
+
+
+  php-fpm:
+    container_name: netcinema_php-fpm
+
+    build:
+      context: docker/php
+      dockerfile: fpm/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+
+    volumes:
+      - .:/var/www/www-data/netcinema.loc
+      - ./logs/php/fpm:/var/log/php/fpm
+
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "php",
+          "-r",
+          "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+    restart: unless-stopped
+
+    networks:
+      - netcinema
+
+
+  php-cli:
+    profiles: ["cli"]
+
+    container_name: netcinema_php-cli
+
+    build:
+      context: docker/php
+      dockerfile: cli/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+
+    volumes:
+      - .:/var/www/www-data/netcinema.loc
+      - ./logs/php/cli:/var/log/php/cli
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    networks:
+      - netcinema
+
+
+  mysql:
+    container_name: netcinema_mysql
+
+    build:
+      context: docker/database
+      dockerfile: mysql/Dockerfile
+
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-netcinema}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_HOST: "%"
+
+    volumes:
+      - netcinema_mysql:/var/lib/mysql
+
+    ports:
+      - "3306:3306"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-uroot",
+          "-p${DB_PASSWORD:-secret}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    restart: unless-stopped
+
+    networks:
+      - netcinema
+
+
+  node:
+    profiles: ["cli"]
+
+    container_name: netcinema_node
+
+    build:
+      context: docker
+      dockerfile: node/Dockerfile
+
+    volumes:
+      - .:/var/www/www-data/netcinema.loc
+      - ./logs/node:/var/log/node
+
+    networks:
+      - netcinema
+
+
+volumes:
+  netcinema_mysql:
+
+
+networks:
+  netcinema:
