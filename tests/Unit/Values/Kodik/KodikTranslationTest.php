@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Values\Kodik;
+
+use App\Values\Kodik\KodikTranslation;
+use PHPUnit\Framework\TestCase;
+
+class KodikTranslationTest extends TestCase
+{
+    public function test_from_array_maps_all_fields(): void
+    {
+        $data = [
+            'id' => 735,
+            'title' => '2x2',
+            'count' => 26,
+        ];
+
+        $translation = KodikTranslation::fromArray($data);
+
+        $this->assertSame(735, $translation->id);
+        $this->assertSame('2x2', $translation->title);
+        $this->assertSame(26, $translation->count);
+    }
+
+    public function test_from_array_casts_string_values(): void
+    {
+        $data = [
+            'id' => '824',
+            'title' => '3df voice',
+            'count' => '16',
+        ];
+
+        $translation = KodikTranslation::fromArray($data);
+
+        $this->assertSame(824, $translation->id);
+        $this->assertSame('3df voice', $translation->title);
+        $this->assertSame(16, $translation->count);
+    }
+
+    public function test_from_array_handles_zero_count(): void
+    {
+        $data = [
+            'id' => 1,
+            'title' => 'Test',
+            'count' => 0,
+        ];
+
+        $translation = KodikTranslation::fromArray($data);
+
+        $this->assertSame(0, $translation->count);
+    }
+}

@@ -11,6 +11,9 @@ php-cli:
 php-fpm:
 	docker compose run --rm php-fpm bash
 
+test:
+	docker compose run --rm -w /var/www/www-data/netcinema.loc php-cli php artisan test
+
 docker-up:
 	docker compose up -d --build
 

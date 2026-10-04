@@ -6,9 +6,14 @@ namespace App\Http\Integrations\Kodik;
 
 use Saloon\Http\Auth\QueryAuthenticator;
 use Saloon\Http\Connector;
+use Saloon\Traits\Plugins\AcceptsJson;
+use Saloon\Traits\Plugins\AlwaysThrowOnErrors;
 
 class KodikConnector extends Connector
 {
+    use AcceptsJson;
+    use AlwaysThrowOnErrors;
+
     /**
      * @inheritDoc
      */

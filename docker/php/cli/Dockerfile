@@ -19,6 +19,7 @@ RUN set -eux; \
         procps \
         libpq-dev \
         libicu-dev \
+        libonig-dev \
         libxml2-dev \
         libzip-dev \
         libpng-dev \
@@ -38,6 +39,7 @@ RUN docker-php-ext-configure gd \
         bcmath \
         gd \
         intl \
+        mbstring \
         mysqli \
         pdo \
         pdo_mysql \
