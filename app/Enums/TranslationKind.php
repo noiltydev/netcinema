@@ -6,6 +6,6 @@ namespace App\Enums;
 
 enum TranslationKind: string
 {
-    case Dub = 'dub';
-    case Sub = 'sub';
+    case DUB = 'dub';
+    case SUB = 'sub';
 }

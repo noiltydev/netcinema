@@ -53,8 +53,8 @@ class KodikServiceTest extends TestCase
 
         $service = new KodikService(new KodikConnector());
         $service->getTranslations([
-            KodikFilter::Types->value => 'anime-serial',
-            KodikFilter::Sort->value => 'title',
+            KodikFilter::TYPES->value => 'anime-serial',
+            KodikFilter::SORT->value => 'title',
         ]);
 
         Saloon::assertSent(function (GetTranslationsRequest $request): bool {
@@ -95,7 +95,7 @@ class KodikServiceTest extends TestCase
 
         $service = new KodikService(new KodikConnector());
         $service->getTranslations([
-            KodikFilter::Types->value => 'anime-serial',
+            KodikFilter::TYPES->value => 'anime-serial',
             'bad_key' => 'value',
         ]);
     }
