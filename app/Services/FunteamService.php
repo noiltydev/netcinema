@@ -39,7 +39,6 @@ class FunteamService
             Funteam::query()->upsert(
                 $chunk->all(),
                 ['slug'],
-                ['name'],
             );
 
             if ($onChunkImported !== null) {

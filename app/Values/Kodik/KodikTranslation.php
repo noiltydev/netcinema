@@ -35,7 +35,7 @@ final readonly class KodikTranslation implements Arrayable
 
     public function slug(): string
     {
-        return Str::slug($this->name());
+        return slugify($this->name());
     }
 
     public function type(): string
