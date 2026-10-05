@@ -46,11 +46,11 @@ class KodikService
         $allowed = KodikFilter::values();
 
         foreach (array_keys($filters) as $key) {
-            if (!in_array($key, $allowed, true)) {
-                throw new InvalidArgumentException(
-                    sprintf('Invalid filter key: %s', $key),
-                );
-            }
+            throw_if(
+                !in_array($key, $allowed, true),
+                InvalidArgumentException::class,
+                sprintf('Invalid filter key: %s', $key),
+            );
         }
     }
 }

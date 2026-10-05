@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
+use App\Enums\KodikTranslationType;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 
@@ -38,9 +39,11 @@ final readonly class KodikTranslation implements Arrayable
         return slugify($this->name());
     }
 
-    public function type(): string
+    public function type(): KodikTranslationType
     {
-        return Str::endsWith($this->title, self::SUBTITLES_SUFFIX) ? 'subtitles' : 'voice';
+        return Str::endsWith($this->title, self::SUBTITLES_SUFFIX)
+            ? KodikTranslationType::SUBTITLES
+            : KodikTranslationType::VOICE;
     }
 
     /** @inheritdoc */

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Str;
+
 function slugify(string $string): string
 {
     return (string)Str::of($string)->replace(['&', '18+'], ['and', 'r-plus'])->slug();
@@ -16,10 +18,7 @@ function simple_hash(?string $string): string
     return md5("noilty:$string");
 }
 
-/**
- * @param string|int ...$parts
- */
-function cache_key(...$parts): string
+function cache_key(string|int ...$parts): string
 {
     return simple_hash(implode('.', $parts));
 }

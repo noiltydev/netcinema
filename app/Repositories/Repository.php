@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Repositories\Contracts\Repository as RepositoryContract;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,18 +15,12 @@ use Illuminate\Database\Eloquent\Model;
 abstract class Repository implements RepositoryContract
 {
     /** @var class-string<T> $modelClass */
-    public string $modelClass;
-
-    protected Guard $auth;
+    protected string $modelClass;
 
     /** @param class-string<T> $modelClass */
     public function __construct(?string $modelClass = null)
     {
         $this->modelClass = $modelClass ?: self::guessModelClass();
-
-        // This instantiation may fail during a console command if e.g. APP_KEY is empty,
-        // rendering the whole installation failing.
-        rescue(fn () => $this->auth = app(Guard::class));
     }
 
     /** @return class-string<T> */

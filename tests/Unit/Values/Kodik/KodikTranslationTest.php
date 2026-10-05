@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
+use App\Enums\KodikTranslationType;
 use App\Values\Kodik\KodikTranslation;
 use PHPUnit\Framework\TestCase;
 
@@ -94,5 +95,27 @@ class KodikTranslationTest extends TestCase
         ]);
 
         $this->assertSame('', $translation->slug());
+    }
+
+    public function test_type_is_voice_without_subtitles_suffix(): void
+    {
+        $translation = KodikTranslation::fromArray([
+            'id' => 735,
+            'title' => 'Название',
+            'count' => 26,
+        ]);
+
+        $this->assertSame(KodikTranslationType::VOICE, $translation->type());
+    }
+
+    public function test_type_is_subtitles_with_subtitles_suffix(): void
+    {
+        $translation = KodikTranslation::fromArray([
+            'id' => 735,
+            'title' => 'Название.Subtitles',
+            'count' => 26,
+        ]);
+
+        $this->assertSame(KodikTranslationType::SUBTITLES, $translation->type());
     }
 }
