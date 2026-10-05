@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Values\Kodik;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Str;
 
 final readonly class KodikTranslation implements Arrayable
 {
+    private const string SUBTITLES_SUFFIX = '.Subtitles';
+
     private function __construct(
         public int $id,
         public string $title,
@@ -23,6 +26,21 @@ final readonly class KodikTranslation implements Arrayable
             title: (string)$data['title'],
             count: (int)$data['count'],
         );
+    }
+
+    public function name(): string
+    {
+        return Str::before($this->title, self::SUBTITLES_SUFFIX);
+    }
+
+    public function slug(): string
+    {
+        return Str::slug($this->name());
+    }
+
+    public function type(): string
+    {
+        return Str::endsWith($this->title, self::SUBTITLES_SUFFIX) ? 'subtitles' : 'voice';
     }
 
     /** @inheritdoc */

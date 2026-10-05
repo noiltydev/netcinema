@@ -51,4 +51,48 @@ class KodikTranslationTest extends TestCase
 
         $this->assertSame(0, $translation->count);
     }
+
+    public function test_name_keeps_title_without_subtitles_suffix(): void
+    {
+        $translation = KodikTranslation::fromArray([
+            'id' => 735,
+            'title' => '2x2',
+            'count' => 26,
+        ]);
+
+        $this->assertSame('2x2', $translation->name());
+    }
+
+    public function test_name_strips_subtitles_suffix(): void
+    {
+        $translation = KodikTranslation::fromArray([
+            'id' => 735,
+            'title' => 'Название.Subtitles',
+            'count' => 26,
+        ]);
+
+        $this->assertSame('Название', $translation->name());
+    }
+
+    public function test_slug_transliterates_name(): void
+    {
+        $translation = KodikTranslation::fromArray([
+            'id' => 824,
+            'title' => 'Название.Subtitles',
+            'count' => 16,
+        ]);
+
+        $this->assertSame('nazvanie', $translation->slug());
+    }
+
+    public function test_slug_is_empty_for_title_without_transliterable_characters(): void
+    {
+        $translation = KodikTranslation::fromArray([
+            'id' => 1,
+            'title' => '!!!',
+            'count' => 1,
+        ]);
+
+        $this->assertSame('', $translation->slug());
+    }
 }
