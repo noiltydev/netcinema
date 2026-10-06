@@ -166,7 +166,7 @@ This is a Laravel application. Read `composer.json` and `package.json` for the e
 
 ## Spelling
 
-- Use US English spelling for all identifiers (PHP method/class/property names, TS/Vue variables and components), comments, docstrings, doc pages, and user-visible strings: `serialize` / `serializer` (not `serialise`), `color` (not `colour`), `initialize` (not `initialise`), `behavior` (not `behaviour`), `organize` / `organization`, `favorite`, `analyze`. Koel's codebase — and PHP's SPL (`JsonSerializable`) — is uniformly American; don't drift British by reflex.
+- Use US English spelling for all identifiers (PHP method/class/property names, TS/Vue variables and components), comments, docstrings, doc pages, and user-visible strings: `serialize` / `serializer` (not `serialise`), `color` (not `colour`), `initialize` (not `initialise`), `behavior` (not `behaviour`), `organize` / `organization`, `favorite`, `analyze`. Codebase — and PHP's SPL (`JsonSerializable`) — is uniformly American; don't drift British by reflex.
 
 ## Self-Explanatory Code
 
@@ -216,5 +216,4 @@ This is a Laravel application. Read `composer.json` and `package.json` for the e
 ## Linting & Static Analysis
 
 - When running lint or static analysis (backend or frontend), fix ALL warnings and errors to ensure 100% clean output — even pre-existing issues unrelated to current changes.
-- **Before creating or updating any PR that touches PHP files**, run all backend gates locally and confirm green: `composer cs` (format check), `composer lint` (mago lint), `composer analyze` (phpstan). Do NOT rely on the pre-commit hook alone — it only catches formatting. Lint and static-analysis failures must be caught locally, not by CI, so the PR isn't created/updated red.
 </laravel-boost-guidelines>

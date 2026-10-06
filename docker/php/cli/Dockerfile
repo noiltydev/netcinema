@@ -19,6 +19,8 @@ RUN set -eux; \
         procps \
         libpq-dev \
         libicu-dev \
+        libonig-dev \
+        libxml2-dev \
         libzip-dev \
         libpng-dev \
         libjpeg-dev \
@@ -37,11 +39,13 @@ RUN docker-php-ext-configure gd \
         bcmath \
         gd \
         intl \
+        mbstring \
         mysqli \
         pdo \
         pdo_mysql \
         pdo_pgsql \
         pgsql \
+        xml \
         zip
 
 RUN pecl install redis \
