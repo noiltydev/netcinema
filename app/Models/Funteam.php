@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Builders\FunteamBuilder;
 use App\Models\Concerns\Funteams\HasFunteamRelationships;
+use App\Models\Concerns\MorphsToSources;
 use Database\Factories\FunteamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 class Funteam extends Model
 {
     /** @use HasFactory<FunteamFactory> */
-    use HasFactory, HasFunteamRelationships;
+    use HasFactory, HasFunteamRelationships, MorphsToSources;
 
     public static function query(): FunteamBuilder
     {
