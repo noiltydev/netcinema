@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * @extends Builder<Funteam>
  */
-class FunteamBuilder extends Builder
+class FunteamBuilder extends SourceableBuilder
 {
+    protected function sourcesRelationName(): string
+    {
+        return 'sources';
+    }
 }

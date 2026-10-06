@@ -23,7 +23,6 @@ abstract class SourceableBuilder extends Builder
         $sources = $this->toCollection($sources);
 
         if ($sources->isEmpty()) {
-            // нет источников — гарантированно пустой результат
             return $this->whereRaw('1 = 0');
         }
 
@@ -46,11 +45,11 @@ abstract class SourceableBuilder extends Builder
         return $this->whereHasSources($sources);
     }
 
-    public function whereHasSourceNamed(ProviderName $source): self
+    public function whereHasSourceFromProvider(ProviderName $providerName): self
     {
         return $this->whereHas(
             $this->sourcesRelationName(),
-            static fn(Builder $query) => $query->where('name', $source->value),
+            static fn(Builder $query) => $query->where('provider_name', $providerName),
         );
     }
 
@@ -67,7 +66,7 @@ abstract class SourceableBuilder extends Builder
 
     private function matchSource(Builder $query, Provider $source): void
     {
-        $query->where('name', $source->providerName)->where('external_id', $source->externalId);
+        $query->where('provider_name', $source->providerName)->where('external_id', $source->externalId);
     }
 
     private function toCollection(iterable $sources): Collection

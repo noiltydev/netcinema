@@ -19,7 +19,7 @@ class SourceTest extends TestCase
     {
         $funteam = Funteam::factory()->createOne();
         $source = Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProviderName::MYANIMELIST,
+            'provider_name' => SourceProviderName::MYANIMELIST,
         ]);
 
         $this->assertCount(1, $funteam->sources);
@@ -34,12 +34,12 @@ class SourceTest extends TestCase
         $this->assertTrue($source->sourceable->is($funteam));
     }
 
-    public function test_provider_is_cast_to_enum(): void
+    public function test_provider_name_is_cast_to_enum(): void
     {
-        $source = Source::factory()->createOne(['provider' => SourceProviderName::KODIK]);
+        $source = Source::factory()->createOne(['provider_name' => SourceProviderName::KODIK]);
 
-        $this->assertSame(SourceProviderName::KODIK, $source->provider);
-        $this->assertSame('kodik', $source->getRawOriginal('provider'));
+        $this->assertSame(SourceProviderName::KODIK, $source->provider_name);
+        $this->assertSame('kodik', $source->getRawOriginal('provider_name'));
     }
 
     public function test_for_relationship_sets_the_morph_columns(): void
@@ -51,17 +51,17 @@ class SourceTest extends TestCase
         $this->assertSame($funteam->id, $source->sourceable_id);
     }
 
-    public function test_sourceable_and_provider_pair_is_unique(): void
+    public function test_sourceable_and_provider_name_pair_is_unique(): void
     {
         $funteam = Funteam::factory()->createOne();
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProviderName::SHIKIMORI,
+            'provider_name' => SourceProviderName::SHIKIMORI,
         ]);
 
         $this->expectException(QueryException::class);
 
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProviderName::SHIKIMORI,
+            'provider_name' => SourceProviderName::SHIKIMORI,
         ]);
     }
 
@@ -69,10 +69,10 @@ class SourceTest extends TestCase
     {
         $funteam = Funteam::factory()->createOne();
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProviderName::MYANIMELIST,
+            'provider_name' => SourceProviderName::MYANIMELIST,
         ]);
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProviderName::KINOPOISK,
+            'provider_name' => SourceProviderName::KINOPOISK,
         ]);
 
         $this->assertCount(2, $funteam->sources);
@@ -83,11 +83,11 @@ class SourceTest extends TestCase
         $externalId = '42';
 
         $first = Source::factory()->for(Funteam::factory(), 'sourceable')->createOne([
-            'provider' => SourceProviderName::IMDB,
+            'provider_name' => SourceProviderName::IMDB,
             'external_id' => $externalId,
         ]);
         $second = Source::factory()->for(Funteam::factory(), 'sourceable')->createOne([
-            'provider' => SourceProviderName::IMDB,
+            'provider_name' => SourceProviderName::IMDB,
             'external_id' => $externalId,
         ]);
 

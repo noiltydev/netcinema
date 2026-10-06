@@ -24,7 +24,7 @@ class SourceFactory extends Factory
         return [
             'sourceable_type' => (new Funteam)->getMorphClass(),
             'sourceable_id' => Funteam::factory(),
-            'provider' => fake()->randomElement(SourceProviderName::cases()),
+            'provider_name' => fake()->randomElement(SourceProviderName::cases()),
             'external_id' => fake()->unique()->uuid(),
         ];
     }

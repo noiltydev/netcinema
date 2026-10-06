@@ -4,22 +4,27 @@ declare(strict_types=1);
 
 namespace App\Values\Source;
 
+use App\Enums\SourceProviderName;
 use Illuminate\Contracts\Support\Arrayable;
 
-class SourceProvider implements Arrayable
+final readonly class SourceProvider implements Arrayable
 {
     private function __construct(
-        public string $providerName,
+        public SourceProviderName $providerName,
         public string $externalId,
     )
     {
     }
 
-    public static function make(string $providerName, string $externalId): self
+    public static function make(SourceProviderName $providerName, string $externalId): self
     {
-        return new self($providerName, $externalId);
+        return new self(
+            providerName: $providerName,
+            externalId: $externalId,
+        );
     }
 
+    /** @inheritdoc */
     public function toArray(): array
     {
         return [

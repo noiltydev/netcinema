@@ -89,6 +89,8 @@ class ImportFunteamsCommandTest extends TestCase
             'slug' => '2x2',
         ]);
 
+        Carbon::setTestNow('2026-02-01 00:00:00');
+
         $this->fakeKodikTranslations([
             ['id' => 735, 'title' => '2x2', 'count' => 26],
         ]);
@@ -100,7 +102,7 @@ class ImportFunteamsCommandTest extends TestCase
         $this->assertDatabaseCount('funteams', 1);
         $this->assertSame('2x2', $funteam->name);
         $this->assertTrue($funteam->created_at->equalTo('2026-01-01 00:00:00'));
-        $this->assertTrue($funteam->updated_at->equalTo(now()));
+        $this->assertTrue($funteam->updated_at->equalTo('2026-02-01 00:00:00'));
 
         Carbon::setTestNow();
     }
