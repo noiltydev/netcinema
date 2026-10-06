@@ -17,14 +17,14 @@ return new class extends Migration
             $table->id();
             $table->string('sourceable_type');
             $table->unsignedBigInteger('sourceable_id');
-            $table->string('provider');
+            $table->string('provider_name');
             $table->string('external_id');
             $table->timestamps();
 
             $table->index('external_id', 'idx_sources_on_external_id');
             $table->unique(
-                ['sourceable_type', 'sourceable_id', 'provider'],
-                'unq_sources_on_sourceable_and_provider',
+                ['sourceable_type', 'sourceable_id', 'provider_name'],
+                'unq_sources_on_sourceable_and_provider_name',
             );
         });
     }

@@ -16,14 +16,14 @@ return new class extends Migration
         Schema::create('translations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('funteam_id')->constrained('funteams');
-            $table->string('balancer');
+            $table->string('balancer_name');
             $table->string('external_id');
             $table->string('kind');
             $table->string('locale')->default('ru');
             $table->timestamps();
 
             $table->index(['funteam_id', 'kind'], 'idx_translations_on_funteam_id_and_kind');
-            $table->unique(['balancer', 'external_id'], 'unq_translations_on_balancer_and_external_id');
+            $table->unique(['balancer_name', 'external_id'], 'unq_translations_on_balancer_name_and_external_id');
         });
     }
 

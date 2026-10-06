@@ -22,7 +22,7 @@ class FunteamService
      * @param array<int, KodikTranslation> $translations
      * @param (callable(int $processedCount): void)|null $onChunkImported
      */
-    public function importFromKodikTranslations(array $translations, ?callable $onChunkImported = null): int
+    public function importFromKodik(array $translations, ?callable $onChunkImported = null): int
     {
         $rows = collect($translations)
             ->map(static fn(KodikTranslation $translation): array => [
@@ -34,10 +34,9 @@ class FunteamService
             ->values();
 
         foreach ($rows->chunk(self::UPSERT_CHUNK_SIZE) as $chunk) {
-            Funteam::query()->upsert(
+
+            Funteam::query()->fillAndInsertOrIgnore(
                 $chunk->all(),
-                ['slug'],
-                ['name'],
             );
 
             if ($onChunkImported !== null) {

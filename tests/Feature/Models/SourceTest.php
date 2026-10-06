@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Models;
 
-use App\Enums\SourceProvider;
+use App\Enums\SourceProviderName;
 use App\Models\Funteam;
 use App\Models\Source;
 use Illuminate\Database\QueryException;
@@ -19,7 +19,7 @@ class SourceTest extends TestCase
     {
         $funteam = Funteam::factory()->createOne();
         $source = Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProvider::MYANIMELIST,
+            'provider' => SourceProviderName::MYANIMELIST,
         ]);
 
         $this->assertCount(1, $funteam->sources);
@@ -36,9 +36,9 @@ class SourceTest extends TestCase
 
     public function test_provider_is_cast_to_enum(): void
     {
-        $source = Source::factory()->createOne(['provider' => SourceProvider::KODIK]);
+        $source = Source::factory()->createOne(['provider' => SourceProviderName::KODIK]);
 
-        $this->assertSame(SourceProvider::KODIK, $source->provider);
+        $this->assertSame(SourceProviderName::KODIK, $source->provider);
         $this->assertSame('kodik', $source->getRawOriginal('provider'));
     }
 
@@ -55,13 +55,13 @@ class SourceTest extends TestCase
     {
         $funteam = Funteam::factory()->createOne();
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProvider::SHIKIMORI,
+            'provider' => SourceProviderName::SHIKIMORI,
         ]);
 
         $this->expectException(QueryException::class);
 
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProvider::SHIKIMORI,
+            'provider' => SourceProviderName::SHIKIMORI,
         ]);
     }
 
@@ -69,10 +69,10 @@ class SourceTest extends TestCase
     {
         $funteam = Funteam::factory()->createOne();
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProvider::MYANIMELIST,
+            'provider' => SourceProviderName::MYANIMELIST,
         ]);
         Source::factory()->for($funteam, 'sourceable')->createOne([
-            'provider' => SourceProvider::KINOPOISK,
+            'provider' => SourceProviderName::KINOPOISK,
         ]);
 
         $this->assertCount(2, $funteam->sources);
@@ -83,11 +83,11 @@ class SourceTest extends TestCase
         $externalId = '42';
 
         $first = Source::factory()->for(Funteam::factory(), 'sourceable')->createOne([
-            'provider' => SourceProvider::IMDB,
+            'provider' => SourceProviderName::IMDB,
             'external_id' => $externalId,
         ]);
         $second = Source::factory()->for(Funteam::factory(), 'sourceable')->createOne([
-            'provider' => SourceProvider::IMDB,
+            'provider' => SourceProviderName::IMDB,
             'external_id' => $externalId,
         ]);
 

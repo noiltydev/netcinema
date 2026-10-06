@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\SourceProvider;
+use App\Enums\SourceProviderName;
 use App\Models\Funteam;
 use App\Models\Source;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -24,7 +24,7 @@ class SourceFactory extends Factory
         return [
             'sourceable_type' => (new Funteam)->getMorphClass(),
             'sourceable_id' => Funteam::factory(),
-            'provider' => fake()->randomElement(SourceProvider::cases()),
+            'provider' => fake()->randomElement(SourceProviderName::cases()),
             'external_id' => fake()->unique()->uuid(),
         ];
     }
