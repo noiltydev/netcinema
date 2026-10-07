@@ -39,7 +39,7 @@ abstract class SourceableBuilder extends Builder
     public function whereHasSourcesByNames(iterable $sources, array $allowedNames): self
     {
         $sources = $this->toCollection($sources)->filter(
-            static fn(Provider $source) => in_array($source->providerName, $allowedNames, true)
+            static fn(Provider $source) => in_array($source->providerName, $allowedNames, true),
         );
 
         return $this->whereHasSources($sources);
