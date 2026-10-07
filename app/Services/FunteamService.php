@@ -8,10 +8,11 @@ use App\Enums\SourceProviderName as ProviderName;
 use App\Models\Funteam;
 use App\Models\Source;
 use App\Repositories\FunteamRepository;
+use App\Repositories\SourceRepository;
 use App\Values\Kodik\KodikTranslation;
-use App\Values\Source\SourceProvider as Provider;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class FunteamService
@@ -19,7 +20,8 @@ class FunteamService
     private const int UPSERT_CHUNK_SIZE = 100;
 
     public function __construct(
-        private readonly FunteamRepository $repository,
+        private readonly FunteamRepository $funteamRepository,
+        private readonly SourceRepository $sourceRepository,
     )
     {
     }
@@ -32,54 +34,10 @@ class FunteamService
      */
     public function importFromKodik(array $translations, ?callable $onChunkImported = null): int
     {
-        $rows = collect($translations)
-            ->map(static fn(KodikTranslation $translation): array => [
-                'kodik_id' => $translation->id,
-                'name' => $translation->name(),
-                'slug' => $translation->slug(),
-            ])
-            ->reject(static fn(array $row): bool => $row['slug'] === '')
-            ->unique('slug')
-            ->values();
+        $rows = $this->makeImportRows($translations);
 
         foreach ($rows->chunk(self::UPSERT_CHUNK_SIZE) as $chunk) {
-
-            /** @var Collection<int, Funteam> $funteams */
-            $funteams = Funteam::query()->whereHasSourcesByNames(
-                $chunk->map(static fn(array $row) => Provider::make(
-                    ProviderName::KODIK,
-                    strval($row['kodik_id']),
-                )),
-                [ProviderName::KODIK]
-            )->with('sources')->get();
-
-            /** @var Collection<int, Source> $sources */
-            $sources = $funteams->flatMap(
-                static fn(Funteam $funteam) => $funteam->sources
-            );
-
-            /** @var array<int, int> $externalIds */
-            $externalIds = $sources->pluck('external_id')->map('intval')->all();
-
-            $importedAt = now();
-
-            /** @var Collection<int, array> $items */
-            $items = $chunk
-                ->reject(static fn(array $row) => in_array($row['kodik_id'], $externalIds))
-                ->map(static fn(array $row): array => [
-                    'name' => $row['name'],
-                    'slug' => $row['slug'],
-                    'created_at' => $importedAt,
-                    'updated_at' => $importedAt,
-                ]);
-
-            Funteam::query()->upsert(
-                $items->toArray(),
-                ['slug'],
-                ['name', 'updated_at'],
-            );
-
-            $this->linkFunteamsToKodikSources($chunk, $importedAt);
+            $this->importChunk($chunk);
 
             if ($onChunkImported !== null) {
                 $onChunkImported($chunk->count());
@@ -90,6 +48,72 @@ class FunteamService
     }
 
     /**
+     * @param array<int, KodikTranslation> $translations
+     *
+     * @return Collection<int, array{kodik_id: int, name: string, slug: string}>
+     */
+    private function makeImportRows(array $translations): Collection
+    {
+        return collect($translations)
+            ->map(static fn(KodikTranslation $translation): array => [
+                'kodik_id' => $translation->id,
+                'name' => $translation->name(),
+                'slug' => $translation->slug(),
+            ])
+            ->reject(static fn(array $row): bool => $row['slug'] === '')
+            ->unique('slug')
+            ->values();
+    }
+
+    /**
+     * @param Collection<int, array{kodik_id: int, name: string, slug: string}> $rows
+     *
+     * @throws RuntimeException
+     */
+    private function importChunk(Collection $rows): void
+    {
+        DB::transaction(function () use ($rows): void {
+            $importedAt = now();
+            $linkedKodikIds = $this->sourceRepository->getFunteamExternalIdsFromProvider(
+                $rows->pluck('kodik_id')->map('strval'),
+                ProviderName::KODIK,
+            );
+
+            $this->upsertFunteams($rows, $importedAt, $linkedKodikIds);
+            $this->linkFunteamsToKodikSources($rows, $importedAt);
+        });
+    }
+
+    /**
+     * @param Collection<int, array{kodik_id: int, name: string, slug: string}> $rows
+     * @param Collection<int, int> $linkedKodikIds
+     */
+    private function upsertFunteams(Collection $rows, CarbonInterface $importedAt, Collection $linkedKodikIds): void
+    {
+        /** @var array<int, array<string, mixed>> $items */
+        $items = $rows
+            ->reject(static fn(array $row): bool => $linkedKodikIds->contains($row['kodik_id']))
+            ->map(static fn(array $row): array => [
+                'name' => $row['name'],
+                'slug' => $row['slug'],
+                'created_at' => $importedAt,
+                'updated_at' => $importedAt,
+            ])
+            ->values()
+            ->all();
+
+        if ($items === []) {
+            return;
+        }
+
+        Funteam::query()->upsert(
+            $items,
+            ['slug'],
+            ['name', 'updated_at'],
+        );
+    }
+
+    /**
      * @param Collection<int, array{kodik_id: int, name: string, slug: string}> $rows
      *
      * @throws RuntimeException
@@ -97,10 +121,11 @@ class FunteamService
     private function linkFunteamsToKodikSources(Collection $rows, CarbonInterface $importedAt): void
     {
         /** @var Collection<string, Funteam> $funteamsBySlug */
-        $funteamsBySlug = Funteam::query()
-            ->whereIn('slug', $rows->pluck('slug'))
-            ->with('sources')
-            ->get()
+        $funteamsBySlug = $this->funteamRepository
+            ->getManyBySlugsWithSourcesFromProvider(
+                $rows->pluck('slug'),
+                ProviderName::KODIK,
+            )
             ->keyBy('slug');
 
         /** @var array<int, array<string, mixed>> $sourceRows */

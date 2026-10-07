@@ -147,6 +147,29 @@ class FunteamServiceTest extends TestCase
         $this->assertTrue($funteam->sources()->sole()->is($source));
     }
 
+    public function test_import_rolls_back_the_chunk_when_a_funteam_is_linked_to_another_kodik_translation(): void
+    {
+        Funteam::factory()->createOne([
+            'name' => 'Original name',
+            'slug' => '2x2',
+        ]);
+        Source::factory()->for(Funteam::query()->where('slug', '2x2')->sole(), 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '111',
+        ]);
+
+        $this->assertThrows(
+            fn() => $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+            ])),
+            RuntimeException::class,
+        );
+
+        $this->assertDatabaseCount('funteams', 1);
+        $this->assertDatabaseCount('sources', 1);
+        $this->assertDatabaseHas('funteams', ['slug' => '2x2', 'name' => 'Original name']);
+    }
+
     public function test_import_reports_the_processed_chunk_size_to_the_progress_callback(): void
     {
         $processedCount = 0;
