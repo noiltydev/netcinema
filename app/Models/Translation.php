@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['funteam_id', 'balancer', 'external_id', 'kind', 'locale'])]
+#[Fillable(['funteam_id', 'balancer_name', 'external_id', 'kind', 'locale'])]
 #[UseEloquentBuilder(TranslationBuilder::class)]
 class Translation extends Model
 {
@@ -35,7 +35,7 @@ class Translation extends Model
     protected function casts(): array
     {
         return [
-            'balancer' => TranslationBalancer::class,
+            'balancer_name' => TranslationBalancer::class,
             'kind' => TranslationKind::class,
         ];
     }

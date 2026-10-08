@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Translation;
 use App\Repositories\TranslationRepository;
 
 class TranslationService

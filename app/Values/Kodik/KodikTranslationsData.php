@@ -20,6 +20,18 @@ final readonly class KodikTranslationsData implements Arrayable
     {
     }
 
+    /**
+     * @param array<int, KodikTranslation> $results
+     */
+    public static function make(string $time = '', int $total = 0, array $results = []): self
+    {
+        return new self(
+            time: $time,
+            total: $total,
+            results: $results,
+        );
+    }
+
     public static function fromSaloonResponse(Response $response): self
     {
         /** @var array $data */
@@ -35,9 +47,9 @@ final readonly class KodikTranslationsData implements Arrayable
             $data['results'] ?? [],
         );
 
-        return new self(
-            time: (string) ($data['time'] ?? ''),
-            total: (int) ($data['total'] ?? 0),
+        return self::make(
+            time: (string)($data['time'] ?? ''),
+            total: (int)($data['total'] ?? 0),
             results: $results,
         );
     }

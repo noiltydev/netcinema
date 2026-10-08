@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Kodik;
 
-use App\Enums\KodikFilter;
+use App\Enums\KodikMaterialType;
 use App\Services\FunteamService;
 use App\Services\KodikService;
+use App\Values\Kodik\KodikFilters;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -15,16 +16,17 @@ use Illuminate\Console\Command;
 #[Description('Populate the funteams table from Kodik translations')]
 class ImportFunteamsCommand extends Command
 {
-    private const string IMPORTED_MATERIAL_TYPES = 'anime,anime-serial';
-
     public function handle(
         KodikService $kodikService,
         FunteamService $funteamService,
     ) : int
     {
-        $res = $kodikService->getTranslations([
-            KodikFilter::TYPES->value => self::IMPORTED_MATERIAL_TYPES,
-        ]);
+        $res = $kodikService->getTranslations(
+            KodikFilters::forTranslations()->withTypes(
+                KodikMaterialType::ANIME,
+                KodikMaterialType::ANIME_SERIAL,
+            ),
+        );
 
         $translations = $res->results;
 

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enums\KodikFilter;
 use App\Http\Integrations\Kodik\KodikConnector;
+use App\Http\Integrations\Kodik\Requests\GetListRequest;
 use App\Http\Integrations\Kodik\Requests\GetTranslationsRequest;
+use App\Values\Kodik\KodikFilters;
+use App\Values\Kodik\KodikListData;
 use App\Values\Kodik\KodikTranslationsData;
-use InvalidArgumentException;
 use Saloon\Exceptions\Request\RequestException;
 
 class KodikService
@@ -20,37 +21,31 @@ class KodikService
     }
 
     /**
-     * @param array<string, string|int> $filters
-     *
-     * @throws InvalidArgumentException
      * @throws RequestException
      */
-    public function getTranslations(array $filters = []): KodikTranslationsData
+    public function getTranslations(?KodikFilters $filters = null): KodikTranslationsData
     {
-        $this->validateFilters($filters);
-
         $response = $this->connector->send(
-            new GetTranslationsRequest($filters)
+            new GetTranslationsRequest(
+                ($filters ?? KodikFilters::forTranslations())->toQuery(),
+            ),
         );
 
         return $response->dtoOrFail();
     }
 
     /**
-     * @param array<string, string|int> $filters
-     *
-     * @throws InvalidArgumentException
+     * @throws RequestException
      */
-    private function validateFilters(array $filters): void
+    public function getList(?KodikFilters $filters = null, ?string $next = null): KodikListData
     {
-        $allowed = KodikFilter::values();
+        $response = $this->connector->send(
+            new GetListRequest(
+                ($filters ?? KodikFilters::forList())->toQuery(),
+                $next,
+            ),
+        );
 
-        foreach (array_keys($filters) as $key) {
-            throw_if(
-                !in_array($key, $allowed, true),
-                InvalidArgumentException::class,
-                sprintf('Invalid filter key: %s', $key),
-            );
-        }
+        return $response->dtoOrFail();
     }
 }
