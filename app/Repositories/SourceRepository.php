@@ -18,9 +18,9 @@ class SourceRepository extends Repository
     /**
      * @param Collection<int, string> $externalIds
      *
-     * @return Collection<int, int>
+     * @return Collection<string, int>
      */
-    public function getFunteamExternalIdsFromProvider(
+    public function getFunteamIdsByExternalIdsFromProvider(
         Collection $externalIds,
         SourceProviderName $providerName,
     ) : Collection
@@ -29,7 +29,7 @@ class SourceRepository extends Repository
             ->where('sourceable_type', Relation::getMorphAlias(Funteam::class))
             ->where('provider_name', $providerName)
             ->whereIn('external_id', $externalIds)
-            ->pluck('external_id')
-            ->map('intval');
+            ->pluck('sourceable_id', 'external_id')
+            ->map(static fn(mixed $funteamId): int => (int)$funteamId);
     }
 }
