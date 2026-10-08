@@ -34,7 +34,7 @@ final readonly class KodikListData implements Arrayable
         array $results = [],
         ?string $prevPage = null,
         ?string $nextPage = null,
-    ): self
+    ) : self
     {
         return new self(
             time: $time,
@@ -84,7 +84,7 @@ final readonly class KodikListData implements Arrayable
         return $this->nextCursor() !== null;
     }
 
-    /** {@inheritdoc} */
+    /** @inheritdoc */
     public function toArray(): array
     {
         return [
