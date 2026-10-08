@@ -21,10 +21,4 @@ class Funteam extends Model
     use HasFactory;
     use HasFunteamRelationships;
     use MorphsToSources;
-
-    public static function query(): FunteamBuilder
-    {
-        /** @var FunteamBuilder */
-        return parent::query();
-    }
 }

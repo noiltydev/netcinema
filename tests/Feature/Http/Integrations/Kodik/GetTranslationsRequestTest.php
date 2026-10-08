@@ -30,7 +30,7 @@ class GetTranslationsRequestTest extends TestCase
         $connector = new KodikConnector();
         $response = $connector->send(new GetTranslationsRequest());
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
             return $request->resolveEndpoint() === '/translations/v2' && $request->getMethod()->value === 'POST';
         });
 
@@ -76,7 +76,7 @@ class GetTranslationsRequestTest extends TestCase
         $connector = new KodikConnector();
         $connector->send(new GetTranslationsRequest(['types' => 'anime-serial']));
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
             return $request->query()->get('types') === 'anime-serial';
         });
     }
@@ -98,7 +98,7 @@ class GetTranslationsRequestTest extends TestCase
             'sort' => '',
         ]));
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
             return (
                 $request->query()->get('types') === 'anime-serial'
                 && $request->query()->get('year') === null

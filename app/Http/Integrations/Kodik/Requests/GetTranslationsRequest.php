@@ -17,7 +17,7 @@ class GetTranslationsRequest extends Request
     protected Method $method = Method::POST;
 
     /**
-     * @param array<string, string|int> $filters
+     * @param array<string, string|int|null> $filters
      */
     public function __construct(
         protected readonly array $filters = [],

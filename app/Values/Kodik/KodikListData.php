@@ -46,9 +46,7 @@ final readonly class KodikListData implements Arrayable
 
     public static function fromArray(array $data): self
     {
-        $results = array_map(static fn (array $item): KodikMaterial => KodikMaterial::fromArray(
-            $item,
-        ), $data['results'] ?? []);
+        $results = array_map(KodikMaterial::fromArray(...), $data['results'] ?? []);
 
         return self::make(
             time: (string) ($data['time'] ?? ''),

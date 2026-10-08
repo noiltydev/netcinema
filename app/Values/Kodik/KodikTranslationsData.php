@@ -36,9 +36,7 @@ final readonly class KodikTranslationsData implements Arrayable
 
     public static function fromArray(array $data): self
     {
-        $results = array_map(static fn (array $item): KodikTranslation => KodikTranslation::fromArray(
-            $item,
-        ), $data['results'] ?? []);
+        $results = array_map(KodikTranslation::fromArray(...), $data['results'] ?? []);
 
         return self::make(time: (string) ($data['time'] ?? ''), total: (int) ($data['total'] ?? 0), results: $results);
     }

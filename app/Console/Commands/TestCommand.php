@@ -16,22 +16,18 @@ use App\Enums\TranslationKind;
 use App\Models\Funteam;
 use App\Models\Source;
 use App\Models\Translation;
-use App\Repositories\SourceRepository;
 use App\Services\KodikService;
 use App\Values\Kodik\KodikFilters;
-use App\Values\Kodik\KodikMaterial;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use RuntimeException;
 
 #[Signature('kodik:run')]
 #[Description('Command description')]
 class TestCommand extends Command
 {
-    /**
-     * Execute the console command.
-     */
-    public function handle(KodikService $kodikService, SourceRepository $sourceRepository)
+    public function handle(KodikService $kodikService): int
     {
         $res = $kodikService->getList(
             KodikFilters::forList()
@@ -42,42 +38,40 @@ class TestCommand extends Command
                 ->withTypes(KodikMaterialType::ANIME, KodikMaterialType::ANIME_SERIAL),
         );
 
-        /** @var array<int, KodikMaterial> $results */
-        $results = $res->results;
+        $funteamsBySource = Funteam::query()
+            ->with('sources')
+            ->get()
+            ->flatMap(static fn (Funteam $funteam) => $funteam->sources->mapWithKeys(static fn (Source $source): array => [
+                sprintf('%s:%s', $source->provider_name->value, $source->external_id) => $funteam,
+            ]));
 
-        $funteams = Funteam::with('sources')->get();
+        foreach ($res->results as $material) {
+            $material->translation ?? throw new RuntimeException(sprintf(
+                'Kodik material %s carries no translation.',
+                $material->id,
+            ));
 
-        $funteamsBySource = $funteams
-            ->flatMap(static fn (Funteam $funteam) => $funteam->sources->map(static fn (Source $source) => [
-                'key' => "{$source->provider_name->value}:{$source->external_id}",
-                'funteam' => $funteam,
-            ]))
-            ->keyBy('key');
+            $key = sprintf('%s:%s', SourceProviderName::KODIK->value, $material->translation->id);
+            $funteam = $funteamsBySource->get($key);
 
-        foreach ($results as $item) {
-            $translation = $item->translation;
+            throw_unless(
+                $funteam instanceof Funteam,
+                RuntimeException::class,
+                sprintf('No funteam is linked to Kodik translation %s.', $material->translation->id),
+            );
 
-            $providerName = SourceProviderName::KODIK;
-            $externalId = $translation->id;
-
-            $key = "{$providerName->value}:{$externalId}";
-
-            /** @var Funteam $funteam */
-            $funteam = $funteamsBySource->get($key)['funteam'] ?? null;
-            if (is_null($funteam))
-                dd($key, $translation);
-            Translation::firstOrCreate([
+            Translation::query()->firstOrCreate([
                 'balancer_name' => TranslationBalancer::KODIK,
-                'external_id' => $item->id,
+                'external_id' => $material->id,
             ], [
                 'funteam_id' => $funteam->id,
-                'balancer_name' => TranslationBalancer::KODIK,
-                'external_id' => $item->id,
-                'kind' => $translation->type === KodikTranslationType::VOICE
+                'kind' => $material->translation->type === KodikTranslationType::VOICE
                     ? TranslationKind::DUB
                     : TranslationKind::SUB,
                 'locale' => EntryLocale::RU,
             ]);
         }
+
+        return self::SUCCESS;
     }
 }

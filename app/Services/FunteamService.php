@@ -66,7 +66,12 @@ class FunteamService
                 return [
                     'name' => $firstRow['name'],
                     'slug' => $firstRow['slug'],
-                    'kodik_ids' => $slugGroup->pluck('kodik_id')->unique()->values()->all(),
+                    'kodik_ids' => $slugGroup
+                        ->pluck('kodik_id')
+                        ->unique()
+                        ->values()
+                        ->map(static fn (mixed $kodikId): int => (int) $kodikId)
+                        ->all(),
                 ];
             })
             ->values();

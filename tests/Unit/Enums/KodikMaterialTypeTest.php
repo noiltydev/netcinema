@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class KodikMaterialTypeTest extends TestCase
 {
+    private const string UNDOCUMENTED_TYPE = 'documentary-film';
+
     public function test_enum_cases_match_documented_vocabulary(): void
     {
         $this->assertSame('foreign-movie', KodikMaterialType::FOREIGN_MOVIE->value);
@@ -63,6 +65,6 @@ class KodikMaterialTypeTest extends TestCase
 
     public function test_try_from_returns_null_for_undocumented_type(): void
     {
-        $this->assertNull(KodikMaterialType::tryFrom('documentary-film'));
+        $this->assertNull(KodikMaterialType::tryFrom(self::UNDOCUMENTED_TYPE));
     }
 }

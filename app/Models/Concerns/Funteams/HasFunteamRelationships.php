@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait HasFunteamRelationships
 {
+    /** @return HasMany<Translation, $this> */
     public function translations(): HasMany
     {
         return $this->hasMany(Translation::class);

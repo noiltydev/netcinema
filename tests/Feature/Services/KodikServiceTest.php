@@ -77,7 +77,7 @@ class KodikServiceTest extends TestCase
                 ->with(KodikFilter::SORT, 'title'),
         );
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
             return $request->query()->get('types') === 'anime-serial' && $request->query()->get('sort') === 'title';
         });
     }
@@ -89,7 +89,7 @@ class KodikServiceTest extends TestCase
         $service = new KodikService(new KodikConnector());
         $service->getTranslations();
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
             return $request->query()->isEmpty();
         });
     }
@@ -160,7 +160,7 @@ class KodikServiceTest extends TestCase
                 ->withRatingMpaa(KodikRatingMpaa::PG_13, KodikRatingMpaa::R_PLUS),
         );
 
-        Saloon::assertSent(function (GetListRequest $request): bool {
+        Saloon::assertSent(static function (GetListRequest $request): bool {
             return (
                 $request->query()->get('limit') === 100
                 && $request->query()->get('types') === 'anime,anime-serial'
@@ -187,7 +187,7 @@ class KodikServiceTest extends TestCase
                 ->with(KodikListFilter::ORDER, 'asc'),
         );
 
-        Saloon::assertSent(function (GetListRequest $request): bool {
+        Saloon::assertSent(static function (GetListRequest $request): bool {
             return (
                 $request->query()->get('types') === 'anime-serial'
                 && $request->query()->get('sort') === 'updated_at'
@@ -204,7 +204,7 @@ class KodikServiceTest extends TestCase
         $service = new KodikService(new KodikConnector());
         $service->getList(KodikFilters::forList()->withTypes(KodikMaterialType::ANIME_SERIAL), 'Y3Vyc29y');
 
-        Saloon::assertSent(function (GetListRequest $request): bool {
+        Saloon::assertSent(static function (GetListRequest $request): bool {
             return $request->query()->get('next') === 'Y3Vyc29y' && $request->query()->get('types') === 'anime-serial';
         });
     }
@@ -216,7 +216,7 @@ class KodikServiceTest extends TestCase
         $service = new KodikService(new KodikConnector());
         $service->getList();
 
-        Saloon::assertSent(function (GetListRequest $request): bool {
+        Saloon::assertSent(static function (GetListRequest $request): bool {
             return $request->query()->isEmpty();
         });
     }

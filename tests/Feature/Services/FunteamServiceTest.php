@@ -24,9 +24,7 @@ class FunteamServiceTest extends TestCase
      */
     private function makeTranslations(array $translations): array
     {
-        return array_map(static fn (array $translation): KodikTranslation => KodikTranslation::fromArray(
-            $translation,
-        ), $translations);
+        return array_map(KodikTranslation::fromArray(...), $translations);
     }
 
     public function test_import_links_every_imported_funteam_to_its_kodik_translation(): void

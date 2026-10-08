@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class KodikMaterialFieldTest extends TestCase
 {
+    private const string UNDOCUMENTED_FIELD = 'tmdb_id';
+
     public function test_enum_cases_match_documented_vocabulary(): void
     {
         $this->assertSame('kinopoisk_id', KodikMaterialField::KINOPOISK_ID->value);
@@ -34,6 +36,6 @@ class KodikMaterialFieldTest extends TestCase
 
     public function test_try_from_returns_null_for_undocumented_field(): void
     {
-        $this->assertNull(KodikMaterialField::tryFrom('tmdb_id'));
+        $this->assertNull(KodikMaterialField::tryFrom(self::UNDOCUMENTED_FIELD));
     }
 }

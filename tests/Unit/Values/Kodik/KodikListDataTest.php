@@ -14,7 +14,7 @@ class KodikListDataTest extends TestCase
     {
         $data = [
             'time' => '5ms',
-            'total' => 30590,
+            'total' => 30_590,
             'prev_page' => null,
             'next_page' => 'https://kodik-api.com/list?token=TOKEN&next=WyIyMDIzLTEwLTExVDA4OjE2OjUwWiIsIjUxMzk1Il0=',
             'results' => [
@@ -30,7 +30,7 @@ class KodikListDataTest extends TestCase
         $dto = KodikListData::fromArray($data);
 
         $this->assertSame('5ms', $dto->time);
-        $this->assertSame(30590, $dto->total);
+        $this->assertSame(30_590, $dto->total);
         $this->assertNull($dto->prevPage);
         $this->assertSame($data['next_page'], $dto->nextPage);
         $this->assertCount(1, $dto->results);

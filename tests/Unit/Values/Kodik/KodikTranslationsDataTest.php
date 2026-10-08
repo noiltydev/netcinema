@@ -13,7 +13,7 @@ class KodikTranslationsDataTest extends TestCase
     {
         $data = [
             'time' => '5ms',
-            'total' => 30590,
+            'total' => 30_590,
             'results' => [
                 ['id' => 735, 'title' => '2x2', 'count' => 26],
                 ['id' => 824, 'title' => '3df voice', 'count' => 16],
@@ -23,7 +23,7 @@ class KodikTranslationsDataTest extends TestCase
         $dto = KodikTranslationsData::fromArray($data);
 
         $this->assertSame('5ms', $dto->time);
-        $this->assertSame(30590, $dto->total);
+        $this->assertSame(30_590, $dto->total);
         $this->assertCount(2, $dto->results);
         $this->assertSame(735, $dto->results[0]->id);
         $this->assertSame('2x2', $dto->results[0]->title);

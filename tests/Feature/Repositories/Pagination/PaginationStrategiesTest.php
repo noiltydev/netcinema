@@ -38,11 +38,13 @@ class PaginationStrategiesTest extends TestCase
             ['name' => 'Third', 'slug' => 'third'],
         ]);
 
-        $paginator = (new OffsetStrategy())->apply(Funteam::query(), 'id', 2);
+        $items = (new OffsetStrategy())
+            ->apply(Funteam::query(), 'id', 2)
+            ->items();
 
-        $this->assertSame(2, $paginator->count());
-        $this->assertSame('First', $paginator->first()->name);
-        $this->assertSame('Second', $paginator->last()->name);
+        $this->assertCount(2, $items);
+        $this->assertSame('First', $items[0]->name);
+        $this->assertSame('Second', $items[1]->name);
     }
 
     public function test_cursor_strategy_orders_by_id_column(): void
@@ -52,9 +54,11 @@ class PaginationStrategiesTest extends TestCase
             ['name' => 'Second', 'slug' => 'second'],
         ]);
 
-        $paginator = (new CursorStrategy(null))->apply(Funteam::query(), 'id', 1);
+        $items = (new CursorStrategy(null))
+            ->apply(Funteam::query(), 'id', 1)
+            ->items();
 
-        $this->assertSame(1, $paginator->count());
-        $this->assertSame('First', $paginator->first()->name);
+        $this->assertCount(1, $items);
+        $this->assertSame('First', $items[0]->name);
     }
 }

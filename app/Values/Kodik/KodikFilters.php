@@ -11,6 +11,7 @@ use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikRatingMpaa;
 use App\Enums\KodikStatus;
+use BackedEnum;
 use InvalidArgumentException;
 
 /**
@@ -141,7 +142,7 @@ final readonly class KodikFilters
     }
 
     /**
-     * @param array<covariant string> $values
+     * @param array<array-key, BackedEnum> $values
      */
     private static function commaSeparated(array $values): string
     {

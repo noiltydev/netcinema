@@ -29,9 +29,7 @@ class ImportFunteamsCommand extends Command
         $progressBar->setMessage('Importing funteams');
         $progressBar->start();
 
-        $importedCount = $funteamService->importFromKodik($translations, static fn (int $processedCount) => $progressBar->advance(
-            $processedCount,
-        ));
+        $importedCount = $funteamService->importFromKodik($translations, $progressBar->advance(...));
 
         $progressBar->finish();
 

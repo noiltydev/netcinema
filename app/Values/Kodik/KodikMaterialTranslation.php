@@ -22,7 +22,7 @@ final readonly class KodikMaterialTranslation implements Arrayable
         ?KodikTranslationType $type = null,
         ?string $typeValue = null,
     ): self {
-        $rawTypeValue = $typeValue ?? $type?->value ?? '';
+        $rawTypeValue = $typeValue ?? $type->value ?? '';
 
         return new self(
             id: $id,

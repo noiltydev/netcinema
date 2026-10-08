@@ -65,7 +65,7 @@ final readonly class KodikMaterial implements Arrayable
         array $blockedCountries = [],
         array $screenshots = [],
     ): self {
-        $rawTypeValue = $typeValue ?? $type?->value ?? '';
+        $rawTypeValue = $typeValue ?? $type->value ?? '';
 
         return new self(
             id: $id,

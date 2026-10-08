@@ -24,12 +24,6 @@ class Translation extends Model
 
     protected $with = ['funteam'];
 
-    public static function query(): TranslationBuilder
-    {
-        /** @var TranslationBuilder */
-        return parent::query();
-    }
-
     /**
      * @return array<string, string>
      */
