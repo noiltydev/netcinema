@@ -71,7 +71,7 @@ class ImportFunteamsCommandTest extends TestCase
         $this->assertDatabaseHas('funteams', ['name' => '2x2', 'slug' => '2x2']);
     }
 
-    public function test_keeps_first_translation_for_duplicated_slugs(): void
+    public function test_links_both_translations_of_a_funteam_to_the_same_funteam(): void
     {
         $this->fakeKodikTranslations([
             ['id' => 1, 'title' => 'Название', 'count' => 26],
@@ -81,7 +81,18 @@ class ImportFunteamsCommandTest extends TestCase
         $this->artisan('kodik:funteams:import')->assertSuccessful();
 
         $this->assertDatabaseCount('funteams', 1);
+        $this->assertDatabaseCount('sources', 2);
         $this->assertDatabaseHas('funteams', ['name' => 'Название', 'slug' => 'nazvanie']);
+        $this->assertDatabaseHas('sources', [
+            'sourceable_type' => 'funteam',
+            'provider_name' => 'kodik',
+            'external_id' => '1',
+        ]);
+        $this->assertDatabaseHas('sources', [
+            'sourceable_type' => 'funteam',
+            'provider_name' => 'kodik',
+            'external_id' => '2',
+        ]);
     }
 
     public function test_updates_existing_funteam_and_keeps_its_creation_date(): void
@@ -146,15 +157,33 @@ class ImportFunteamsCommandTest extends TestCase
         $this->assertDatabaseCount('sources', 1);
     }
 
-    public function test_fails_when_a_funteam_is_linked_to_another_kodik_translation(): void
+    public function test_repeated_import_does_not_duplicate_the_sources_of_a_paired_funteam(): void
+    {
+        $this->fakeKodikTranslations([
+            ['id' => 735, 'title' => '2x2', 'count' => 26],
+            ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
+        ]);
+
+        $this->artisan('kodik:funteams:import')->assertSuccessful();
+        $this->artisan('kodik:funteams:import')->assertSuccessful();
+
+        $this->assertDatabaseCount('funteams', 1);
+        $this->assertDatabaseCount('sources', 2);
+    }
+
+    public function test_fails_when_a_kodik_translation_is_already_linked_to_another_funteam(): void
     {
         $funteam = Funteam::factory()->createOne([
             'name' => '2x2',
             'slug' => '2x2',
         ]);
-        Source::factory()->for($funteam, 'sourceable')->createOne([
+        $linkedFunteam = Funteam::factory()->createOne([
+            'name' => 'Other team',
+            'slug' => 'other-team',
+        ]);
+        Source::factory()->for($linkedFunteam, 'sourceable')->createOne([
             'provider_name' => SourceProviderName::KODIK,
-            'external_id' => '111',
+            'external_id' => '735',
         ]);
 
         $this->fakeKodikTranslations([
@@ -164,7 +193,11 @@ class ImportFunteamsCommandTest extends TestCase
         $this->assertThrows(
             static fn() => Artisan::call('kodik:funteams:import'),
             RuntimeException::class,
-            'Funteam "2x2" is already linked to Kodik translation 111 and cannot be linked to translation 735.',
+            sprintf(
+                'Kodik translation 735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
+                $linkedFunteam->id,
+                $funteam->id,
+            ),
         );
 
         $this->assertDatabaseCount('sources', 1);

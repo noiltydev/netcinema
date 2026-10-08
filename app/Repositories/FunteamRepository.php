@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Enums\SourceProviderName;
 use App\Models\Funteam;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 
 /**
@@ -19,17 +17,8 @@ class FunteamRepository extends Repository
      *
      * @return Collection<int, Funteam>
      */
-    public function getManyBySlugsWithSourcesFromProvider(
-        Collection $slugs,
-        SourceProviderName $providerName,
-    ) : Collection
+    public function getManyBySlugs(Collection $slugs): Collection
     {
-        return $this->modelClass::query()
-            ->whereIn('slug', $slugs)
-            ->with([
-                'sources' => static fn(MorphMany $sources): MorphMany => $sources
-                    ->where('provider_name', $providerName),
-            ])
-            ->get();
+        return $this->modelClass::query()->whereIn('slug', $slugs)->get();
     }
 }

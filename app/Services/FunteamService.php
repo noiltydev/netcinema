@@ -50,23 +50,32 @@ class FunteamService
     /**
      * @param array<int, KodikTranslation> $translations
      *
-     * @return Collection<int, array{kodik_id: int, name: string, slug: string}>
+     * @return Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}>
      */
     private function makeImportRows(array $translations): Collection
     {
         return collect($translations)
             ->map(static fn(KodikTranslation $translation): array => [
-                'kodik_id' => $translation->id,
                 'name' => $translation->name(),
                 'slug' => $translation->slug(),
+                'kodik_id' => $translation->id,
             ])
             ->reject(static fn(array $row): bool => $row['slug'] === '')
-            ->unique('slug')
+            ->groupBy('slug')
+            ->map(static function (Collection $slugGroup): array {
+                $firstRow = $slugGroup->first();
+
+                return [
+                    'name' => $firstRow['name'],
+                    'slug' => $firstRow['slug'],
+                    'kodik_ids' => $slugGroup->pluck('kodik_id')->unique()->values()->all(),
+                ];
+            })
             ->values();
     }
 
     /**
-     * @param Collection<int, array{kodik_id: int, name: string, slug: string}> $rows
+     * @param Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}> $rows
      *
      * @throws RuntimeException
      */
@@ -74,25 +83,25 @@ class FunteamService
     {
         DB::transaction(function () use ($rows): void {
             $importedAt = now();
-            $linkedKodikIds = $this->sourceRepository->getFunteamExternalIdsFromProvider(
-                $rows->pluck('kodik_id')->map('strval'),
+            $linkedKodikFunteamIds = $this->sourceRepository->getFunteamIdsByExternalIdsFromProvider(
+                $rows->flatMap(static fn(array $row): array => $row['kodik_ids'])->map('strval')->unique(),
                 ProviderName::KODIK,
             );
 
-            $this->upsertFunteams($rows, $importedAt, $linkedKodikIds);
-            $this->linkFunteamsToKodikSources($rows, $importedAt);
+            $this->upsertFunteams($rows, $importedAt, $linkedKodikFunteamIds);
+            $this->linkFunteamsToKodikSources($rows, $importedAt, $linkedKodikFunteamIds);
         });
     }
 
     /**
-     * @param Collection<int, array{kodik_id: int, name: string, slug: string}> $rows
-     * @param Collection<int, int> $linkedKodikIds
+     * @param Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}> $rows
+     * @param Collection<string, int> $linkedKodikFunteamIds
      */
-    private function upsertFunteams(Collection $rows, CarbonInterface $importedAt, Collection $linkedKodikIds): void
+    private function upsertFunteams(Collection $rows, CarbonInterface $importedAt, Collection $linkedKodikFunteamIds): void
     {
         /** @var array<int, array<string, mixed>> $items */
         $items = $rows
-            ->reject(static fn(array $row): bool => $linkedKodikIds->contains($row['kodik_id']))
+            ->reject(fn(array $row): bool => $this->hasLinkedKodikId($row, $linkedKodikFunteamIds))
             ->map(static fn(array $row): array => [
                 'name' => $row['name'],
                 'slug' => $row['slug'],
@@ -114,28 +123,30 @@ class FunteamService
     }
 
     /**
-     * @param Collection<int, array{kodik_id: int, name: string, slug: string}> $rows
+     * @param Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}> $rows
+     * @param Collection<string, int> $linkedKodikFunteamIds
      *
      * @throws RuntimeException
      */
-    private function linkFunteamsToKodikSources(Collection $rows, CarbonInterface $importedAt): void
+    private function linkFunteamsToKodikSources(
+        Collection $rows,
+        CarbonInterface $importedAt,
+        Collection $linkedKodikFunteamIds,
+    ) : void
     {
         /** @var Collection<string, Funteam> $funteamsBySlug */
         $funteamsBySlug = $this->funteamRepository
-            ->getManyBySlugsWithSourcesFromProvider(
-                $rows->pluck('slug'),
-                ProviderName::KODIK,
-            )
+            ->getManyBySlugs($rows->pluck('slug'))
             ->keyBy('slug');
 
         /** @var array<int, array<string, mixed>> $sourceRows */
         $sourceRows = $rows
-            ->map(fn(array $row): ?array => $this->makeKodikSourceRow(
+            ->flatMap(fn(array $row): array => $this->makeKodikSourceRows(
                 $funteamsBySlug->get($row['slug']),
                 $row,
                 $importedAt,
+                $linkedKodikFunteamIds,
             ))
-            ->filter()
             ->values()
             ->all();
 
@@ -147,55 +158,77 @@ class FunteamService
     }
 
     /**
-     * @param array{kodik_id: int, name: string, slug: string} $row
+     * @param array{name: string, slug: string, kodik_ids: array<int, int>} $row
+     * @param Collection<string, int> $linkedKodikFunteamIds
      *
-     * @return array<string, mixed>|null
+     * @return array<int, array<string, mixed>>
+     */
+    private function makeKodikSourceRows(
+        ?Funteam $funteam,
+        array $row,
+        CarbonInterface $importedAt,
+        Collection $linkedKodikFunteamIds,
+    ) : array
+    {
+        if ($funteam === null) {
+            return [];
+        }
+
+        return array_map(
+            static fn(int $kodikId): array => [
+                'sourceable_type' => $funteam->getMorphClass(),
+                'sourceable_id' => $funteam->id,
+                'provider_name' => ProviderName::KODIK->value,
+                'external_id' => (string)$kodikId,
+                'created_at' => $importedAt,
+                'updated_at' => $importedAt,
+            ],
+            $this->unlinkedKodikIdsOf($funteam, $row, $linkedKodikFunteamIds),
+        );
+    }
+
+    /**
+     * @param array{name: string, slug: string, kodik_ids: array<int, int>} $row
+     * @param Collection<string, int> $linkedKodikFunteamIds
+     */
+    private function hasLinkedKodikId(array $row, Collection $linkedKodikFunteamIds): bool
+    {
+        return collect($row['kodik_ids'])->contains(
+            static fn(int $kodikId): bool => $linkedKodikFunteamIds->has((string)$kodikId),
+        );
+    }
+
+    /**
+     * @param array{name: string, slug: string, kodik_ids: array<int, int>} $row
+     * @param Collection<string, int> $linkedKodikFunteamIds
+     *
+     * @return array<int, int>
      *
      * @throws RuntimeException
      */
-    private function makeKodikSourceRow(?Funteam $funteam, array $row, CarbonInterface $importedAt): ?array
+    private function unlinkedKodikIdsOf(Funteam $funteam, array $row, Collection $linkedKodikFunteamIds): array
     {
-        if ($funteam === null) {
-            return null;
+        $unlinkedKodikIds = [];
+
+        foreach ($row['kodik_ids'] as $kodikId) {
+            $linkedFunteamId = $linkedKodikFunteamIds->get((string)$kodikId);
+
+            throw_if(
+                $linkedFunteamId !== null && $linkedFunteamId !== $funteam->id,
+                RuntimeException::class,
+                sprintf(
+                    'Kodik translation %d is already linked to funteam #%d and cannot be linked to funteam #%d.',
+                    $kodikId,
+                    $linkedFunteamId,
+                    $funteam->id,
+                ),
+            );
+
+            if ($linkedFunteamId === null) {
+                $unlinkedKodikIds[] = $kodikId;
+            }
         }
 
-        $kodikExternalId = $this->kodikExternalIdOf($funteam);
-
-        throw_if(
-            $kodikExternalId !== null && $kodikExternalId !== (int)$row['kodik_id'],
-            RuntimeException::class,
-            sprintf(
-                'Funteam "%s" is already linked to Kodik translation %d and cannot be linked to translation %d.',
-                $funteam->slug,
-                $kodikExternalId,
-                (int)$row['kodik_id'],
-            ),
-        );
-
-        if ($kodikExternalId !== null) {
-            return null;
-        }
-
-        return [
-            'sourceable_type' => $funteam->getMorphClass(),
-            'sourceable_id' => $funteam->id,
-            'provider_name' => ProviderName::KODIK->value,
-            'external_id' => (string)$row['kodik_id'],
-            'created_at' => $importedAt,
-            'updated_at' => $importedAt,
-        ];
-    }
-
-    private function kodikExternalIdOf(Funteam $funteam): ?int
-    {
-        $kodikSource = $funteam->sources->first(
-            static fn(Source $source): bool => $source->provider_name === ProviderName::KODIK
-        );
-
-        if ($kodikSource === null) {
-            return null;
-        }
-
-        return (int)$kodikSource->external_id;
+        return $unlinkedKodikIds;
     }
 }
