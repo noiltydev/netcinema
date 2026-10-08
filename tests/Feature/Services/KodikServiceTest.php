@@ -60,10 +60,10 @@ class KodikServiceTest extends TestCase
         $service = new KodikService(new KodikConnector());
         $result = $service->getTranslations();
 
-        $this->assertInstanceOf(KodikTranslationsData::class, $result);
-        $this->assertSame('5ms', $result->time);
-        $this->assertSame(2, $result->total);
-        $this->assertCount(2, $result->results);
+        static::assertInstanceOf(KodikTranslationsData::class, $result);
+        static::assertSame('5ms', $result->time);
+        static::assertSame(2, $result->total);
+        static::assertCount(2, $result->results);
     }
 
     public function test_get_translations_passes_filters_to_request(): void
@@ -136,11 +136,11 @@ class KodikServiceTest extends TestCase
         $service = new KodikService(new KodikConnector());
         $result = $service->getList();
 
-        $this->assertInstanceOf(KodikListData::class, $result);
-        $this->assertSame('5ms', $result->time);
-        $this->assertSame(1, $result->total);
-        $this->assertCount(1, $result->results);
-        $this->assertSame('serial-452654', $result->results[0]->id);
+        static::assertInstanceOf(KodikListData::class, $result);
+        static::assertSame('5ms', $result->time);
+        static::assertSame(1, $result->total);
+        static::assertCount(1, $result->results);
+        static::assertSame('serial-452654', $result->results[0]->id);
     }
 
     public function test_get_list_sends_every_named_filter_as_query_params(): void

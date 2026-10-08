@@ -20,9 +20,9 @@ class KodikTranslationTest extends TestCase
 
         $translation = KodikTranslation::fromArray($data);
 
-        $this->assertSame(735, $translation->id);
-        $this->assertSame('2x2', $translation->title);
-        $this->assertSame(26, $translation->count);
+        static::assertSame(735, $translation->id);
+        static::assertSame('2x2', $translation->title);
+        static::assertSame(26, $translation->count);
     }
 
     public function test_from_array_casts_string_values(): void
@@ -35,9 +35,9 @@ class KodikTranslationTest extends TestCase
 
         $translation = KodikTranslation::fromArray($data);
 
-        $this->assertSame(824, $translation->id);
-        $this->assertSame('3df voice', $translation->title);
-        $this->assertSame(16, $translation->count);
+        static::assertSame(824, $translation->id);
+        static::assertSame('3df voice', $translation->title);
+        static::assertSame(16, $translation->count);
     }
 
     public function test_from_array_handles_zero_count(): void
@@ -50,7 +50,7 @@ class KodikTranslationTest extends TestCase
 
         $translation = KodikTranslation::fromArray($data);
 
-        $this->assertSame(0, $translation->count);
+        static::assertSame(0, $translation->count);
     }
 
     public function test_name_keeps_title_without_subtitles_suffix(): void
@@ -61,7 +61,7 @@ class KodikTranslationTest extends TestCase
             'count' => 26,
         ]);
 
-        $this->assertSame('2x2', $translation->name());
+        static::assertSame('2x2', $translation->name());
     }
 
     public function test_name_strips_subtitles_suffix(): void
@@ -72,7 +72,7 @@ class KodikTranslationTest extends TestCase
             'count' => 26,
         ]);
 
-        $this->assertSame('Название', $translation->name());
+        static::assertSame('Название', $translation->name());
     }
 
     public function test_slug_transliterates_name(): void
@@ -83,7 +83,7 @@ class KodikTranslationTest extends TestCase
             'count' => 16,
         ]);
 
-        $this->assertSame('nazvanie', $translation->slug());
+        static::assertSame('nazvanie', $translation->slug());
     }
 
     public function test_slug_is_empty_for_title_without_transliterable_characters(): void
@@ -94,7 +94,7 @@ class KodikTranslationTest extends TestCase
             'count' => 1,
         ]);
 
-        $this->assertSame('', $translation->slug());
+        static::assertSame('', $translation->slug());
     }
 
     public function test_type_is_voice_without_subtitles_suffix(): void
@@ -105,7 +105,7 @@ class KodikTranslationTest extends TestCase
             'count' => 26,
         ]);
 
-        $this->assertSame(KodikTranslationType::VOICE, $translation->type());
+        static::assertSame(KodikTranslationType::VOICE, $translation->type());
     }
 
     public function test_type_is_subtitles_with_subtitles_suffix(): void
@@ -116,6 +116,6 @@ class KodikTranslationTest extends TestCase
             'count' => 26,
         ]);
 
-        $this->assertSame(KodikTranslationType::SUBTITLES, $translation->type());
+        static::assertSame(KodikTranslationType::SUBTITLES, $translation->type());
     }
 }

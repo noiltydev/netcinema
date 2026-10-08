@@ -12,22 +12,22 @@ class KodikListFilterTest extends TestCase
 {
     public function test_enum_cases_match_documented_vocabulary(): void
     {
-        $this->assertSame('limit', KodikListFilter::LIMIT->value);
-        $this->assertSame('order', KodikListFilter::ORDER->value);
-        $this->assertSame('translation_id', KodikListFilter::TRANSLATION_ID->value);
-        $this->assertSame('block_translations', KodikListFilter::BLOCK_TRANSLATIONS->value);
-        $this->assertSame('camrip', KodikListFilter::CAMRIP->value);
-        $this->assertSame('with_seasons', KodikListFilter::WITH_SEASONS->value);
-        $this->assertSame('with_episodes', KodikListFilter::WITH_EPISODES->value);
-        $this->assertSame('with_episodes_data', KodikListFilter::WITH_EPISODES_DATA->value);
-        $this->assertSame('with_page_links', KodikListFilter::WITH_PAGE_LINKS->value);
-        $this->assertSame('not_blocked_in', KodikListFilter::NOT_BLOCKED_IN->value);
-        $this->assertSame('not_blocked_for_me', KodikListFilter::NOT_BLOCKED_FOR_ME->value);
+        static::assertSame('limit', KodikListFilter::LIMIT->value);
+        static::assertSame('order', KodikListFilter::ORDER->value);
+        static::assertSame('translation_id', KodikListFilter::TRANSLATION_ID->value);
+        static::assertSame('block_translations', KodikListFilter::BLOCK_TRANSLATIONS->value);
+        static::assertSame('camrip', KodikListFilter::CAMRIP->value);
+        static::assertSame('with_seasons', KodikListFilter::WITH_SEASONS->value);
+        static::assertSame('with_episodes', KodikListFilter::WITH_EPISODES->value);
+        static::assertSame('with_episodes_data', KodikListFilter::WITH_EPISODES_DATA->value);
+        static::assertSame('with_page_links', KodikListFilter::WITH_PAGE_LINKS->value);
+        static::assertSame('not_blocked_in', KodikListFilter::NOT_BLOCKED_IN->value);
+        static::assertSame('not_blocked_for_me', KodikListFilter::NOT_BLOCKED_FOR_ME->value);
     }
 
     public function test_values_returns_all_list_only_filter_keys(): void
     {
-        $this->assertSame(
+        static::assertSame(
             [
                 'limit',
                 'order',
@@ -47,6 +47,6 @@ class KodikListFilterTest extends TestCase
 
     public function test_list_only_filters_do_not_overlap_shared_filters(): void
     {
-        $this->assertSame([], array_intersect(KodikListFilter::values(), KodikFilter::values()));
+        static::assertSame([], array_intersect(KodikListFilter::values(), KodikFilter::values()));
     }
 }

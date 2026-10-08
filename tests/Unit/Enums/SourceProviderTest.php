@@ -11,17 +11,17 @@ class SourceProviderTest extends TestCase
 {
     public function test_enum_cases_have_expected_values(): void
     {
-        $this->assertSame('myanimelist', SourceProviderName::MYANIMELIST->value);
-        $this->assertSame('shikimori', SourceProviderName::SHIKIMORI->value);
-        $this->assertSame('kinopoisk', SourceProviderName::KINOPOISK->value);
-        $this->assertSame('imdb', SourceProviderName::IMDB->value);
-        $this->assertSame('kodik', SourceProviderName::KODIK->value);
+        static::assertSame('myanimelist', SourceProviderName::MYANIMELIST->value);
+        static::assertSame('shikimori', SourceProviderName::SHIKIMORI->value);
+        static::assertSame('kinopoisk', SourceProviderName::KINOPOISK->value);
+        static::assertSame('imdb', SourceProviderName::IMDB->value);
+        static::assertSame('kodik', SourceProviderName::KODIK->value);
     }
 
     public function test_enum_exposes_every_provider_exactly_once(): void
     {
         $values = array_column(SourceProviderName::cases(), 'value');
 
-        $this->assertSame(['myanimelist', 'shikimori', 'kinopoisk', 'imdb', 'kodik'], $values);
+        static::assertSame(['myanimelist', 'shikimori', 'kinopoisk', 'imdb', 'kodik'], $values);
     }
 }

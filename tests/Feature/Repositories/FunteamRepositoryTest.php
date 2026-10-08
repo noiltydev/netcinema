@@ -22,7 +22,7 @@ class FunteamRepositoryTest extends TestCase
 
         $funteams = $this->repository()->getMany([1, 2]);
 
-        $this->assertCount(2, $funteams);
+        static::assertCount(2, $funteams);
     }
 
     public function test_get_many_orders_results_to_match_the_requested_id_sequence(): void
@@ -35,7 +35,7 @@ class FunteamRepositoryTest extends TestCase
 
         $funteams = $this->repository()->getMany([3, 1, 2], preserveOrder: true);
 
-        $this->assertSame(['Third', 'First', 'Second'], $funteams->pluck('name')->all());
+        static::assertSame(['Third', 'First', 'Second'], $funteams->pluck('name')->all());
     }
 
     public function test_get_many_skips_ids_with_no_matching_row_when_ordering(): void
@@ -47,7 +47,7 @@ class FunteamRepositoryTest extends TestCase
 
         $funteams = $this->repository()->getMany([2, 999, 1], preserveOrder: true);
 
-        $this->assertSame(['Second', 'First'], $funteams->pluck('name')->all());
+        static::assertSame(['Second', 'First'], $funteams->pluck('name')->all());
     }
 
     public function test_get_many_by_slugs_returns_every_matching_funteam(): void
@@ -60,7 +60,7 @@ class FunteamRepositoryTest extends TestCase
 
         $funteams = $this->repository()->getManyBySlugs(collect(['first', 'second']));
 
-        $this->assertEqualsCanonicalizing(['first', 'second'], $funteams->pluck('slug')->all());
+        static::assertEqualsCanonicalizing(['first', 'second'], $funteams->pluck('slug')->all());
     }
 
     private function repository(): FunteamRepository

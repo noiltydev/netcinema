@@ -11,14 +11,14 @@ class KodikStatusTest extends TestCase
 {
     public function test_enum_cases_match_documented_vocabulary(): void
     {
-        $this->assertSame('anons', KodikStatus::ANONS->value);
-        $this->assertSame('ongoing', KodikStatus::ONGOING->value);
-        $this->assertSame('released', KodikStatus::RELEASED->value);
+        static::assertSame('anons', KodikStatus::ANONS->value);
+        static::assertSame('ongoing', KodikStatus::ONGOING->value);
+        static::assertSame('released', KodikStatus::RELEASED->value);
     }
 
     public function test_values_returns_every_status(): void
     {
-        $this->assertSame(
+        static::assertSame(
             [
                 'anons',
                 'ongoing',
@@ -30,6 +30,6 @@ class KodikStatusTest extends TestCase
 
     public function test_the_same_vocabulary_serves_every_status_filter(): void
     {
-        $this->assertSame(['anons', 'ongoing', 'released'], KodikStatus::values());
+        static::assertSame(['anons', 'ongoing', 'released'], KodikStatus::values());
     }
 }

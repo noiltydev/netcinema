@@ -34,7 +34,7 @@ class GetTranslationsRequestTest extends TestCase
             return $request->resolveEndpoint() === '/translations/v2' && $request->getMethod()->value === 'POST';
         });
 
-        $this->assertTrue($response->successful());
+        static::assertTrue($response->successful());
     }
 
     public function test_request_returns_dto(): void
@@ -55,10 +55,10 @@ class GetTranslationsRequestTest extends TestCase
 
         $dto = $response->dtoOrFail();
 
-        $this->assertInstanceOf(KodikTranslationsData::class, $dto);
-        $this->assertSame('5ms', $dto->time);
-        $this->assertSame(2, $dto->total);
-        $this->assertCount(2, $dto->results);
+        static::assertInstanceOf(KodikTranslationsData::class, $dto);
+        static::assertSame('5ms', $dto->time);
+        static::assertSame(2, $dto->total);
+        static::assertCount(2, $dto->results);
     }
 
     public function test_request_sends_filters_as_query_params(): void

@@ -13,16 +13,16 @@ class KodikMaterialFieldTest extends TestCase
 
     public function test_enum_cases_match_documented_vocabulary(): void
     {
-        $this->assertSame('kinopoisk_id', KodikMaterialField::KINOPOISK_ID->value);
-        $this->assertSame('imdb_id', KodikMaterialField::IMDB_ID->value);
-        $this->assertSame('mdl_id', KodikMaterialField::MDL_ID->value);
-        $this->assertSame('worldart_link', KodikMaterialField::WORLDART_LINK->value);
-        $this->assertSame('shikimori_id', KodikMaterialField::SHIKIMORI_ID->value);
+        static::assertSame('kinopoisk_id', KodikMaterialField::KINOPOISK_ID->value);
+        static::assertSame('imdb_id', KodikMaterialField::IMDB_ID->value);
+        static::assertSame('mdl_id', KodikMaterialField::MDL_ID->value);
+        static::assertSame('worldart_link', KodikMaterialField::WORLDART_LINK->value);
+        static::assertSame('shikimori_id', KodikMaterialField::SHIKIMORI_ID->value);
     }
 
     public function test_values_returns_every_field(): void
     {
-        $this->assertSame(
+        static::assertSame(
             [
                 'kinopoisk_id',
                 'imdb_id',
@@ -36,6 +36,6 @@ class KodikMaterialFieldTest extends TestCase
 
     public function test_try_from_returns_null_for_undocumented_field(): void
     {
-        $this->assertNull(KodikMaterialField::tryFrom(self::UNDOCUMENTED_FIELD));
+        static::assertNull(KodikMaterialField::tryFrom(self::UNDOCUMENTED_FIELD));
     }
 }

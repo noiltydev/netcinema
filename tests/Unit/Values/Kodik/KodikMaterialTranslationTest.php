@@ -18,10 +18,10 @@ class KodikMaterialTranslationTest extends TestCase
             'type' => 'voice',
         ]);
 
-        $this->assertSame(611, $translation->id);
-        $this->assertSame('ColdFilm', $translation->title);
-        $this->assertSame(KodikTranslationType::VOICE, $translation->type);
-        $this->assertSame('voice', $translation->typeValue);
+        static::assertSame(611, $translation->id);
+        static::assertSame('ColdFilm', $translation->title);
+        static::assertSame(KodikTranslationType::VOICE, $translation->type);
+        static::assertSame('voice', $translation->typeValue);
     }
 
     public function test_from_array_maps_subtitles_type(): void
@@ -32,7 +32,7 @@ class KodikMaterialTranslationTest extends TestCase
             'type' => 'subtitles',
         ]);
 
-        $this->assertSame(KodikTranslationType::SUBTITLES, $translation->type);
+        static::assertSame(KodikTranslationType::SUBTITLES, $translation->type);
     }
 
     public function test_from_array_keeps_undocumented_type_as_raw_value(): void
@@ -43,33 +43,33 @@ class KodikMaterialTranslationTest extends TestCase
             'type' => 'original',
         ]);
 
-        $this->assertNull($translation->type);
-        $this->assertSame('original', $translation->typeValue);
+        static::assertNull($translation->type);
+        static::assertSame('original', $translation->typeValue);
     }
 
     public function test_from_array_handles_missing_fields(): void
     {
         $translation = KodikMaterialTranslation::fromArray([]);
 
-        $this->assertSame(0, $translation->id);
-        $this->assertSame('', $translation->title);
-        $this->assertNull($translation->type);
-        $this->assertSame('', $translation->typeValue);
+        static::assertSame(0, $translation->id);
+        static::assertSame('', $translation->title);
+        static::assertNull($translation->type);
+        static::assertSame('', $translation->typeValue);
     }
 
     public function test_make_derives_type_value_from_type(): void
     {
         $translation = KodikMaterialTranslation::make(611, 'ColdFilm', KodikTranslationType::VOICE);
 
-        $this->assertSame('voice', $translation->typeValue);
-        $this->assertSame(KodikTranslationType::VOICE, $translation->type);
+        static::assertSame('voice', $translation->typeValue);
+        static::assertSame(KodikTranslationType::VOICE, $translation->type);
     }
 
     public function test_to_array_serializes_type_as_string(): void
     {
         $translation = KodikMaterialTranslation::make(611, 'ColdFilm', KodikTranslationType::VOICE);
 
-        $this->assertSame(
+        static::assertSame(
             [
                 'id' => 611,
                 'title' => 'ColdFilm',

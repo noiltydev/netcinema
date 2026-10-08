@@ -115,9 +115,9 @@ class ImportFunteamsCommandTest extends TestCase
         $funteam->refresh();
 
         $this->assertDatabaseCount('funteams', 1);
-        $this->assertSame('2x2', $funteam->name);
-        $this->assertTrue($funteam->created_at->equalTo('2026-01-01 00:00:00'));
-        $this->assertTrue($funteam->updated_at->equalTo('2026-02-01 00:00:00'));
+        static::assertSame('2x2', $funteam->name);
+        static::assertTrue($funteam->created_at->equalTo('2026-01-01 00:00:00'));
+        static::assertTrue($funteam->updated_at->equalTo('2026-02-01 00:00:00'));
 
         Carbon::setTestNow();
     }

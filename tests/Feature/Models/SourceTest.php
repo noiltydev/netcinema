@@ -22,8 +22,8 @@ class SourceTest extends TestCase
             'provider_name' => SourceProviderName::MYANIMELIST,
         ]);
 
-        $this->assertCount(1, $funteam->sources);
-        $this->assertTrue($funteam->sources->first()->is($source));
+        static::assertCount(1, $funteam->sources);
+        static::assertTrue($funteam->sources->first()->is($source));
     }
 
     public function test_source_resolves_its_sourceable_funteam(): void
@@ -31,15 +31,15 @@ class SourceTest extends TestCase
         $funteam = Funteam::factory()->createOne();
         $source = Source::factory()->for($funteam, 'sourceable')->createOne();
 
-        $this->assertTrue($source->sourceable->is($funteam));
+        static::assertTrue($source->sourceable->is($funteam));
     }
 
     public function test_provider_name_is_cast_to_enum(): void
     {
         $source = Source::factory()->createOne(['provider_name' => SourceProviderName::KODIK]);
 
-        $this->assertSame(SourceProviderName::KODIK, $source->provider_name);
-        $this->assertSame('kodik', $source->getRawOriginal('provider_name'));
+        static::assertSame(SourceProviderName::KODIK, $source->provider_name);
+        static::assertSame('kodik', $source->getRawOriginal('provider_name'));
     }
 
     public function test_for_relationship_sets_the_morph_columns(): void
@@ -47,8 +47,8 @@ class SourceTest extends TestCase
         $funteam = Funteam::factory()->createOne();
         $source = Source::factory()->for($funteam, 'sourceable')->createOne();
 
-        $this->assertSame($funteam->getMorphClass(), $source->sourceable_type);
-        $this->assertSame($funteam->id, $source->sourceable_id);
+        static::assertSame($funteam->getMorphClass(), $source->sourceable_type);
+        static::assertSame($funteam->id, $source->sourceable_id);
     }
 
     public function test_sourceable_and_provider_and_external_id_triple_is_unique(): void
@@ -79,7 +79,7 @@ class SourceTest extends TestCase
             'external_id' => '3729',
         ]);
 
-        $this->assertCount(2, $funteam->sources);
+        static::assertCount(2, $funteam->sources);
     }
 
     public function test_a_funteam_may_hold_several_providers(): void
@@ -92,7 +92,7 @@ class SourceTest extends TestCase
             'provider_name' => SourceProviderName::KINOPOISK,
         ]);
 
-        $this->assertCount(2, $funteam->sources);
+        static::assertCount(2, $funteam->sources);
     }
 
     public function test_the_same_external_id_may_be_shared_across_sourceables(): void
@@ -108,7 +108,7 @@ class SourceTest extends TestCase
             'external_id' => $externalId,
         ]);
 
-        $this->assertFalse($first->sourceable->is($second->sourceable));
-        $this->assertSame($externalId, $second->external_id);
+        static::assertFalse($first->sourceable->is($second->sourceable));
+        static::assertSame($externalId, $second->external_id);
     }
 }

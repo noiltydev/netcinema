@@ -20,14 +20,14 @@ class PaginationStrategiesTest extends TestCase
     {
         $strategy = PaginationStrategyResolver::resolve(Request::create('/funteams'));
 
-        $this->assertInstanceOf(OffsetStrategy::class, $strategy);
+        static::assertInstanceOf(OffsetStrategy::class, $strategy);
     }
 
     public function test_resolver_picks_cursor_strategy_with_cursor(): void
     {
         $strategy = PaginationStrategyResolver::resolve(Request::create('/funteams?cursor=abc'));
 
-        $this->assertInstanceOf(CursorStrategy::class, $strategy);
+        static::assertInstanceOf(CursorStrategy::class, $strategy);
     }
 
     public function test_offset_strategy_orders_by_id_column(): void
@@ -42,9 +42,9 @@ class PaginationStrategiesTest extends TestCase
             ->apply(Funteam::query(), 'id', 2)
             ->items();
 
-        $this->assertCount(2, $items);
-        $this->assertSame('First', $items[0]->name);
-        $this->assertSame('Second', $items[1]->name);
+        static::assertCount(2, $items);
+        static::assertSame('First', $items[0]->name);
+        static::assertSame('Second', $items[1]->name);
     }
 
     public function test_cursor_strategy_orders_by_id_column(): void
@@ -58,7 +58,7 @@ class PaginationStrategiesTest extends TestCase
             ->apply(Funteam::query(), 'id', 1)
             ->items();
 
-        $this->assertCount(1, $items);
-        $this->assertSame('First', $items[0]->name);
+        static::assertCount(1, $items);
+        static::assertSame('First', $items[0]->name);
     }
 }

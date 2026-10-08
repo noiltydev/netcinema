@@ -11,20 +11,20 @@ class KodikAnimeKindTest extends TestCase
 {
     public function test_enum_cases_match_documented_vocabulary(): void
     {
-        $this->assertSame('tv', KodikAnimeKind::TV->value);
-        $this->assertSame('movie', KodikAnimeKind::MOVIE->value);
-        $this->assertSame('ova', KodikAnimeKind::OVA->value);
-        $this->assertSame('ona', KodikAnimeKind::ONA->value);
-        $this->assertSame('special', KodikAnimeKind::SPECIAL->value);
-        $this->assertSame('music', KodikAnimeKind::MUSIC->value);
-        $this->assertSame('tv_13', KodikAnimeKind::TV_13->value);
-        $this->assertSame('tv_24', KodikAnimeKind::TV_24->value);
-        $this->assertSame('tv_48', KodikAnimeKind::TV_48->value);
+        static::assertSame('tv', KodikAnimeKind::TV->value);
+        static::assertSame('movie', KodikAnimeKind::MOVIE->value);
+        static::assertSame('ova', KodikAnimeKind::OVA->value);
+        static::assertSame('ona', KodikAnimeKind::ONA->value);
+        static::assertSame('special', KodikAnimeKind::SPECIAL->value);
+        static::assertSame('music', KodikAnimeKind::MUSIC->value);
+        static::assertSame('tv_13', KodikAnimeKind::TV_13->value);
+        static::assertSame('tv_24', KodikAnimeKind::TV_24->value);
+        static::assertSame('tv_48', KodikAnimeKind::TV_48->value);
     }
 
     public function test_values_returns_every_anime_kind(): void
     {
-        $this->assertSame(
+        static::assertSame(
             [
                 'tv',
                 'movie',

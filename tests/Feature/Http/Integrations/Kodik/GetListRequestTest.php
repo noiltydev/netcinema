@@ -54,7 +54,7 @@ class GetListRequestTest extends TestCase
             return $request->resolveEndpoint() === '/list' && $request->getMethod()->value === 'POST';
         });
 
-        $this->assertTrue($response->successful());
+        static::assertTrue($response->successful());
     }
 
     public function test_request_returns_dto(): void
@@ -74,12 +74,12 @@ class GetListRequestTest extends TestCase
 
         $dto = $response->dtoOrFail();
 
-        $this->assertInstanceOf(KodikListData::class, $dto);
-        $this->assertSame('5ms', $dto->time);
-        $this->assertSame(1, $dto->total);
-        $this->assertCount(1, $dto->results);
-        $this->assertSame('movie-452654', $dto->results[0]->id);
-        $this->assertSame('Y3Vyc29y', $dto->nextCursor());
+        static::assertInstanceOf(KodikListData::class, $dto);
+        static::assertSame('5ms', $dto->time);
+        static::assertSame(1, $dto->total);
+        static::assertCount(1, $dto->results);
+        static::assertSame('movie-452654', $dto->results[0]->id);
+        static::assertSame('Y3Vyc29y', $dto->nextCursor());
     }
 
     public function test_request_sends_filters_as_query_params(): void

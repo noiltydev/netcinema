@@ -29,10 +29,6 @@ no-isset = { enabled = false }
 prefer-arrow-function = { enabled = false }
 too-many-methods = { threshold = 14, exclude = ["tests/"] }
 
-# This suite asserts through `$this->` exclusively (384 call sites, zero `static::`),
-# so the rule is told the house style instead of rewriting every assertion.
-assertion-style = { level = "warning", style = "this" }
-
 # KodikFilter maps the Kodik API's filter surface one-to-one (34 query parameters), and
 # KodikMaterial is a flat mapper for a 21-field payload. Both are wide by nature, not by
 # accident, so the defaults of 20 cases / 15 complexity are raised rather than splitting

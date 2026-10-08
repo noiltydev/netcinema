@@ -29,13 +29,13 @@ class KodikListDataTest extends TestCase
 
         $dto = KodikListData::fromArray($data);
 
-        $this->assertSame('5ms', $dto->time);
-        $this->assertSame(30_590, $dto->total);
-        $this->assertNull($dto->prevPage);
-        $this->assertSame($data['next_page'], $dto->nextPage);
-        $this->assertCount(1, $dto->results);
-        $this->assertInstanceOf(KodikMaterial::class, $dto->results[0]);
-        $this->assertSame('movie-452654', $dto->results[0]->id);
+        static::assertSame('5ms', $dto->time);
+        static::assertSame(30_590, $dto->total);
+        static::assertNull($dto->prevPage);
+        static::assertSame($data['next_page'], $dto->nextPage);
+        static::assertCount(1, $dto->results);
+        static::assertInstanceOf(KodikMaterial::class, $dto->results[0]);
+        static::assertSame('movie-452654', $dto->results[0]->id);
     }
 
     public function test_next_cursor_is_extracted_from_next_page_url(): void
@@ -46,7 +46,7 @@ class KodikListDataTest extends TestCase
             'results' => [],
         ]);
 
-        $this->assertSame('WyIyMDIzLTEwLTExVDA4OjE2OjUwWiIsIjUxMzk1Il0=', $dto->nextCursor());
+        static::assertSame('WyIyMDIzLTEwLTExVDA4OjE2OjUwWiIsIjUxMzk1Il0=', $dto->nextCursor());
     }
 
     public function test_prev_cursor_is_extracted_from_prev_page_url(): void
@@ -57,8 +57,8 @@ class KodikListDataTest extends TestCase
             'results' => [],
         ]);
 
-        $this->assertSame('WyJwcmV2LWN1cnNvciJ9', $dto->prevCursor());
-        $this->assertNull($dto->nextCursor());
+        static::assertSame('WyJwcmV2LWN1cnNvciJ9', $dto->prevCursor());
+        static::assertNull($dto->nextCursor());
     }
 
     public function test_cursors_are_null_when_page_urls_are_null(): void
@@ -70,9 +70,9 @@ class KodikListDataTest extends TestCase
             'results' => [],
         ]);
 
-        $this->assertNull($dto->nextCursor());
-        $this->assertNull($dto->prevCursor());
-        $this->assertFalse($dto->hasNextPage());
+        static::assertNull($dto->nextCursor());
+        static::assertNull($dto->prevCursor());
+        static::assertFalse($dto->hasNextPage());
     }
 
     public function test_cursor_is_null_when_page_url_has_no_next_parameter(): void
@@ -83,8 +83,8 @@ class KodikListDataTest extends TestCase
             'results' => [],
         ]);
 
-        $this->assertNull($dto->nextCursor());
-        $this->assertFalse($dto->hasNextPage());
+        static::assertNull($dto->nextCursor());
+        static::assertFalse($dto->hasNextPage());
     }
 
     public function test_has_next_page_is_true_when_cursor_is_present(): void
@@ -95,7 +95,7 @@ class KodikListDataTest extends TestCase
             'results' => [],
         ]);
 
-        $this->assertTrue($dto->hasNextPage());
+        static::assertTrue($dto->hasNextPage());
     }
 
     public function test_from_array_handles_empty_results(): void
@@ -106,11 +106,11 @@ class KodikListDataTest extends TestCase
             'results' => [],
         ]);
 
-        $this->assertSame('2ms', $dto->time);
-        $this->assertSame(0, $dto->total);
-        $this->assertSame([], $dto->results);
-        $this->assertNull($dto->prevPage);
-        $this->assertNull($dto->nextPage);
+        static::assertSame('2ms', $dto->time);
+        static::assertSame(0, $dto->total);
+        static::assertSame([], $dto->results);
+        static::assertNull($dto->prevPage);
+        static::assertNull($dto->nextPage);
     }
 
     public function test_from_array_handles_missing_optional_fields(): void
@@ -119,19 +119,19 @@ class KodikListDataTest extends TestCase
             'results' => [],
         ]);
 
-        $this->assertSame('', $dto->time);
-        $this->assertSame(0, $dto->total);
-        $this->assertSame([], $dto->results);
+        static::assertSame('', $dto->time);
+        static::assertSame(0, $dto->total);
+        static::assertSame([], $dto->results);
     }
 
     public function test_make_uses_defaults_for_every_field(): void
     {
         $dto = KodikListData::make();
 
-        $this->assertSame('', $dto->time);
-        $this->assertSame(0, $dto->total);
-        $this->assertSame([], $dto->results);
-        $this->assertNull($dto->prevPage);
-        $this->assertNull($dto->nextPage);
+        static::assertSame('', $dto->time);
+        static::assertSame(0, $dto->total);
+        static::assertSame([], $dto->results);
+        static::assertNull($dto->prevPage);
+        static::assertNull($dto->nextPage);
     }
 }
