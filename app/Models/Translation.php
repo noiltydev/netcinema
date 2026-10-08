@@ -19,7 +19,8 @@ use Illuminate\Database\Eloquent\Model;
 class Translation extends Model
 {
     /** @use HasFactory<TranslationFactory> */
-    use HasFactory, HasTranslationRelationships;
+    use HasFactory;
+    use HasTranslationRelationships;
 
     protected $with = ['funteam'];
 

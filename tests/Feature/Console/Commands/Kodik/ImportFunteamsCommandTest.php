@@ -191,7 +191,7 @@ class ImportFunteamsCommandTest extends TestCase
         ]);
 
         $this->assertThrows(
-            static fn() => Artisan::call('kodik:funteams:import'),
+            static fn () => Artisan::call('kodik:funteams:import'),
             RuntimeException::class,
             sprintf(
                 'Kodik translation 735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
@@ -207,9 +207,7 @@ class ImportFunteamsCommandTest extends TestCase
     {
         $this->fakeKodikTranslations([]);
 
-        $this->artisan('kodik:funteams:import')
-            ->expectsOutputToContain('Imported 0 funteams')
-            ->assertSuccessful();
+        $this->artisan('kodik:funteams:import')->expectsOutputToContain('Imported 0 funteams')->assertSuccessful();
 
         $this->assertDatabaseCount('funteams', 0);
     }

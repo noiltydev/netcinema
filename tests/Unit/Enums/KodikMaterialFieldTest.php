@@ -20,13 +20,16 @@ class KodikMaterialFieldTest extends TestCase
 
     public function test_values_returns_every_field(): void
     {
-        $this->assertSame([
-            'kinopoisk_id',
-            'imdb_id',
-            'mdl_id',
-            'worldart_link',
-            'shikimori_id',
-        ], KodikMaterialField::values());
+        $this->assertSame(
+            [
+                'kinopoisk_id',
+                'imdb_id',
+                'mdl_id',
+                'worldart_link',
+                'shikimori_id',
+            ],
+            KodikMaterialField::values(),
+        );
     }
 
     public function test_try_from_returns_null_for_undocumented_field(): void

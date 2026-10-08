@@ -26,10 +26,13 @@ class FunteamBuilderTest extends TestCase
         $this->giveSourceTo($imdbFunteam, SourceProviderName::IMDB, '42');
         $this->giveSourceTo($unrelatedFunteam, SourceProviderName::SHIKIMORI, '77');
 
-        $found = Funteam::query()->whereHasSources([
-            SourceProvider::make(SourceProviderName::KODIK, '735'),
-            SourceProvider::make(SourceProviderName::IMDB, '42'),
-        ])->pluck('id')->all();
+        $found = Funteam::query()
+            ->whereHasSources([
+                SourceProvider::make(SourceProviderName::KODIK, '735'),
+                SourceProvider::make(SourceProviderName::IMDB, '42'),
+            ])
+            ->pluck('id')
+            ->all();
 
         $this->assertEqualsCanonicalizing([$kodikFunteam->id, $imdbFunteam->id], $found);
     }
@@ -39,9 +42,12 @@ class FunteamBuilderTest extends TestCase
         $funteam = Funteam::factory()->createOne();
         $this->giveSourceTo($funteam, SourceProviderName::KODIK, '735');
 
-        $found = Funteam::query()->whereHasSources([
-            SourceProvider::make(SourceProviderName::KODIK, '824'),
-        ])->pluck('id')->all();
+        $found = Funteam::query()
+            ->whereHasSources([
+                SourceProvider::make(SourceProviderName::KODIK, '824'),
+            ])
+            ->pluck('id')
+            ->all();
 
         $this->assertSame([], $found);
     }
@@ -79,13 +85,13 @@ class FunteamBuilderTest extends TestCase
         $this->giveSourceTo($kodikFunteam, SourceProviderName::IMDB, '42');
         $this->giveSourceTo($imdbOnlyFunteam, SourceProviderName::IMDB, '42');
 
-        $found = Funteam::query()->whereHasSourcesByNames(
-            [
+        $found = Funteam::query()
+            ->whereHasSourcesByNames([
                 SourceProvider::make(SourceProviderName::KODIK, '735'),
                 SourceProvider::make(SourceProviderName::IMDB, '42'),
-            ],
-            [SourceProviderName::KODIK],
-        )->pluck('id')->all();
+            ], [SourceProviderName::KODIK])
+            ->pluck('id')
+            ->all();
 
         $this->assertSame([$kodikFunteam->id], $found);
     }
@@ -95,10 +101,10 @@ class FunteamBuilderTest extends TestCase
         $funteam = Funteam::factory()->createOne();
         $this->giveSourceTo($funteam, SourceProviderName::KODIK, '735');
 
-        $found = Funteam::query()->whereHasSourcesByNames(
-            [SourceProvider::make(SourceProviderName::KODIK, '735')],
-            [],
-        )->pluck('id')->all();
+        $found = Funteam::query()
+            ->whereHasSourcesByNames([SourceProvider::make(SourceProviderName::KODIK, '735')], [])
+            ->pluck('id')
+            ->all();
 
         $this->assertSame([], $found);
     }
@@ -111,9 +117,7 @@ class FunteamBuilderTest extends TestCase
         $this->giveSourceTo($funteam, SourceProviderName::KODIK, '735');
         $this->giveSourceTo($imdbFunteam, SourceProviderName::IMDB, '42');
 
-        $found = Funteam::query()
-            ->whereHasSourceFromProvider(SourceProviderName::KODIK)
-            ->pluck('id')->all();
+        $found = Funteam::query()->whereHasSourceFromProvider(SourceProviderName::KODIK)->pluck('id')->all();
 
         $this->assertSame([$funteam->id], $found);
     }

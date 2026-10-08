@@ -18,11 +18,14 @@ class KodikStatusTest extends TestCase
 
     public function test_values_returns_every_status(): void
     {
-        $this->assertSame([
-            'anons',
-            'ongoing',
-            'released',
-        ], KodikStatus::values());
+        $this->assertSame(
+            [
+                'anons',
+                'ongoing',
+                'released',
+            ],
+            KodikStatus::values(),
+        );
     }
 
     public function test_the_same_vocabulary_serves_every_status_filter(): void

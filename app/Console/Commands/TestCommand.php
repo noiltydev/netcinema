@@ -31,10 +31,7 @@ class TestCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(
-        KodikService $kodikService,
-        SourceRepository $sourceRepository,
-    )
+    public function handle(KodikService $kodikService, SourceRepository $sourceRepository)
     {
         $res = $kodikService->getList(
             KodikFilters::forList()
@@ -51,18 +48,13 @@ class TestCommand extends Command
         $funteams = Funteam::with('sources')->get();
 
         $funteamsBySource = $funteams
-            ->flatMap(
-                static fn(Funteam $funteam) => $funteam->sources->map(
-                    static fn(Source $source) => [
-                        'key' => "{$source->provider_name->value}:{$source->external_id}",
-                        'funteam' => $funteam,
-                    ]
-                ),
-            )
+            ->flatMap(static fn (Funteam $funteam) => $funteam->sources->map(static fn (Source $source) => [
+                'key' => "{$source->provider_name->value}:{$source->external_id}",
+                'funteam' => $funteam,
+            ]))
             ->keyBy('key');
 
         foreach ($results as $item) {
-
             $translation = $item->translation;
 
             $providerName = SourceProviderName::KODIK;
@@ -72,23 +64,20 @@ class TestCommand extends Command
 
             /** @var Funteam $funteam */
             $funteam = $funteamsBySource->get($key)['funteam'] ?? null;
-if (is_null($funteam)) dd($key, $translation);
-            Translation::firstOrCreate(
-                [
-                    'balancer_name' => TranslationBalancer::KODIK,
-                    'external_id' => $item->id
-                ],
-                [
-                    'funteam_id' => $funteam->id,
-                    'balancer_name' => TranslationBalancer::KODIK,
-                    'external_id' => $item->id,
-                    'kind' => $translation->type === KodikTranslationType::VOICE
-                        ? TranslationKind::DUB
-                        : TranslationKind::SUB,
-                    'locale' => EntryLocale::RU,
-                ]
-            );
+            if (is_null($funteam))
+                dd($key, $translation);
+            Translation::firstOrCreate([
+                'balancer_name' => TranslationBalancer::KODIK,
+                'external_id' => $item->id,
+            ], [
+                'funteam_id' => $funteam->id,
+                'balancer_name' => TranslationBalancer::KODIK,
+                'external_id' => $item->id,
+                'kind' => $translation->type === KodikTranslationType::VOICE
+                    ? TranslationKind::DUB
+                    : TranslationKind::SUB,
+                'locale' => EntryLocale::RU,
+            ]);
         }
-
     }
 }

@@ -27,12 +27,11 @@ class GetTranslationsRequestTest extends TestCase
             ]),
         ]);
 
-        $connector = new KodikConnector;
-        $response = $connector->send(new GetTranslationsRequest);
+        $connector = new KodikConnector();
+        $response = $connector->send(new GetTranslationsRequest());
 
         Saloon::assertSent(function (GetTranslationsRequest $request): bool {
-            return $request->resolveEndpoint() === '/translations/v2'
-                && $request->getMethod()->value === 'POST';
+            return $request->resolveEndpoint() === '/translations/v2' && $request->getMethod()->value === 'POST';
         });
 
         $this->assertTrue($response->successful());
@@ -51,8 +50,8 @@ class GetTranslationsRequestTest extends TestCase
             ]),
         ]);
 
-        $connector = new KodikConnector;
-        $response = $connector->send(new GetTranslationsRequest);
+        $connector = new KodikConnector();
+        $response = $connector->send(new GetTranslationsRequest());
 
         $dto = $response->dtoOrFail();
 
@@ -74,7 +73,7 @@ class GetTranslationsRequestTest extends TestCase
             ]),
         ]);
 
-        $connector = new KodikConnector;
+        $connector = new KodikConnector();
         $connector->send(new GetTranslationsRequest(['types' => 'anime-serial']));
 
         Saloon::assertSent(function (GetTranslationsRequest $request): bool {
@@ -92,7 +91,7 @@ class GetTranslationsRequestTest extends TestCase
             ]),
         ]);
 
-        $connector = new KodikConnector;
+        $connector = new KodikConnector();
         $connector->send(new GetTranslationsRequest([
             'types' => 'anime-serial',
             'year' => null,
@@ -100,9 +99,11 @@ class GetTranslationsRequestTest extends TestCase
         ]));
 
         Saloon::assertSent(function (GetTranslationsRequest $request): bool {
-            return $request->query()->get('types') === 'anime-serial'
+            return (
+                $request->query()->get('types') === 'anime-serial'
                 && $request->query()->get('year') === null
-                && $request->query()->get('sort') === null;
+                && $request->query()->get('sort') === null
+            );
         });
     }
 
@@ -114,10 +115,10 @@ class GetTranslationsRequestTest extends TestCase
             ], 403),
         ]);
 
-        $connector = new KodikConnector;
+        $connector = new KodikConnector();
 
         $this->expectException(ForbiddenException::class);
 
-        $connector->send(new GetTranslationsRequest);
+        $connector->send(new GetTranslationsRequest());
     }
 }

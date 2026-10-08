@@ -24,9 +24,7 @@ class GetListRequest extends Request
     public function __construct(
         protected readonly array $filters = [],
         protected readonly ?string $next = null,
-    )
-    {
-    }
+    ) {}
 
     /**
      * The endpoint for the request
@@ -41,7 +39,7 @@ class GetListRequest extends Request
      */
     protected function defaultQuery(): array
     {
-        $query = array_filter($this->filters, static fn($value): bool => $value !== null && $value !== '');
+        $query = array_filter($this->filters, static fn ($value): bool => $value !== null && $value !== '');
 
         if ($this->next !== null && $this->next !== '') {
             $query[self::CURSOR_QUERY_KEY] = $this->next;

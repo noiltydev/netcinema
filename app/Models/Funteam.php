@@ -18,7 +18,9 @@ use Illuminate\Database\Eloquent\Model;
 class Funteam extends Model
 {
     /** @use HasFactory<FunteamFactory> */
-    use HasFactory, HasFunteamRelationships, MorphsToSources;
+    use HasFactory;
+    use HasFunteamRelationships;
+    use MorphsToSources;
 
     public static function query(): FunteamBuilder
     {

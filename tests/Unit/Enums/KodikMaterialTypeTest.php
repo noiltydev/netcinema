@@ -27,20 +27,23 @@ class KodikMaterialTypeTest extends TestCase
 
     public function test_values_returns_every_material_type(): void
     {
-        $this->assertSame([
-            'foreign-movie',
-            'soviet-cartoon',
-            'foreign-cartoon',
-            'russian-cartoon',
-            'anime',
-            'russian-movie',
-            'cartoon-serial',
-            'documentary-serial',
-            'russian-serial',
-            'foreign-serial',
-            'anime-serial',
-            'multi-part-film',
-        ], KodikMaterialType::values());
+        $this->assertSame(
+            [
+                'foreign-movie',
+                'soviet-cartoon',
+                'foreign-cartoon',
+                'russian-cartoon',
+                'anime',
+                'russian-movie',
+                'cartoon-serial',
+                'documentary-serial',
+                'russian-serial',
+                'foreign-serial',
+                'anime-serial',
+                'multi-part-film',
+            ],
+            KodikMaterialType::values(),
+        );
     }
 
     public function test_comma_separated_joins_types_for_the_filter_value(): void

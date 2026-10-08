@@ -16,20 +16,14 @@ final readonly class KodikTranslationsData implements Arrayable
         public string $time,
         public int $total,
         public array $results,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @param array<int, KodikTranslation> $results
      */
     public static function make(string $time = '', int $total = 0, array $results = []): self
     {
-        return new self(
-            time: $time,
-            total: $total,
-            results: $results,
-        );
+        return new self(time: $time, total: $total, results: $results);
     }
 
     public static function fromSaloonResponse(Response $response): self
@@ -42,16 +36,11 @@ final readonly class KodikTranslationsData implements Arrayable
 
     public static function fromArray(array $data): self
     {
-        $results = array_map(
-            static fn(array $item): KodikTranslation => KodikTranslation::fromArray($item),
-            $data['results'] ?? [],
-        );
+        $results = array_map(static fn (array $item): KodikTranslation => KodikTranslation::fromArray(
+            $item,
+        ), $data['results'] ?? []);
 
-        return self::make(
-            time: (string)($data['time'] ?? ''),
-            total: (int)($data['total'] ?? 0),
-            results: $results,
-        );
+        return self::make(time: (string) ($data['time'] ?? ''), total: (int) ($data['total'] ?? 0), results: $results);
     }
 
     /** @inheritdoc */
@@ -60,10 +49,7 @@ final readonly class KodikTranslationsData implements Arrayable
         return [
             'time' => $this->time,
             'total' => $this->total,
-            'results' => array_map(
-                static fn(KodikTranslation $item): array => $item->toArray(),
-                $this->results,
-            ),
+            'results' => array_map(static fn (KodikTranslation $item): array => $item->toArray(), $this->results),
         ];
     }
 }

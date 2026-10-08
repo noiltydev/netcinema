@@ -50,9 +50,7 @@ class KodikFiltersTest extends TestCase
 
     public function test_with_anime_kind_writes_the_anime_kind_key(): void
     {
-        $query = KodikFilters::forList()
-            ->withAnimeKind(KodikAnimeKind::TV, KodikAnimeKind::TV_24)
-            ->toQuery();
+        $query = KodikFilters::forList()->withAnimeKind(KodikAnimeKind::TV, KodikAnimeKind::TV_24)->toQuery();
 
         $this->assertSame(['anime_kind' => 'tv,tv_24'], $query);
     }
@@ -71,9 +69,7 @@ class KodikFiltersTest extends TestCase
 
         $this->assertSame(
             ['all_status' => 'anons,released'],
-            KodikFilters::forList()
-                ->withAnyStatus(KodikStatus::ANONS, KodikStatus::RELEASED)
-                ->toQuery(),
+            KodikFilters::forList()->withAnyStatus(KodikStatus::ANONS, KodikStatus::RELEASED)->toQuery(),
         );
     }
 
@@ -97,14 +93,17 @@ class KodikFiltersTest extends TestCase
             ->withRatingMpaa(KodikRatingMpaa::PG_13)
             ->toQuery();
 
-        $this->assertSame([
-            'limit' => 100,
-            'types' => 'anime,anime-serial',
-            'has_field' => 'shikimori_id',
-            'anime_kind' => 'tv,tv_24',
-            'anime_status' => 'released',
-            'rating_mpaa' => 'PG-13',
-        ], $query);
+        $this->assertSame(
+            [
+                'limit' => 100,
+                'types' => 'anime,anime-serial',
+                'has_field' => 'shikimori_id',
+                'anime_kind' => 'tv,tv_24',
+                'anime_status' => 'released',
+                'rating_mpaa' => 'PG-13',
+            ],
+            $query,
+        );
     }
 
     public function test_builder_is_immutable(): void
@@ -159,9 +158,12 @@ class KodikFiltersTest extends TestCase
             ->withAnimeStatus(KodikStatus::RELEASED)
             ->toQuery();
 
-        $this->assertSame([
-            'types' => 'anime',
-            'anime_status' => 'released',
-        ], $query);
+        $this->assertSame(
+            [
+                'types' => 'anime',
+                'anime_status' => 'released',
+            ],
+            $query,
+        );
     }
 }

@@ -16,11 +16,12 @@
         "saloonphp/saloon": "^4.0"
     },
     "require-dev": {
+        "carthage-software/mago": "^1.8.0",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.7",
         "laravel/boost": "^2.10",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
-        "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "phpunit/phpunit": "^12.5.12"
@@ -57,6 +58,10 @@
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
         ],
+        "cs": "mago format --check",
+        "cs:fix": "mago format",
+        "lint": "mago lint",
+        "analyze": "phpstan analyse --memory-limit 1G --configuration phpstan.neon.dist --ansi",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

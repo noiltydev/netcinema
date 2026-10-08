@@ -16,17 +16,12 @@ use Illuminate\Console\Command;
 #[Description('Populate the funteams table from Kodik translations')]
 class ImportFunteamsCommand extends Command
 {
-    public function handle(
-        KodikService $kodikService,
-        FunteamService $funteamService,
-    ) : int
+    public function handle(KodikService $kodikService, FunteamService $funteamService): int
     {
-        $res = $kodikService->getTranslations(
-            KodikFilters::forTranslations()->withTypes(
-                KodikMaterialType::ANIME,
-                KodikMaterialType::ANIME_SERIAL,
-            ),
-        );
+        $res = $kodikService->getTranslations(KodikFilters::forTranslations()->withTypes(
+            KodikMaterialType::ANIME,
+            KodikMaterialType::ANIME_SERIAL,
+        ));
 
         $translations = $res->results;
 
@@ -34,10 +29,9 @@ class ImportFunteamsCommand extends Command
         $progressBar->setMessage('Importing funteams');
         $progressBar->start();
 
-        $importedCount = $funteamService->importFromKodik(
-            $translations,
-            static fn(int $processedCount) => $progressBar->advance($processedCount),
-        );
+        $importedCount = $funteamService->importFromKodik($translations, static fn (int $processedCount) => $progressBar->advance(
+            $processedCount,
+        ));
 
         $progressBar->finish();
 

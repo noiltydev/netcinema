@@ -14,17 +14,14 @@ final readonly class KodikMaterialTranslation implements Arrayable
         public string $title,
         public string $typeValue,
         public ?KodikTranslationType $type,
-    )
-    {
-    }
+    ) {}
 
     public static function make(
         int $id,
         string $title,
         ?KodikTranslationType $type = null,
         ?string $typeValue = null,
-    ): self
-    {
+    ): self {
         $rawTypeValue = $typeValue ?? $type?->value ?? '';
 
         return new self(
@@ -38,9 +35,9 @@ final readonly class KodikMaterialTranslation implements Arrayable
     public static function fromArray(array $data): self
     {
         return self::make(
-            id: (int)($data['id'] ?? 0),
-            title: (string)($data['title'] ?? ''),
-            typeValue: (string)($data['type'] ?? ''),
+            id: (int) ($data['id'] ?? 0),
+            title: (string) ($data['title'] ?? ''),
+            typeValue: (string) ($data['type'] ?? ''),
         );
     }
 

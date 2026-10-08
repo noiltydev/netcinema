@@ -24,18 +24,19 @@ class FunteamServiceTest extends TestCase
      */
     private function makeTranslations(array $translations): array
     {
-        return array_map(
-            static fn(array $translation): KodikTranslation => KodikTranslation::fromArray($translation),
-            $translations,
-        );
+        return array_map(static fn (array $translation): KodikTranslation => KodikTranslation::fromArray(
+            $translation,
+        ), $translations);
     }
 
     public function test_import_links_every_imported_funteam_to_its_kodik_translation(): void
     {
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ['id' => 824, 'title' => '3df voice', 'count' => 16],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ['id' => 824, 'title' => '3df voice', 'count' => 16],
+            ]));
 
         /** @var Funteam $firstFunteam */
         $firstFunteam = Funteam::query()->where('slug', '2x2')->sole();
@@ -51,20 +52,19 @@ class FunteamServiceTest extends TestCase
 
     public function test_import_links_the_voice_and_subtitles_translations_of_a_funteam_to_that_funteam(): void
     {
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
+            ]));
 
         /** @var Funteam $funteam */
         $funteam = Funteam::query()->where('slug', '2x2')->sole();
 
         $this->assertDatabaseCount('funteams', 1);
         $this->assertDatabaseCount('sources', 2);
-        $this->assertEqualsCanonicalizing(
-            ['735', '736'],
-            $funteam->sources()->pluck('external_id')->all(),
-        );
+        $this->assertEqualsCanonicalizing(['735', '736'], $funteam->sources()->pluck('external_id')->all());
     }
 
     public function test_import_is_idempotent_for_a_funteam_with_two_kodik_translations(): void
@@ -89,9 +89,11 @@ class FunteamServiceTest extends TestCase
             'slug' => '2x2',
         ]);
 
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+            ]));
 
         $source = $funteam->sources()->sole();
 
@@ -111,9 +113,11 @@ class FunteamServiceTest extends TestCase
             'external_id' => '42',
         ]);
 
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+            ]));
 
         $providers = $funteam->sources()->orderBy('provider_name')->get();
 
@@ -173,9 +177,11 @@ class FunteamServiceTest extends TestCase
         ]);
 
         $this->assertThrows(
-            fn() => $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-                ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ])),
+            fn () => $this->app
+                ->make(FunteamService::class)
+                ->importFromKodik($this->makeTranslations([
+                    ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ])),
             RuntimeException::class,
             sprintf(
                 'Kodik translation 735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
@@ -204,10 +210,12 @@ class FunteamServiceTest extends TestCase
         ]);
 
         $this->assertThrows(
-            fn() => $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-                ['id' => 824, 'title' => '3df voice', 'count' => 16],
-                ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ])),
+            fn () => $this->app
+                ->make(FunteamService::class)
+                ->importFromKodik($this->makeTranslations([
+                    ['id' => 824, 'title' => '3df voice', 'count' => 16],
+                    ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ])),
             RuntimeException::class,
         );
 

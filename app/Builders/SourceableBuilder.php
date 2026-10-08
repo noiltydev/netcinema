@@ -26,10 +26,10 @@ abstract class SourceableBuilder extends Builder
             return $this->whereRaw('1 = 0');
         }
 
-        return $this->whereHas(
-            $this->sourcesRelationName(),
-            fn(Builder $query) => $this->applySourcesMatch($query, $sources),
-        );
+        return $this->whereHas($this->sourcesRelationName(), fn (Builder $query) => $this->applySourcesMatch(
+            $query,
+            $sources,
+        ));
     }
 
     /**
@@ -38,30 +38,30 @@ abstract class SourceableBuilder extends Builder
      */
     public function whereHasSourcesByNames(iterable $sources, array $allowedNames): self
     {
-        $sources = $this->toCollection($sources)->filter(
-            static fn(Provider $source) => in_array($source->providerName, $allowedNames, true),
-        );
+        $sources = $this->toCollection($sources)->filter(static fn (Provider $source) => in_array(
+            $source->providerName,
+            $allowedNames,
+            true,
+        ));
 
         return $this->whereHasSources($sources);
     }
 
     public function whereHasSourceFromProvider(ProviderName $providerName): self
     {
-        return $this->whereHas(
-            $this->sourcesRelationName(),
-            static fn(Builder $query) => $query->where('provider_name', $providerName),
-        );
+        return $this->whereHas($this->sourcesRelationName(), static fn (Builder $query) => $query->where(
+            'provider_name',
+            $providerName,
+        ));
     }
 
     private function applySourcesMatch(Builder $query, Collection $sources): void
     {
-        $query->where(
-            function (Builder $query) use ($sources): void {
-                foreach ($sources as $source) {
-                    $query->orWhere(fn(Builder $query) => $this->matchSource($query, $source));
-                }
-            },
-        );
+        $query->where(function (Builder $query) use ($sources): void {
+            foreach ($sources as $source) {
+                $query->orWhere(fn (Builder $query) => $this->matchSource($query, $source));
+            }
+        });
     }
 
     private function matchSource(Builder $query, Provider $source): void

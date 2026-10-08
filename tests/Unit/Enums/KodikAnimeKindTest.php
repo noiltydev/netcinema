@@ -24,16 +24,19 @@ class KodikAnimeKindTest extends TestCase
 
     public function test_values_returns_every_anime_kind(): void
     {
-        $this->assertSame([
-            'tv',
-            'movie',
-            'ova',
-            'ona',
-            'special',
-            'music',
-            'tv_13',
-            'tv_24',
-            'tv_48',
-        ], KodikAnimeKind::values());
+        $this->assertSame(
+            [
+                'tv',
+                'movie',
+                'ova',
+                'ona',
+                'special',
+                'music',
+                'tv_13',
+                'tv_24',
+                'tv_48',
+            ],
+            KodikAnimeKind::values(),
+        );
     }
 }

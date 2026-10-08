@@ -69,10 +69,13 @@ class KodikMaterialTranslationTest extends TestCase
     {
         $translation = KodikMaterialTranslation::make(611, 'ColdFilm', KodikTranslationType::VOICE);
 
-        $this->assertSame([
-            'id' => 611,
-            'title' => 'ColdFilm',
-            'type' => 'voice',
-        ], $translation->toArray());
+        $this->assertSame(
+            [
+                'id' => 611,
+                'title' => 'ColdFilm',
+                'type' => 'voice',
+            ],
+            $translation->toArray(),
+        );
     }
 }

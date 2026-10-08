@@ -10,6 +10,4 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * @extends Builder<Translation>
  */
-class TranslationBuilder extends Builder
-{
-}
+class TranslationBuilder extends Builder {}

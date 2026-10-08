@@ -10,7 +10,5 @@ class TranslationService
 {
     public function __construct(
         private readonly TranslationRepository $repository,
-    )
-    {
-    }
+    ) {}
 }

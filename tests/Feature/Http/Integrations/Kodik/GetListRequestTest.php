@@ -48,11 +48,10 @@ class GetListRequestTest extends TestCase
         ]);
 
         $connector = new KodikConnector();
-        $response = $connector->send(new GetListRequest);
+        $response = $connector->send(new GetListRequest());
 
         Saloon::assertSent(function (GetListRequest $request): bool {
-            return $request->resolveEndpoint() === '/list'
-                && $request->getMethod()->value === 'POST';
+            return $request->resolveEndpoint() === '/list' && $request->getMethod()->value === 'POST';
         });
 
         $this->assertTrue($response->successful());
@@ -99,8 +98,7 @@ class GetListRequestTest extends TestCase
         ]));
 
         Saloon::assertSent(function (GetListRequest $request): bool {
-            return $request->query()->get('types') === 'anime-serial'
-                && $request->query()->get('limit') === 100;
+            return $request->query()->get('types') === 'anime-serial' && $request->query()->get('limit') === 100;
         });
     }
 
@@ -117,8 +115,7 @@ class GetListRequestTest extends TestCase
         $connector->send(new GetListRequest(['types' => 'anime-serial'], 'Y3Vyc29y'));
 
         Saloon::assertSent(function (GetListRequest $request): bool {
-            return $request->query()->get('next') === 'Y3Vyc29y'
-                && $request->query()->get('types') === 'anime-serial';
+            return $request->query()->get('next') === 'Y3Vyc29y' && $request->query()->get('types') === 'anime-serial';
         });
     }
 
@@ -156,9 +153,11 @@ class GetListRequestTest extends TestCase
         ]));
 
         Saloon::assertSent(function (GetListRequest $request): bool {
-            return $request->query()->get('types') === 'anime-serial'
+            return (
+                $request->query()->get('types') === 'anime-serial'
                 && $request->query()->get('year') === null
-                && $request->query()->get('sort') === null;
+                && $request->query()->get('sort') === null
+            );
         });
     }
 

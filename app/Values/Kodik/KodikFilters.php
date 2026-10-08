@@ -28,19 +28,14 @@ final readonly class KodikFilters
     private function __construct(
         private array $query,
         private array $allowedKeys,
-    )
-    {
-    }
+    ) {}
 
     /**
      * Filters accepted by the /list endpoint.
      */
     public static function forList(): self
     {
-        return new self([], array_merge(
-            KodikFilter::values(),
-            KodikListFilter::values(),
-        ));
+        return new self([], array_merge(KodikFilter::values(), KodikListFilter::values()));
     }
 
     /**
@@ -64,10 +59,7 @@ final readonly class KodikFilters
      */
     public function withTypes(KodikMaterialType ...$types): self
     {
-        return $this->with(
-            KodikFilter::TYPES,
-            KodikMaterialType::commaSeparated($types),
-        );
+        return $this->with(KodikFilter::TYPES, KodikMaterialType::commaSeparated($types));
     }
 
     /**
@@ -77,10 +69,7 @@ final readonly class KodikFilters
      */
     public function withField(KodikMaterialField ...$fields): self
     {
-        return $this->with(
-            KodikFilter::HAS_FIELD,
-            self::commaSeparated($fields),
-        );
+        return $this->with(KodikFilter::HAS_FIELD, self::commaSeparated($fields));
     }
 
     /**
@@ -88,10 +77,7 @@ final readonly class KodikFilters
      */
     public function withAnimeKind(KodikAnimeKind ...$kinds): self
     {
-        return $this->with(
-            KodikFilter::ANIME_KIND,
-            self::commaSeparated($kinds),
-        );
+        return $this->with(KodikFilter::ANIME_KIND, self::commaSeparated($kinds));
     }
 
     /**
@@ -99,10 +85,7 @@ final readonly class KodikFilters
      */
     public function withAnimeStatus(KodikStatus ...$statuses): self
     {
-        return $this->with(
-            KodikFilter::ANIME_STATUS,
-            self::commaSeparated($statuses),
-        );
+        return $this->with(KodikFilter::ANIME_STATUS, self::commaSeparated($statuses));
     }
 
     /**
@@ -110,10 +93,7 @@ final readonly class KodikFilters
      */
     public function withDramaStatus(KodikStatus ...$statuses): self
     {
-        return $this->with(
-            KodikFilter::DRAMA_STATUS,
-            self::commaSeparated($statuses),
-        );
+        return $this->with(KodikFilter::DRAMA_STATUS, self::commaSeparated($statuses));
     }
 
     /**
@@ -124,10 +104,7 @@ final readonly class KodikFilters
      */
     public function withAnyStatus(KodikStatus ...$statuses): self
     {
-        return $this->with(
-            KodikFilter::ALL_STATUS,
-            self::commaSeparated($statuses),
-        );
+        return $this->with(KodikFilter::ALL_STATUS, self::commaSeparated($statuses));
     }
 
     /**
@@ -135,10 +112,7 @@ final readonly class KodikFilters
      */
     public function withRatingMpaa(KodikRatingMpaa ...$ratings): self
     {
-        return $this->with(
-            KodikFilter::RATING_MPAA,
-            self::commaSeparated($ratings),
-        );
+        return $this->with(KodikFilter::RATING_MPAA, self::commaSeparated($ratings));
     }
 
     /**

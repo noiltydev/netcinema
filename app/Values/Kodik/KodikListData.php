@@ -21,9 +21,7 @@ final readonly class KodikListData implements Arrayable
         public array $results,
         public ?string $prevPage,
         public ?string $nextPage,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @param array<int, KodikMaterial> $results
@@ -34,15 +32,8 @@ final readonly class KodikListData implements Arrayable
         array $results = [],
         ?string $prevPage = null,
         ?string $nextPage = null,
-    ) : self
-    {
-        return new self(
-            time: $time,
-            total: $total,
-            results: $results,
-            prevPage: $prevPage,
-            nextPage: $nextPage,
-        );
+    ): self {
+        return new self(time: $time, total: $total, results: $results, prevPage: $prevPage, nextPage: $nextPage);
     }
 
     public static function fromSaloonResponse(Response $response): self
@@ -55,14 +46,13 @@ final readonly class KodikListData implements Arrayable
 
     public static function fromArray(array $data): self
     {
-        $results = array_map(
-            static fn(array $item): KodikMaterial => KodikMaterial::fromArray($item),
-            $data['results'] ?? [],
-        );
+        $results = array_map(static fn (array $item): KodikMaterial => KodikMaterial::fromArray(
+            $item,
+        ), $data['results'] ?? []);
 
         return self::make(
-            time: (string)($data['time'] ?? ''),
-            total: (int)($data['total'] ?? 0),
+            time: (string) ($data['time'] ?? ''),
+            total: (int) ($data['total'] ?? 0),
             results: $results,
             prevPage: $data['prev_page'] ?? null,
             nextPage: $data['next_page'] ?? null,
@@ -90,10 +80,7 @@ final readonly class KodikListData implements Arrayable
         return [
             'time' => $this->time,
             'total' => $this->total,
-            'results' => array_map(
-                static fn(KodikMaterial $item): array => $item->toArray(),
-                $this->results,
-            ),
+            'results' => array_map(static fn (KodikMaterial $item): array => $item->toArray(), $this->results),
             'prev_page' => $this->prevPage,
             'next_page' => $this->nextPage,
         ];

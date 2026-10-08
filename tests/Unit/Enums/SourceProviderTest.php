@@ -22,9 +22,6 @@ class SourceProviderTest extends TestCase
     {
         $values = array_column(SourceProviderName::cases(), 'value');
 
-        $this->assertSame(
-            ['myanimelist', 'shikimori', 'kinopoisk', 'imdb', 'kodik'],
-            $values,
-        );
+        $this->assertSame(['myanimelist', 'shikimori', 'kinopoisk', 'imdb', 'kodik'], $values);
     }
 }

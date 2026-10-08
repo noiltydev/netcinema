@@ -29,13 +29,16 @@ class KodikRatingMpaaTest extends TestCase
 
     public function test_values_returns_every_rating(): void
     {
-        $this->assertSame([
-            'G',
-            'PG',
-            'PG-13',
-            'R',
-            'R+',
-            'Rx',
-        ], KodikRatingMpaa::values());
+        $this->assertSame(
+            [
+                'G',
+                'PG',
+                'PG-13',
+                'R',
+                'R+',
+                'Rx',
+            ],
+            KodikRatingMpaa::values(),
+        );
     }
 }

@@ -22,9 +22,7 @@ class FunteamService
     public function __construct(
         private readonly FunteamRepository $funteamRepository,
         private readonly SourceRepository $sourceRepository,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @param array<int, KodikTranslation> $translations
@@ -55,12 +53,12 @@ class FunteamService
     private function makeImportRows(array $translations): Collection
     {
         return collect($translations)
-            ->map(static fn(KodikTranslation $translation): array => [
+            ->map(static fn (KodikTranslation $translation): array => [
                 'name' => $translation->name(),
                 'slug' => $translation->slug(),
                 'kodik_id' => $translation->id,
             ])
-            ->reject(static fn(array $row): bool => $row['slug'] === '')
+            ->reject(static fn (array $row): bool => $row['slug'] === '')
             ->groupBy('slug')
             ->map(static function (Collection $slugGroup): array {
                 $firstRow = $slugGroup->first();
@@ -84,7 +82,10 @@ class FunteamService
         DB::transaction(function () use ($rows): void {
             $importedAt = now();
             $linkedKodikFunteamIds = $this->sourceRepository->getFunteamIdsByExternalIdsFromProvider(
-                $rows->flatMap(static fn(array $row): array => $row['kodik_ids'])->map('strval')->unique(),
+                $rows
+                    ->flatMap(static fn (array $row): array => $row['kodik_ids'])
+                    ->map('strval')
+                    ->unique(),
                 ProviderName::KODIK,
             );
 
@@ -97,12 +98,15 @@ class FunteamService
      * @param Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}> $rows
      * @param Collection<string, int> $linkedKodikFunteamIds
      */
-    private function upsertFunteams(Collection $rows, CarbonInterface $importedAt, Collection $linkedKodikFunteamIds): void
-    {
+    private function upsertFunteams(
+        Collection $rows,
+        CarbonInterface $importedAt,
+        Collection $linkedKodikFunteamIds,
+    ): void {
         /** @var array<int, array<string, mixed>> $items */
         $items = $rows
-            ->reject(fn(array $row): bool => $this->hasLinkedKodikId($row, $linkedKodikFunteamIds))
-            ->map(static fn(array $row): array => [
+            ->reject(fn (array $row): bool => $this->hasLinkedKodikId($row, $linkedKodikFunteamIds))
+            ->map(static fn (array $row): array => [
                 'name' => $row['name'],
                 'slug' => $row['slug'],
                 'created_at' => $importedAt,
@@ -115,11 +119,7 @@ class FunteamService
             return;
         }
 
-        Funteam::query()->upsert(
-            $items,
-            ['slug'],
-            ['name', 'updated_at'],
-        );
+        Funteam::query()->upsert($items, ['slug'], ['name', 'updated_at']);
     }
 
     /**
@@ -132,16 +132,13 @@ class FunteamService
         Collection $rows,
         CarbonInterface $importedAt,
         Collection $linkedKodikFunteamIds,
-    ) : void
-    {
+    ): void {
         /** @var Collection<string, Funteam> $funteamsBySlug */
-        $funteamsBySlug = $this->funteamRepository
-            ->getManyBySlugs($rows->pluck('slug'))
-            ->keyBy('slug');
+        $funteamsBySlug = $this->funteamRepository->getManyBySlugs($rows->pluck('slug'))->keyBy('slug');
 
         /** @var array<int, array<string, mixed>> $sourceRows */
         $sourceRows = $rows
-            ->flatMap(fn(array $row): array => $this->makeKodikSourceRows(
+            ->flatMap(fn (array $row): array => $this->makeKodikSourceRows(
                 $funteamsBySlug->get($row['slug']),
                 $row,
                 $importedAt,
@@ -168,18 +165,17 @@ class FunteamService
         array $row,
         CarbonInterface $importedAt,
         Collection $linkedKodikFunteamIds,
-    ) : array
-    {
+    ): array {
         if ($funteam === null) {
             return [];
         }
 
         return array_map(
-            static fn(int $kodikId): array => [
+            static fn (int $kodikId): array => [
                 'sourceable_type' => $funteam->getMorphClass(),
                 'sourceable_id' => $funteam->id,
                 'provider_name' => ProviderName::KODIK->value,
-                'external_id' => (string)$kodikId,
+                'external_id' => (string) $kodikId,
                 'created_at' => $importedAt,
                 'updated_at' => $importedAt,
             ],
@@ -193,9 +189,8 @@ class FunteamService
      */
     private function hasLinkedKodikId(array $row, Collection $linkedKodikFunteamIds): bool
     {
-        return collect($row['kodik_ids'])->contains(
-            static fn(int $kodikId): bool => $linkedKodikFunteamIds->has((string)$kodikId),
-        );
+        return collect($row['kodik_ids'])
+            ->contains(static fn (int $kodikId): bool => $linkedKodikFunteamIds->has((string) $kodikId));
     }
 
     /**
@@ -211,7 +206,7 @@ class FunteamService
         $unlinkedKodikIds = [];
 
         foreach ($row['kodik_ids'] as $kodikId) {
-            $linkedFunteamId = $linkedKodikFunteamIds->get((string)$kodikId);
+            $linkedFunteamId = $linkedKodikFunteamIds->get((string) $kodikId);
 
             throw_if(
                 $linkedFunteamId !== null && $linkedFunteamId !== $funteam->id,

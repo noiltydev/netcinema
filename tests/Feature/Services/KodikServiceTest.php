@@ -78,8 +78,7 @@ class KodikServiceTest extends TestCase
         );
 
         Saloon::assertSent(function (GetTranslationsRequest $request): bool {
-            return $request->query()->get('types') === 'anime-serial'
-                && $request->query()->get('sort') === 'title';
+            return $request->query()->get('types') === 'anime-serial' && $request->query()->get('sort') === 'title';
         });
     }
 
@@ -103,9 +102,7 @@ class KodikServiceTest extends TestCase
         self::fakeTranslations();
 
         $service = new KodikService(new KodikConnector());
-        $service->getTranslations(
-            KodikFilters::forTranslations()->with(KodikListFilter::LIMIT, 100),
-        );
+        $service->getTranslations(KodikFilters::forTranslations()->with(KodikListFilter::LIMIT, 100));
     }
 
     public function test_get_translations_propagates_api_errors(): void
@@ -164,14 +161,16 @@ class KodikServiceTest extends TestCase
         );
 
         Saloon::assertSent(function (GetListRequest $request): bool {
-            return $request->query()->get('limit') === 100
+            return (
+                $request->query()->get('limit') === 100
                 && $request->query()->get('types') === 'anime,anime-serial'
                 && $request->query()->get('has_field') === 'shikimori_id'
                 && $request->query()->get('anime_kind') === 'tv,tv_24'
                 && $request->query()->get('anime_status') === 'released'
                 && $request->query()->get('drama_status') === 'ongoing'
                 && $request->query()->get('all_status') === 'anons'
-                && $request->query()->get('rating_mpaa') === 'PG-13,R+';
+                && $request->query()->get('rating_mpaa') === 'PG-13,R+'
+            );
         });
     }
 
@@ -189,10 +188,12 @@ class KodikServiceTest extends TestCase
         );
 
         Saloon::assertSent(function (GetListRequest $request): bool {
-            return $request->query()->get('types') === 'anime-serial'
+            return (
+                $request->query()->get('types') === 'anime-serial'
                 && $request->query()->get('sort') === 'updated_at'
                 && $request->query()->get('limit') === 100
-                && $request->query()->get('order') === 'asc';
+                && $request->query()->get('order') === 'asc'
+            );
         });
     }
 
@@ -201,14 +202,10 @@ class KodikServiceTest extends TestCase
         self::fakeList();
 
         $service = new KodikService(new KodikConnector());
-        $service->getList(
-            KodikFilters::forList()->withTypes(KodikMaterialType::ANIME_SERIAL),
-            'Y3Vyc29y',
-        );
+        $service->getList(KodikFilters::forList()->withTypes(KodikMaterialType::ANIME_SERIAL), 'Y3Vyc29y');
 
         Saloon::assertSent(function (GetListRequest $request): bool {
-            return $request->query()->get('next') === 'Y3Vyc29y'
-                && $request->query()->get('types') === 'anime-serial';
+            return $request->query()->get('next') === 'Y3Vyc29y' && $request->query()->get('types') === 'anime-serial';
         });
     }
 

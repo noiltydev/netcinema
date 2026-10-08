@@ -27,26 +27,26 @@ class KodikListFilterTest extends TestCase
 
     public function test_values_returns_all_list_only_filter_keys(): void
     {
-        $this->assertSame([
-            'limit',
-            'order',
-            'translation_id',
-            'block_translations',
-            'camrip',
-            'with_seasons',
-            'with_episodes',
-            'with_episodes_data',
-            'with_page_links',
-            'not_blocked_in',
-            'not_blocked_for_me',
-        ], KodikListFilter::values());
+        $this->assertSame(
+            [
+                'limit',
+                'order',
+                'translation_id',
+                'block_translations',
+                'camrip',
+                'with_seasons',
+                'with_episodes',
+                'with_episodes_data',
+                'with_page_links',
+                'not_blocked_in',
+                'not_blocked_for_me',
+            ],
+            KodikListFilter::values(),
+        );
     }
 
     public function test_list_only_filters_do_not_overlap_shared_filters(): void
     {
-        $this->assertSame([], array_intersect(
-            KodikListFilter::values(),
-            KodikFilter::values(),
-        ));
+        $this->assertSame([], array_intersect(KodikListFilter::values(), KodikFilter::values()));
     }
 }

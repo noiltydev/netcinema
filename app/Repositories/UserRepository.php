@@ -9,6 +9,4 @@ use App\Models\User;
 /**
  * @extends Repository<User>
  */
-class UserRepository extends Repository
-{
-}
+class UserRepository extends Repository {}

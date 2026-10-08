@@ -21,9 +21,7 @@ class GetTranslationsRequest extends Request
      */
     public function __construct(
         protected readonly array $filters = [],
-    )
-    {
-    }
+    ) {}
 
     /**
      * The endpoint for the request
@@ -38,7 +36,7 @@ class GetTranslationsRequest extends Request
      */
     protected function defaultQuery(): array
     {
-        return array_filter($this->filters, static fn($value): bool => $value !== null && $value !== '');
+        return array_filter($this->filters, static fn ($value): bool => $value !== null && $value !== '');
     }
 
     public function createDtoFromResponse(Response $response): KodikTranslationsData

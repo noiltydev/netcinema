@@ -16,9 +16,7 @@ class KodikService
 {
     public function __construct(
         private readonly KodikConnector $connector,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws RequestException
@@ -26,9 +24,7 @@ class KodikService
     public function getTranslations(?KodikFilters $filters = null): KodikTranslationsData
     {
         $response = $this->connector->send(
-            new GetTranslationsRequest(
-                ($filters ?? KodikFilters::forTranslations())->toQuery(),
-            ),
+            new GetTranslationsRequest(($filters ?? KodikFilters::forTranslations())->toQuery()),
         );
 
         return $response->dtoOrFail();
@@ -39,12 +35,7 @@ class KodikService
      */
     public function getList(?KodikFilters $filters = null, ?string $next = null): KodikListData
     {
-        $response = $this->connector->send(
-            new GetListRequest(
-                ($filters ?? KodikFilters::forList())->toQuery(),
-                $next,
-            ),
-        );
+        $response = $this->connector->send(new GetListRequest(($filters ?? KodikFilters::forList())->toQuery(), $next));
 
         return $response->dtoOrFail();
     }

@@ -9,6 +9,4 @@ use App\Models\Translation;
 /**
  * @extends Repository<Translation>
  */
-class TranslationRepository extends Repository
-{
-}
+class TranslationRepository extends Repository {}

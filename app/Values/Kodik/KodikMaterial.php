@@ -36,9 +36,7 @@ final readonly class KodikMaterial implements Arrayable
         public ?CarbonImmutable $updatedAt,
         public array $blockedCountries,
         public array $screenshots,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @param array<int, string> $blockedCountries
@@ -66,8 +64,7 @@ final readonly class KodikMaterial implements Arrayable
         ?CarbonImmutable $updatedAt = null,
         array $blockedCountries = [],
         array $screenshots = [],
-    ) : self
-    {
+    ): self {
         $rawTypeValue = $typeValue ?? $type?->value ?? '';
 
         return new self(
@@ -98,24 +95,24 @@ final readonly class KodikMaterial implements Arrayable
     public static function fromArray(array $data): self
     {
         return self::make(
-            id: (string)($data['id'] ?? ''),
-            title: (string)($data['title'] ?? ''),
-            typeValue: (string)($data['type'] ?? ''),
+            id: (string) ($data['id'] ?? ''),
+            title: (string) ($data['title'] ?? ''),
+            typeValue: (string) ($data['type'] ?? ''),
             link: self::nullableString($data['link'] ?? null),
             titleOrig: self::nullableString($data['title_orig'] ?? null),
             otherTitle: self::nullableString($data['other_title'] ?? null),
             translation: isset($data['translation']) && is_array($data['translation'])
                 ? KodikMaterialTranslation::fromArray($data['translation'])
                 : null,
-            year: isset($data['year']) ? (int)$data['year'] : null,
+            year: isset($data['year']) ? (int) $data['year'] : null,
             kinopoiskId: self::nullableString($data['kinopoisk_id'] ?? null),
             imdbId: self::nullableString($data['imdb_id'] ?? null),
             mdlId: self::nullableString($data['mdl_id'] ?? null),
             worldartLink: self::nullableString($data['worldart_link'] ?? null),
             shikimoriId: self::nullableString($data['shikimori_id'] ?? null),
             quality: self::nullableString($data['quality'] ?? null),
-            camrip: isset($data['camrip']) ? (bool)$data['camrip'] : null,
-            lgbt: isset($data['lgbt']) ? (bool)$data['lgbt'] : null,
+            camrip: isset($data['camrip']) ? (bool) $data['camrip'] : null,
+            lgbt: isset($data['lgbt']) ? (bool) $data['lgbt'] : null,
             createdAt: self::parseDate($data['created_at'] ?? null),
             updatedAt: self::parseDate($data['updated_at'] ?? null),
             blockedCountries: self::stringList($data['blocked_countries'] ?? []),
@@ -152,7 +149,7 @@ final readonly class KodikMaterial implements Arrayable
 
     private static function nullableString(mixed $value): ?string
     {
-        return $value === null ? null : (string)$value;
+        return $value === null ? null : (string) $value;
     }
 
     /**
@@ -164,10 +161,7 @@ final readonly class KodikMaterial implements Arrayable
             return [];
         }
 
-        return array_values(array_map(
-            static fn(mixed $item): string => (string)$item,
-            $value,
-        ));
+        return array_values(array_map(static fn (mixed $item): string => (string) $item, $value));
     }
 
     private static function parseDate(mixed $value): ?CarbonImmutable
@@ -176,6 +170,6 @@ final readonly class KodikMaterial implements Arrayable
             return null;
         }
 
-        return CarbonImmutable::parse((string)$value);
+        return CarbonImmutable::parse((string) $value);
     }
 }
