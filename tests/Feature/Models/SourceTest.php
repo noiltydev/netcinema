@@ -51,18 +51,35 @@ class SourceTest extends TestCase
         $this->assertSame($funteam->id, $source->sourceable_id);
     }
 
-    public function test_sourceable_and_provider_name_pair_is_unique(): void
+    public function test_sourceable_and_provider_and_external_id_triple_is_unique(): void
     {
         $funteam = Funteam::factory()->createOne();
         Source::factory()->for($funteam, 'sourceable')->createOne([
             'provider_name' => SourceProviderName::SHIKIMORI,
+            'external_id' => '42',
         ]);
 
         $this->expectException(QueryException::class);
 
         Source::factory()->for($funteam, 'sourceable')->createOne([
             'provider_name' => SourceProviderName::SHIKIMORI,
+            'external_id' => '42',
         ]);
+    }
+
+    public function test_a_funteam_may_hold_several_external_ids_of_the_same_provider(): void
+    {
+        $funteam = Funteam::factory()->createOne();
+        Source::factory()->for($funteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '963',
+        ]);
+        Source::factory()->for($funteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '3729',
+        ]);
+
+        $this->assertCount(2, $funteam->sources);
     }
 
     public function test_a_funteam_may_hold_several_providers(): void
