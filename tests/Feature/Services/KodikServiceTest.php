@@ -13,10 +13,12 @@ use App\Enums\KodikRatingMpaa;
 use App\Enums\KodikStatus;
 use App\Http\Integrations\Kodik\KodikConnector;
 use App\Http\Integrations\Kodik\Requests\GetListRequest;
+use App\Http\Integrations\Kodik\Requests\GetSearchRequest;
 use App\Http\Integrations\Kodik\Requests\GetTranslationsRequest;
 use App\Services\KodikService;
 use App\Values\Kodik\KodikFilters;
 use App\Values\Kodik\KodikListData;
+use App\Values\Kodik\KodikSearchData;
 use App\Values\Kodik\KodikTranslationsData;
 use InvalidArgumentException;
 use Saloon\Exceptions\Request\Statuses\ForbiddenException;
@@ -43,6 +45,16 @@ class KodikServiceTest extends TestCase
     {
         Saloon::fake([
             GetListRequest::class => MockResponse::make($body),
+        ]);
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     */
+    private static function fakeSearch(array $body = ['time' => '5ms', 'total' => 0, 'results' => []]): void
+    {
+        Saloon::fake([
+            GetSearchRequest::class => MockResponse::make($body),
         ]);
     }
 
@@ -232,5 +244,78 @@ class KodikServiceTest extends TestCase
         $this->expectException(ForbiddenException::class);
 
         $service->getList();
+    }
+
+    public function test_search_returns_dto(): void
+    {
+        self::fakeSearch([
+            'time' => '5ms',
+            'total' => 1,
+            'results' => [
+                [
+                    'id' => 'movie-452654',
+                    'type' => 'foreign-movie',
+                    'title' => 'Спортлото-82',
+                    'year' => 1982,
+                ],
+            ],
+        ]);
+
+        $service = new KodikService(new KodikConnector());
+        $result = $service->search();
+
+        static::assertInstanceOf(KodikSearchData::class, $result);
+        static::assertSame('5ms', $result->time);
+        static::assertSame(1, $result->total);
+        static::assertCount(1, $result->results);
+        static::assertSame('movie-452654', $result->results[0]->id);
+    }
+
+    public function test_search_passes_filters_to_request(): void
+    {
+        self::fakeSearch();
+
+        $service = new KodikService(new KodikConnector());
+        $service->search(
+            KodikFilters::forSearch()
+                ->withTitle('Спортлото-82')
+                ->withStrictMatch()
+                ->withLimit(20)
+                ->withTypes(KodikMaterialType::FOREIGN_MOVIE),
+        );
+
+        Saloon::assertSent(static function (GetSearchRequest $request): bool {
+            return (
+                $request->query()->get('title') === 'Спортлото-82'
+                && $request->query()->get('strict') === '1'
+                && $request->query()->get('limit') === 20
+                && $request->query()->get('types') === 'foreign-movie'
+            );
+        });
+    }
+
+    public function test_search_with_empty_filters_sends_no_query_params(): void
+    {
+        self::fakeSearch();
+
+        $service = new KodikService(new KodikConnector());
+        $service->search();
+
+        Saloon::assertSent(static function (GetSearchRequest $request): bool {
+            return $request->query()->isEmpty();
+        });
+    }
+
+    public function test_search_propagates_api_errors(): void
+    {
+        Saloon::fake([
+            GetSearchRequest::class => MockResponse::make(['error' => 'Invalid token'], 403),
+        ]);
+
+        $service = new KodikService(new KodikConnector());
+
+        $this->expectException(ForbiddenException::class);
+
+        $service->search();
     }
 }

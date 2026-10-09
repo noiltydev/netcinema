@@ -10,6 +10,7 @@ use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikRatingMpaa;
+use App\Enums\KodikSearchFilter;
 use App\Enums\KodikStatus;
 use App\Values\Kodik\KodikFilters;
 use InvalidArgumentException;
@@ -164,6 +165,97 @@ class KodikFiltersTest extends TestCase
                 'anime_status' => 'released',
             ],
             $query,
+        );
+    }
+
+    public function test_empty_search_builder_produces_an_empty_query(): void
+    {
+        static::assertSame([], KodikFilters::forSearch()->toQuery());
+    }
+
+    public function test_search_only_named_builders_write_their_keys(): void
+    {
+        static::assertSame(
+            [
+                'title' => 'Спортлото-82',
+                'title_orig' => 'Спортлото-82',
+                'strict' => '1',
+                'full_match' => '1',
+                'id' => 'movie-452654',
+                'kinopoisk_id' => '43949',
+                'imdb_id' => 'tt0084716',
+                'shikimori_id' => '12345',
+                'season' => 2,
+                'episode' => 5,
+            ],
+            KodikFilters::forSearch()
+                ->withTitle('Спортлото-82')
+                ->withTitleOrig('Спортлото-82')
+                ->withStrictMatch()
+                ->withFullMatch()
+                ->withKodikId('movie-452654')
+                ->withKinopoiskId('43949')
+                ->withImdbId('tt0084716')
+                ->withShikimoriId('12345')
+                ->withSeason(2)
+                ->withEpisode(5)
+                ->toQuery(),
+        );
+    }
+
+    public function test_disabled_boolean_search_builders_send_zero(): void
+    {
+        static::assertSame(
+            ['strict' => '0', 'full_match' => '0'],
+            KodikFilters::forSearch()->withStrictMatch(false)->withFullMatch(false)->toQuery(),
+        );
+    }
+
+    public function test_search_scope_accepts_shared_and_list_filters(): void
+    {
+        $query = KodikFilters::forSearch()
+            ->withLimit(100)
+            ->withTypes(KodikMaterialType::ANIME_SERIAL)
+            ->with(KodikFilter::SORT, 'updated_at')
+            ->with(KodikListFilter::ORDER, 'asc')
+            ->with(KodikSearchFilter::PLAYER_LINK, 'https://kodikplayer.com/video/19850')
+            ->toQuery();
+
+        static::assertSame(
+            [
+                'limit' => 100,
+                'types' => 'anime-serial',
+                'sort' => 'updated_at',
+                'order' => 'asc',
+                'player_link' => 'https://kodikplayer.com/video/19850',
+            ],
+            $query,
+        );
+    }
+
+    public function test_search_only_filter_is_rejected_for_list_scope(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid filter key: title');
+
+        KodikFilters::forList()->with(KodikSearchFilter::TITLE, 'Спортлото-82');
+    }
+
+    public function test_search_only_filter_is_rejected_for_translations_scope(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid filter key: title');
+
+        KodikFilters::forTranslations()->with(KodikSearchFilter::TITLE, 'Спортлото-82');
+    }
+
+    public function test_boolean_values_are_normalized_for_every_scope(): void
+    {
+        static::assertSame(['camrip' => '0'], KodikFilters::forList()->with(KodikListFilter::CAMRIP, false)->toQuery());
+
+        static::assertSame(
+            ['strict' => '1'],
+            KodikFilters::forSearch()->with(KodikSearchFilter::STRICT, true)->toQuery(),
         );
     }
 }

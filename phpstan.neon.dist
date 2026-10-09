@@ -17,7 +17,7 @@ parameters:
     parseModelCastsMethod: true
 
     ignoreErrors:
-        # These two tests assert that tryFrom() rejects a value absent from the enum. PHPStan
+        # These tests assert that tryFrom() rejects a value absent from the enum. PHPStan
         # resolves the constant and proves the assertion statically, but the test is a guard
         # against the enum later gaining the case.
         -
@@ -26,6 +26,9 @@ parameters:
         -
             message: '#with null will always evaluate to true#'
             path: tests/Unit/Enums/KodikMaterialTypeTest.php
+        -
+            message: '#with null will always evaluate to true#'
+            path: tests/Unit/Enums/KodikSearchFilterTest.php
 
     excludePaths:
         - ./routes/console.php

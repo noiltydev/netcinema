@@ -27,7 +27,11 @@ no-else-clause = { enabled = false }
 no-shorthand-ternary = { enabled = false }
 no-isset = { enabled = false }
 prefer-arrow-function = { enabled = false }
-too-many-methods = { threshold = 14, exclude = ["tests/"] }
+# KodikFilters is an immutable builder over the Kodik API filter surface: one scope per endpoint
+# (forList, forTranslations, forSearch) plus a named method per documented query parameter, so it
+# carries more methods than the default threshold allows. Splitting it would only trade the API
+# mirror for indirection, so that single file is exempted from the count.
+too-many-methods = { threshold = 14, exclude = ["tests/", "app/Values/Kodik/KodikFilters.php"] }
 
 # KodikFilter maps the Kodik API's filter surface one-to-one (34 query parameters), and
 # KodikMaterial is a flat mapper for a 21-field payload. Both are wide by nature, not by

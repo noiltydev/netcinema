@@ -10,6 +10,7 @@ use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikRatingMpaa;
+use App\Enums\KodikSearchFilter;
 use App\Enums\KodikStatus;
 use BackedEnum;
 use InvalidArgumentException;
@@ -18,6 +19,7 @@ use InvalidArgumentException;
  * Immutable, endpoint-scoped set of Kodik API query filters.
  *
  * @see \App\Http\Integrations\Kodik\Requests\GetListRequest
+ * @see \App\Http\Integrations\Kodik\Requests\GetSearchRequest
  * @see \App\Http\Integrations\Kodik\Requests\GetTranslationsRequest
  */
 final readonly class KodikFilters
@@ -45,6 +47,14 @@ final readonly class KodikFilters
     public static function forTranslations(): self
     {
         return new self([], KodikFilter::values());
+    }
+
+    /**
+     * Filters accepted by the /search endpoint.
+     */
+    public static function forSearch(): self
+    {
+        return new self([], array_merge(KodikFilter::values(), KodikListFilter::values(), KodikSearchFilter::values()));
     }
 
     /**
@@ -117,12 +127,101 @@ final readonly class KodikFilters
     }
 
     /**
+     * Matched against title, title_orig and other_title at once. Extra words in the title are
+     * tolerated unless withStrictMatch or withFullMatch narrows it down.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withTitle(string $title): self
+    {
+        return $this->with(KodikSearchFilter::TITLE, $title);
+    }
+
+    /**
+     * Matched against title_orig alone.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withTitleOrig(string $title): self
+    {
+        return $this->with(KodikSearchFilter::TITLE_ORIG, $title);
+    }
+
+    /**
+     * Requires the word order to match the searched title, extra words still allowed.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withStrictMatch(bool $strictMatch = true): self
+    {
+        return $this->with(KodikSearchFilter::STRICT, $strictMatch);
+    }
+
+    /**
+     * Requires the title to match completely, apart from letter case.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withFullMatch(bool $fullMatch = true): self
+    {
+        return $this->with(KodikSearchFilter::FULL_MATCH, $fullMatch);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withKodikId(string $kodikId): self
+    {
+        return $this->with(KodikSearchFilter::ID, $kodikId);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withKinopoiskId(string $kinopoiskId): self
+    {
+        return $this->with(KodikSearchFilter::KINOPOISK_ID, $kinopoiskId);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withImdbId(string $imdbId): self
+    {
+        return $this->with(KodikSearchFilter::IMDB_ID, $imdbId);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withShikimoriId(string $shikimoriId): self
+    {
+        return $this->with(KodikSearchFilter::SHIKIMORI_ID, $shikimoriId);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withSeason(int $season): self
+    {
+        return $this->with(KodikSearchFilter::SEASON, $season);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withEpisode(int $episode): self
+    {
+        return $this->with(KodikSearchFilter::EPISODE, $episode);
+    }
+
+    /**
      * Escape hatch for filters without a dedicated method. The key is still validated against
      * the endpoint scope, so an unknown or out-of-scope key throws rather than reaching the API.
      *
      * @throws InvalidArgumentException
      */
-    public function with(KodikFilter|KodikListFilter $key, string|int $value): self
+    public function with(KodikFilter|KodikListFilter|KodikSearchFilter $key, string|int|bool $value): self
     {
         throw_unless(
             in_array($key->value, $this->allowedKeys, true),
@@ -130,7 +229,9 @@ final readonly class KodikFilters
             sprintf('Invalid filter key: %s', $key->value),
         );
 
-        return new self([...$this->query, $key->value => $value], $this->allowedKeys);
+        $query = [...$this->query, $key->value => self::normalizeValue($value)];
+
+        return new self($query, $this->allowedKeys);
     }
 
     /**
@@ -147,5 +248,14 @@ final readonly class KodikFilters
     private static function commaSeparated(array $values): string
     {
         return implode(',', array_column($values, 'value'));
+    }
+
+    private static function normalizeValue(string|int|bool $value): string|int
+    {
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        return $value;
     }
 }
