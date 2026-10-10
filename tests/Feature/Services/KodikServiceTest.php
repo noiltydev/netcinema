@@ -22,11 +22,11 @@ use App\Values\Kodik\KodikSearchData;
 use App\Values\Kodik\KodikSearchFilters;
 use App\Values\Kodik\KodikTranslationsData;
 use App\Values\Kodik\KodikTranslationsFilters;
+use InvalidArgumentException;
 use Saloon\Exceptions\Request\Statuses\ForbiddenException;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Laravel\Facades\Saloon;
 use Tests\TestCase;
-use TypeError;
 
 class KodikServiceTest extends TestCase
 {
@@ -110,14 +110,12 @@ class KodikServiceTest extends TestCase
 
     public function test_get_translations_rejects_a_list_only_filter(): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid filter key: limit');
 
         self::fakeTranslations();
 
         $service = new KodikService(new KodikConnector());
-
-        // The scope now rejects the key through its parameter type rather than at runtime.
-        /** @phpstan-ignore argument.type */
         $service->getTranslations(KodikTranslationsFilters::make()->with(KodikListFilter::LIMIT, 100));
     }
 

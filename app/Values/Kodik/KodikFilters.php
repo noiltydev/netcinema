@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
+use App\Enums\Contracts\KodikFilterKey;
 use App\Enums\KodikAnimeKind;
 use App\Enums\KodikFilter;
 use App\Enums\KodikMaterialField;
@@ -16,8 +17,9 @@ use InvalidArgumentException;
 /**
  * The filters every Kodik endpoint accepts, held immutably beside the endpoint's own scope.
  *
- * Each endpoint scope is its own subclass so that it can declare with() with exactly the key
- * enums it accepts, and so that a named builder only exists where the endpoint understands it.
+ * Each endpoint scope is its own subclass so that a named builder only exists where the endpoint
+ * understands the filter. with() is the escape hatch for everything else: it accepts any key
+ * enum, and put() rejects the ones this endpoint does not accept.
  *
  * @see KodikTranslationsFilters
  * @see KodikListFilters
@@ -106,14 +108,24 @@ abstract readonly class KodikFilters
     }
 
     /**
+     * Escape hatch for filters without a dedicated method.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function with(KodikFilterKey $key, string|int|bool $value): static
+    {
+        return $this->put($key, $value);
+    }
+
+    /**
      * Writes a key the endpoint scope accepts, rejecting anything outside it rather than
      * letting it reach the API.
      *
      * @throws InvalidArgumentException
      */
-    protected function put(BackedEnum $key, string|int|bool $value): static
+    protected function put(KodikFilterKey $key, string|int|bool $value): static
     {
-        $keyName = (string) $key->value;
+        $keyName = $key->queryKey();
 
         throw_unless(
             in_array($keyName, $this->allowedKeys, true),

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum KodikListFilter: string
+use App\Enums\Contracts\KodikFilterKey;
+
+enum KodikListFilter: string implements KodikFilterKey
 {
     case LIMIT = 'limit';
     case ORDER = 'order';
@@ -17,6 +19,11 @@ enum KodikListFilter: string
     case WITH_PAGE_LINKS = 'with_page_links';
     case NOT_BLOCKED_IN = 'not_blocked_in';
     case NOT_BLOCKED_FOR_ME = 'not_blocked_for_me';
+
+    public function queryKey(): string
+    {
+        return $this->value;
+    }
 
     /**
      * @return array<string>

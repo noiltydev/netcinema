@@ -27,14 +27,4 @@ final readonly class KodikListFilters extends KodikFilters
     {
         return $this->put(KodikListFilter::LIMIT, $limit);
     }
-
-    /**
-     * Escape hatch for filters without a dedicated method.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function with(KodikFilter|KodikListFilter $key, string|int|bool $value): static
-    {
-        return $this->put($key, $value);
-    }
 }

@@ -153,11 +153,6 @@ class KodikFiltersTest extends TestCase
             {
                 parent::__construct($query, $allowedKeys);
             }
-
-            public function with(KodikFilter $key, string|int|bool $value): static
-            {
-                return $this->put($key, $value);
-            }
         };
 
         $this->expectException(InvalidArgumentException::class);

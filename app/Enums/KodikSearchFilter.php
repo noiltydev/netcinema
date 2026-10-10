@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum KodikSearchFilter: string
+use App\Enums\Contracts\KodikFilterKey;
+
+enum KodikSearchFilter: string implements KodikFilterKey
 {
     case TITLE = 'title';
     case TITLE_ORIG = 'title_orig';
@@ -25,6 +27,11 @@ enum KodikSearchFilter: string
     case PRIORITIZE_TRANSLATIONS = 'prioritize_translations';
     case UNPRIORITIZE_TRANSLATIONS = 'unprioritize_translations';
     case PRIORITIZE_TRANSLATION_TYPE = 'prioritize_translation_type';
+
+    public function queryKey(): string
+    {
+        return $this->value;
+    }
 
     /**
      * @return array<string>

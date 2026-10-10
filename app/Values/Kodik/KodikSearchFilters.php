@@ -117,14 +117,4 @@ final readonly class KodikSearchFilters extends KodikFilters
     {
         return $this->put(KodikSearchFilter::EPISODE, $episode);
     }
-
-    /**
-     * Escape hatch for filters without a dedicated method.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function with(KodikFilter|KodikListFilter|KodikSearchFilter $key, string|int|bool $value): static
-    {
-        return $this->put($key, $value);
-    }
 }
