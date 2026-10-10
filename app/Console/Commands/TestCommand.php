@@ -17,7 +17,7 @@ use App\Models\Funteam;
 use App\Models\Source;
 use App\Models\Translation;
 use App\Services\KodikService;
-use App\Values\Kodik\KodikFilters;
+use App\Values\Kodik\KodikListFilters;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -30,7 +30,7 @@ class TestCommand extends Command
     public function handle(KodikService $kodikService): int
     {
         $res = $kodikService->getList(
-            KodikFilters::forList()
+            KodikListFilters::make()
                 ->withLimit(100)
                 ->with(KodikListFilter::ORDER, 'asc')
                 ->withField(KodikMaterialField::SHIKIMORI_ID)

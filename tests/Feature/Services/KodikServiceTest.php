@@ -16,15 +16,17 @@ use App\Http\Integrations\Kodik\Requests\GetListRequest;
 use App\Http\Integrations\Kodik\Requests\GetSearchRequest;
 use App\Http\Integrations\Kodik\Requests\GetTranslationsRequest;
 use App\Services\KodikService;
-use App\Values\Kodik\KodikFilters;
 use App\Values\Kodik\KodikListData;
+use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikSearchData;
+use App\Values\Kodik\KodikSearchFilters;
 use App\Values\Kodik\KodikTranslationsData;
-use InvalidArgumentException;
+use App\Values\Kodik\KodikTranslationsFilters;
 use Saloon\Exceptions\Request\Statuses\ForbiddenException;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Laravel\Facades\Saloon;
 use Tests\TestCase;
+use TypeError;
 
 class KodikServiceTest extends TestCase
 {
@@ -84,7 +86,7 @@ class KodikServiceTest extends TestCase
 
         $service = new KodikService(new KodikConnector());
         $service->getTranslations(
-            KodikFilters::forTranslations()
+            KodikTranslationsFilters::make()
                 ->withTypes(KodikMaterialType::ANIME_SERIAL)
                 ->with(KodikFilter::SORT, 'title'),
         );
@@ -106,15 +108,17 @@ class KodikServiceTest extends TestCase
         });
     }
 
-    public function test_get_translations_rejects_list_only_filter(): void
+    public function test_get_translations_rejects_a_list_only_filter(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid filter key: limit');
+        $this->expectException(TypeError::class);
 
         self::fakeTranslations();
 
         $service = new KodikService(new KodikConnector());
-        $service->getTranslations(KodikFilters::forTranslations()->with(KodikListFilter::LIMIT, 100));
+
+        // The scope now rejects the key through its parameter type rather than at runtime.
+        /** @phpstan-ignore argument.type */
+        $service->getTranslations(KodikTranslationsFilters::make()->with(KodikListFilter::LIMIT, 100));
     }
 
     public function test_get_translations_propagates_api_errors(): void
@@ -161,7 +165,7 @@ class KodikServiceTest extends TestCase
 
         $service = new KodikService(new KodikConnector());
         $service->getList(
-            KodikFilters::forList()
+            KodikListFilters::make()
                 ->withLimit(100)
                 ->withTypes(KodikMaterialType::ANIME, KodikMaterialType::ANIME_SERIAL)
                 ->withField(KodikMaterialField::SHIKIMORI_ID)
@@ -192,7 +196,7 @@ class KodikServiceTest extends TestCase
 
         $service = new KodikService(new KodikConnector());
         $service->getList(
-            KodikFilters::forList()
+            KodikListFilters::make()
                 ->with(KodikFilter::TYPES, 'anime-serial')
                 ->with(KodikFilter::SORT, 'updated_at')
                 ->with(KodikListFilter::LIMIT, 100)
@@ -214,7 +218,7 @@ class KodikServiceTest extends TestCase
         self::fakeList();
 
         $service = new KodikService(new KodikConnector());
-        $service->getList(KodikFilters::forList()->withTypes(KodikMaterialType::ANIME_SERIAL), 'Y3Vyc29y');
+        $service->getList(KodikListFilters::make()->withTypes(KodikMaterialType::ANIME_SERIAL), 'Y3Vyc29y');
 
         Saloon::assertSent(static function (GetListRequest $request): bool {
             return $request->query()->get('next') === 'Y3Vyc29y' && $request->query()->get('types') === 'anime-serial';
@@ -277,7 +281,7 @@ class KodikServiceTest extends TestCase
 
         $service = new KodikService(new KodikConnector());
         $service->search(
-            KodikFilters::forSearch()
+            KodikSearchFilters::make()
                 ->withTitle('Спортлото-82')
                 ->withStrictMatch()
                 ->withLimit(20)

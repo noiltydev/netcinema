@@ -1,0 +1,81 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Values\Kodik;
+
+use App\Enums\KodikAnimeKind;
+use App\Enums\KodikFilter;
+use App\Enums\KodikListFilter;
+use App\Enums\KodikMaterialField;
+use App\Enums\KodikMaterialType;
+use App\Enums\KodikRatingMpaa;
+use App\Enums\KodikStatus;
+use App\Values\Kodik\KodikListFilters;
+use PHPUnit\Framework\TestCase;
+
+class KodikListFiltersTest extends TestCase
+{
+    public function test_empty_scope_produces_an_empty_query(): void
+    {
+        static::assertSame([], KodikListFilters::make()->toQuery());
+    }
+
+    public function test_with_limit_writes_the_limit_key(): void
+    {
+        $query = KodikListFilters::make()->withLimit(100)->toQuery();
+
+        static::assertSame(['limit' => 100], $query);
+    }
+
+    public function test_escape_hatch_accepts_shared_and_list_filters(): void
+    {
+        $query = KodikListFilters::make()
+            ->with(KodikFilter::TYPES, 'anime-serial')
+            ->with(KodikFilter::SORT, 'updated_at')
+            ->with(KodikListFilter::LIMIT, 100)
+            ->with(KodikListFilter::ORDER, 'asc')
+            ->toQuery();
+
+        static::assertSame(
+            [
+                'types' => 'anime-serial',
+                'sort' => 'updated_at',
+                'limit' => 100,
+                'order' => 'asc',
+            ],
+            $query,
+        );
+    }
+
+    public function test_full_chain_produces_the_expected_query(): void
+    {
+        $query = KodikListFilters::make()
+            ->withLimit(100)
+            ->withTypes(KodikMaterialType::ANIME, KodikMaterialType::ANIME_SERIAL)
+            ->withField(KodikMaterialField::SHIKIMORI_ID)
+            ->withAnimeKind(KodikAnimeKind::TV, KodikAnimeKind::TV_24)
+            ->withAnimeStatus(KodikStatus::RELEASED)
+            ->withRatingMpaa(KodikRatingMpaa::PG_13)
+            ->toQuery();
+
+        static::assertSame(
+            [
+                'limit' => 100,
+                'types' => 'anime,anime-serial',
+                'has_field' => 'shikimori_id',
+                'anime_kind' => 'tv,tv_24',
+                'anime_status' => 'released',
+                'rating_mpaa' => 'PG-13',
+            ],
+            $query,
+        );
+    }
+
+    public function test_boolean_list_filter_is_normalized(): void
+    {
+        $query = KodikListFilters::make()->with(KodikListFilter::CAMRIP, false)->toQuery();
+
+        static::assertSame(['camrip' => '0'], $query);
+    }
+}

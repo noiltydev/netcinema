@@ -8,10 +8,12 @@ use App\Http\Integrations\Kodik\KodikConnector;
 use App\Http\Integrations\Kodik\Requests\GetListRequest;
 use App\Http\Integrations\Kodik\Requests\GetSearchRequest;
 use App\Http\Integrations\Kodik\Requests\GetTranslationsRequest;
-use App\Values\Kodik\KodikFilters;
 use App\Values\Kodik\KodikListData;
+use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikSearchData;
+use App\Values\Kodik\KodikSearchFilters;
 use App\Values\Kodik\KodikTranslationsData;
+use App\Values\Kodik\KodikTranslationsFilters;
 use Saloon\Exceptions\Request\RequestException;
 
 class KodikService
@@ -23,10 +25,10 @@ class KodikService
     /**
      * @throws RequestException
      */
-    public function getTranslations(?KodikFilters $filters = null): KodikTranslationsData
+    public function getTranslations(?KodikTranslationsFilters $filters = null): KodikTranslationsData
     {
         $response = $this->connector->send(
-            new GetTranslationsRequest(($filters ?? KodikFilters::forTranslations())->toQuery()),
+            new GetTranslationsRequest(($filters ?? KodikTranslationsFilters::make())->toQuery()),
         );
 
         return $response->dtoOrFail();
@@ -35,9 +37,11 @@ class KodikService
     /**
      * @throws RequestException
      */
-    public function getList(?KodikFilters $filters = null, ?string $next = null): KodikListData
+    public function getList(?KodikListFilters $filters = null, ?string $next = null): KodikListData
     {
-        $response = $this->connector->send(new GetListRequest(($filters ?? KodikFilters::forList())->toQuery(), $next));
+        $response = $this->connector->send(
+            new GetListRequest(($filters ?? KodikListFilters::make())->toQuery(), $next),
+        );
 
         return $response->dtoOrFail();
     }
@@ -45,9 +49,9 @@ class KodikService
     /**
      * @throws RequestException
      */
-    public function search(?KodikFilters $filters = null): KodikSearchData
+    public function search(?KodikSearchFilters $filters = null): KodikSearchData
     {
-        $response = $this->connector->send(new GetSearchRequest(($filters ?? KodikFilters::forSearch())->toQuery()));
+        $response = $this->connector->send(new GetSearchRequest(($filters ?? KodikSearchFilters::make())->toQuery()));
 
         return $response->dtoOrFail();
     }

@@ -7,7 +7,7 @@ namespace App\Console\Commands\Kodik;
 use App\Enums\KodikMaterialType;
 use App\Services\FunteamService;
 use App\Services\KodikService;
-use App\Values\Kodik\KodikFilters;
+use App\Values\Kodik\KodikTranslationsFilters;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -18,7 +18,7 @@ class ImportFunteamsCommand extends Command
 {
     public function handle(KodikService $kodikService, FunteamService $funteamService): int
     {
-        $res = $kodikService->getTranslations(KodikFilters::forTranslations()->withTypes(
+        $res = $kodikService->getTranslations(KodikTranslationsFilters::make()->withTypes(
             KodikMaterialType::ANIME,
             KodikMaterialType::ANIME_SERIAL,
         ));
