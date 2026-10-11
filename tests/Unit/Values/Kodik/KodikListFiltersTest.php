@@ -78,4 +78,20 @@ class KodikListFiltersTest extends TestCase
 
         static::assertSame(['camrip' => '0'], $query);
     }
+
+    public function test_with_translation_id_joins_the_ids_with_commas(): void
+    {
+        $query = KodikListFilters::make()->withTranslationId(714, 720)->toQuery();
+
+        static::assertSame(['translation_id' => '714,720'], $query);
+    }
+
+    public function test_with_translation_id_is_immutable(): void
+    {
+        $base = KodikListFilters::make()->withLimit(50);
+        $derived = $base->withTranslationId(714);
+
+        static::assertSame(['limit' => 50], $base->toQuery());
+        static::assertSame(['limit' => 50, 'translation_id' => '714'], $derived->toQuery());
+    }
 }

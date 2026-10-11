@@ -7,6 +7,8 @@ namespace App\Values\Kodik;
 use App\Enums\KodikFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikSearchFilter;
+use App\Values\Kodik\Concerns\HasLimit;
+use App\Values\Kodik\Concerns\HasTranslationId;
 use InvalidArgumentException;
 
 /**
@@ -16,17 +18,12 @@ use InvalidArgumentException;
  */
 final readonly class KodikSearchFilters extends KodikFilters
 {
+    use HasLimit;
+    use HasTranslationId;
+
     public static function make(): self
     {
         return new self([], array_merge(KodikFilter::values(), KodikListFilter::values(), KodikSearchFilter::values()));
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withLimit(int $limit): static
-    {
-        return $this->put(KodikListFilter::LIMIT, $limit);
     }
 
     /**

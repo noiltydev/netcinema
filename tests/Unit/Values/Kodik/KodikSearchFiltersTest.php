@@ -84,4 +84,20 @@ class KodikSearchFiltersTest extends TestCase
 
         static::assertSame(['strict' => '1'], $query);
     }
+
+    public function test_with_translation_id_joins_the_ids_with_commas(): void
+    {
+        $query = KodikSearchFilters::make()->withTranslationId(714, 720)->toQuery();
+
+        static::assertSame(['translation_id' => '714,720'], $query);
+    }
+
+    public function test_with_translation_id_is_immutable(): void
+    {
+        $base = KodikSearchFilters::make()->withTitle('Спортлото-82');
+        $derived = $base->withTranslationId(714);
+
+        static::assertSame(['title' => 'Спортлото-82'], $base->toQuery());
+        static::assertSame(['title' => 'Спортлото-82', 'translation_id' => '714'], $derived->toQuery());
+    }
 }
