@@ -64,13 +64,19 @@ abstract class Repository implements RepositoryContract
     {
         $models = $this->modelClass::query()->find($ids);
 
-        return $preserveOrder ? $models->orderByArray($ids) : $models;
+        if (!$preserveOrder) {
+            return $models;
+        }
+
+        $positions = array_flip(array_values($ids));
+
+        return $models->sortBy(static fn (Model $model): int => $positions[$model->getKey()] ?? PHP_INT_MAX)->values();
     }
 
     /** @inheritDoc */
     public function getAll(): Collection
     {
-        return $this->modelClass::all(); // @phpstan-ignore-line
+        return $this->modelClass::all();
     }
 
     /** @inheritDoc */

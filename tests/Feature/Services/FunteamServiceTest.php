@@ -24,18 +24,17 @@ class FunteamServiceTest extends TestCase
      */
     private function makeTranslations(array $translations): array
     {
-        return array_map(
-            static fn(array $translation): KodikTranslation => KodikTranslation::fromArray($translation),
-            $translations,
-        );
+        return array_map(KodikTranslation::fromArray(...), $translations);
     }
 
     public function test_import_links_every_imported_funteam_to_its_kodik_translation(): void
     {
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ['id' => 824, 'title' => '3df voice', 'count' => 16],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ['id' => 824, 'title' => '3df voice', 'count' => 16],
+            ]));
 
         /** @var Funteam $firstFunteam */
         $firstFunteam = Funteam::query()->where('slug', '2x2')->sole();
@@ -43,28 +42,27 @@ class FunteamServiceTest extends TestCase
         $secondFunteam = Funteam::query()->where('slug', '3df-voice')->sole();
 
         $this->assertDatabaseCount('sources', 2);
-        $this->assertSame(SourceProviderName::KODIK, $firstFunteam->sources()->sole()->provider_name);
-        $this->assertSame('735', $firstFunteam->sources()->sole()->external_id);
-        $this->assertSame(SourceProviderName::KODIK, $secondFunteam->sources()->sole()->provider_name);
-        $this->assertSame('824', $secondFunteam->sources()->sole()->external_id);
+        static::assertSame(SourceProviderName::KODIK, $firstFunteam->sources()->sole()->provider_name);
+        static::assertSame('735', $firstFunteam->sources()->sole()->external_id);
+        static::assertSame(SourceProviderName::KODIK, $secondFunteam->sources()->sole()->provider_name);
+        static::assertSame('824', $secondFunteam->sources()->sole()->external_id);
     }
 
     public function test_import_links_the_voice_and_subtitles_translations_of_a_funteam_to_that_funteam(): void
     {
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
+            ]));
 
         /** @var Funteam $funteam */
         $funteam = Funteam::query()->where('slug', '2x2')->sole();
 
         $this->assertDatabaseCount('funteams', 1);
         $this->assertDatabaseCount('sources', 2);
-        $this->assertEqualsCanonicalizing(
-            ['735', '736'],
-            $funteam->sources()->pluck('external_id')->all(),
-        );
+        static::assertEqualsCanonicalizing(['735', '736'], $funteam->sources()->pluck('external_id')->all());
     }
 
     public function test_import_is_idempotent_for_a_funteam_with_two_kodik_translations(): void
@@ -89,15 +87,17 @@ class FunteamServiceTest extends TestCase
             'slug' => '2x2',
         ]);
 
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+            ]));
 
         $source = $funteam->sources()->sole();
 
         $this->assertDatabaseCount('funteams', 1);
-        $this->assertSame(SourceProviderName::KODIK, $source->provider_name);
-        $this->assertSame('735', $source->external_id);
+        static::assertSame(SourceProviderName::KODIK, $source->provider_name);
+        static::assertSame('735', $source->external_id);
     }
 
     public function test_import_keeps_the_sources_of_another_provider_intact(): void
@@ -111,17 +111,19 @@ class FunteamServiceTest extends TestCase
             'external_id' => '42',
         ]);
 
-        $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-            ['id' => 735, 'title' => '2x2', 'count' => 26],
-        ]));
+        $this->app
+            ->make(FunteamService::class)
+            ->importFromKodik($this->makeTranslations([
+                ['id' => 735, 'title' => '2x2', 'count' => 26],
+            ]));
 
         $providers = $funteam->sources()->orderBy('provider_name')->get();
 
-        $this->assertCount(2, $providers);
-        $this->assertSame(SourceProviderName::KODIK, $providers->first()->provider_name);
-        $this->assertSame(SourceProviderName::MYANIMELIST, $providers->last()->provider_name);
-        $this->assertSame('735', $providers->first()->external_id);
-        $this->assertSame('42', $providers->last()->external_id);
+        static::assertCount(2, $providers);
+        static::assertSame(SourceProviderName::KODIK, $providers->first()->provider_name);
+        static::assertSame(SourceProviderName::MYANIMELIST, $providers->last()->provider_name);
+        static::assertSame('735', $providers->first()->external_id);
+        static::assertSame('42', $providers->last()->external_id);
     }
 
     public function test_import_is_idempotent(): void
@@ -173,9 +175,11 @@ class FunteamServiceTest extends TestCase
         ]);
 
         $this->assertThrows(
-            fn() => $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-                ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ])),
+            fn () => $this->app
+                ->make(FunteamService::class)
+                ->importFromKodik($this->makeTranslations([
+                    ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ])),
             RuntimeException::class,
             sprintf(
                 'Kodik translation 735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
@@ -185,7 +189,7 @@ class FunteamServiceTest extends TestCase
         );
 
         $this->assertDatabaseCount('sources', 1);
-        $this->assertTrue($linkedFunteam->sources()->sole()->is($source));
+        static::assertTrue($linkedFunteam->sources()->sole()->is($source));
     }
 
     public function test_import_rolls_back_the_chunk_when_a_kodik_translation_is_already_linked_to_another_funteam(): void
@@ -204,10 +208,12 @@ class FunteamServiceTest extends TestCase
         ]);
 
         $this->assertThrows(
-            fn() => $this->app->make(FunteamService::class)->importFromKodik($this->makeTranslations([
-                ['id' => 824, 'title' => '3df voice', 'count' => 16],
-                ['id' => 735, 'title' => '2x2', 'count' => 26],
-            ])),
+            fn () => $this->app
+                ->make(FunteamService::class)
+                ->importFromKodik($this->makeTranslations([
+                    ['id' => 824, 'title' => '3df voice', 'count' => 16],
+                    ['id' => 735, 'title' => '2x2', 'count' => 26],
+                ])),
             RuntimeException::class,
         );
 
@@ -230,8 +236,8 @@ class FunteamServiceTest extends TestCase
             },
         );
 
-        $this->assertSame(1, $importedCount);
-        $this->assertSame(1, $processedCount);
+        static::assertSame(1, $importedCount);
+        static::assertSame(1, $processedCount);
         $this->assertDatabaseCount('sources', 1);
     }
 }

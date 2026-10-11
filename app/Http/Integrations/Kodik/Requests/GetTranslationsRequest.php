@@ -17,13 +17,11 @@ class GetTranslationsRequest extends Request
     protected Method $method = Method::POST;
 
     /**
-     * @param array<string, string|int> $filters
+     * @param array<string, string|int|null> $filters
      */
     public function __construct(
         protected readonly array $filters = [],
-    )
-    {
-    }
+    ) {}
 
     /**
      * The endpoint for the request
@@ -38,7 +36,7 @@ class GetTranslationsRequest extends Request
      */
     protected function defaultQuery(): array
     {
-        return array_filter($this->filters, static fn($value): bool => $value !== null && $value !== '');
+        return array_filter($this->filters, static fn ($value): bool => $value !== null && $value !== '');
     }
 
     public function createDtoFromResponse(Response $response): KodikTranslationsData

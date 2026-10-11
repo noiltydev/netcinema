@@ -14,6 +14,18 @@ php-fpm:
 test:
 	docker compose run --rm -w /var/www/www-data/netcinema.loc php-cli php artisan test
 
+cs:
+	docker compose run --rm -w /var/www/www-data/netcinema.loc php-cli composer cs
+
+cs-fix:
+	docker compose run --rm -w /var/www/www-data/netcinema.loc php-cli composer cs:fix
+
+lint:
+	docker compose run --rm -w /var/www/www-data/netcinema.loc php-cli composer lint
+
+analyze:
+	docker compose run --rm -w /var/www/www-data/netcinema.loc php-cli composer analyze
+
 docker-up:
 	docker compose up -d --build
 

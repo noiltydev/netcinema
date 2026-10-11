@@ -20,12 +20,6 @@ class Source extends Model
     /** @use HasFactory<SourceFactory> */
     use HasFactory;
 
-    public static function query(): SourceBuilder
-    {
-        /** @var SourceBuilder */
-        return parent::query();
-    }
-
     public function sourceable(): MorphTo
     {
         return $this->morphTo();

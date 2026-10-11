@@ -14,15 +14,15 @@ class SourceProviderTest extends TestCase
     {
         $provider = SourceProvider::make(SourceProviderName::KINOPOISK, '42');
 
-        $this->assertSame(SourceProviderName::KINOPOISK, $provider->providerName);
-        $this->assertSame('42', $provider->externalId);
+        static::assertSame(SourceProviderName::KINOPOISK, $provider->providerName);
+        static::assertSame('42', $provider->externalId);
     }
 
     public function test_to_array_exposes_the_sources_table_columns(): void
     {
         $provider = SourceProvider::make(SourceProviderName::SHIKIMORI, '735');
 
-        $this->assertSame(
+        static::assertSame(
             ['provider_name' => SourceProviderName::SHIKIMORI, 'external_id' => '735'],
             $provider->toArray(),
         );

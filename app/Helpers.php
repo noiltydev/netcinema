@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 function slugify(string $string): string
 {
-    return (string)Str::of($string)->replace(['&', '18+'], ['and', 'r-plus'])->slug();
+    return (string) Str::of($string)->replace(['&', '18+'], ['and', 'r-plus'])->slug();
 }
 
 /**

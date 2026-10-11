@@ -10,6 +10,4 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * @extends Builder<Source>
  */
-class SourceBuilder extends Builder
-{
-}
+class SourceBuilder extends Builder {}

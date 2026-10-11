@@ -12,16 +12,11 @@ final readonly class SourceProvider implements Arrayable
     private function __construct(
         public ProviderName $providerName,
         public string $externalId,
-    )
-    {
-    }
+    ) {}
 
     public static function make(ProviderName $providerName, string $externalId): self
     {
-        return new self(
-            providerName: $providerName,
-            externalId: $externalId,
-        );
+        return new self(providerName: $providerName, externalId: $externalId);
     }
 
     /** @inheritdoc */

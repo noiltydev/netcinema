@@ -1,0 +1,52 @@
+php-version = "8.3.0"
+
+[source]
+workspace = "."
+paths = ["app/", "bootstrap/", "config/", "database/factories/", "database/seeders/", "routes/", "tests/"]
+includes = ["vendor"]
+excludes = ["bootstrap/cache/"]
+
+[formatter]
+preset = "default"
+space-before-arrow-function-parameter-list-parenthesis = true
+
+[linter]
+integrations = ["laravel", "phpunit"]
+
+[linter.rules]
+ambiguous-function-call = { enabled = false }
+literal-named-argument = { enabled = false }
+halstead = { effort-threshold = 7000 }
+braced-string-interpolation = { enabled = false }
+strict-types = { enabled = false }
+no-boolean-flag-parameter = { enabled = false }
+no-literal-password = { enabled = false }
+final-controller = { enabled = false }
+excessive-parameter-list = { enabled = false }
+no-else-clause = { enabled = false }
+no-shorthand-ternary = { enabled = false }
+no-isset = { enabled = false }
+prefer-arrow-function = { enabled = false }
+too-many-methods = { threshold = 14, exclude = ["tests/"] }
+
+# KodikFilter maps the Kodik API's filter surface one-to-one (34 query parameters), and
+# KodikMaterial is a flat mapper for a 21-field payload. Both are wide by nature, not by
+# accident, so the defaults of 20 cases / 15 complexity are raised rather than splitting
+# a one-to-one API mirror or adding indirection to a data mapper.
+too-many-enum-cases = { level = "warning", threshold = 40 }
+cyclomatic-complexity = { level = "warning", threshold = 30 }
+
+[analyzer]
+plugins = []
+find-unused-definitions = true
+find-unused-expressions = false
+analyze-dead-code = false
+memoize-properties = true
+allow-possibly-undefined-array-keys = true
+check-throws = false
+check-missing-override = false
+find-unused-parameters = false
+strict-list-index-checks = false
+no-boolean-literal-comparison = false
+check-missing-type-hints = false
+register-super-globals = true

@@ -115,9 +115,9 @@ class ImportFunteamsCommandTest extends TestCase
         $funteam->refresh();
 
         $this->assertDatabaseCount('funteams', 1);
-        $this->assertSame('2x2', $funteam->name);
-        $this->assertTrue($funteam->created_at->equalTo('2026-01-01 00:00:00'));
-        $this->assertTrue($funteam->updated_at->equalTo('2026-02-01 00:00:00'));
+        static::assertSame('2x2', $funteam->name);
+        static::assertTrue($funteam->created_at->equalTo('2026-01-01 00:00:00'));
+        static::assertTrue($funteam->updated_at->equalTo('2026-02-01 00:00:00'));
 
         Carbon::setTestNow();
     }
@@ -191,7 +191,7 @@ class ImportFunteamsCommandTest extends TestCase
         ]);
 
         $this->assertThrows(
-            static fn() => Artisan::call('kodik:funteams:import'),
+            static fn () => Artisan::call('kodik:funteams:import'),
             RuntimeException::class,
             sprintf(
                 'Kodik translation 735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
@@ -207,9 +207,7 @@ class ImportFunteamsCommandTest extends TestCase
     {
         $this->fakeKodikTranslations([]);
 
-        $this->artisan('kodik:funteams:import')
-            ->expectsOutputToContain('Imported 0 funteams')
-            ->assertSuccessful();
+        $this->artisan('kodik:funteams:import')->expectsOutputToContain('Imported 0 funteams')->assertSuccessful();
 
         $this->assertDatabaseCount('funteams', 0);
     }

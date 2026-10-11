@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum KodikFilter: string
+use App\Enums\Contracts\KodikFilterKey;
+
+enum KodikFilter: string implements KodikFilterKey
 {
     case TYPES = 'types';
     case YEAR = 'year';
@@ -40,6 +42,11 @@ enum KodikFilter: string
     case ALL_STATUS = 'all_status';
     case ANIME_STUDIOS = 'anime_studios';
     case ANIME_LICENSED_BY = 'anime_licensed_by';
+
+    public function queryKey(): string
+    {
+        return $this->value;
+    }
 
     /**
      * @return array<string>

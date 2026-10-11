@@ -16,17 +16,16 @@ final readonly class KodikTranslation implements Arrayable
         public int $id,
         public string $title,
         public int $count,
-    )
+    ) {}
+
+    public static function make(int $id, string $title, int $count): self
     {
+        return new self(id: $id, title: $title, count: $count);
     }
 
     public static function fromArray(array $data): self
     {
-        return new self(
-            id: (int)$data['id'],
-            title: (string)$data['title'],
-            count: (int)$data['count'],
-        );
+        return self::make(id: (int) $data['id'], title: (string) $data['title'], count: (int) $data['count']);
     }
 
     public function name(): string

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait MorphsToSources
 {
+    /** @return MorphMany<Source, $this> */
     public function sources(): MorphMany
     {
         return $this->morphMany(Source::class, 'sourceable');

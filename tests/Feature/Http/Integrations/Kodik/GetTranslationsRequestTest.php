@@ -30,12 +30,11 @@ class GetTranslationsRequestTest extends TestCase
         $connector = new KodikConnector();
         $response = $connector->send(new GetTranslationsRequest());
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
-            return $request->resolveEndpoint() === '/translations/v2'
-                && $request->getMethod()->value === 'POST';
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
+            return $request->resolveEndpoint() === '/translations/v2' && $request->getMethod()->value === 'POST';
         });
 
-        $this->assertTrue($response->successful());
+        static::assertTrue($response->successful());
     }
 
     public function test_request_returns_dto(): void
@@ -56,10 +55,10 @@ class GetTranslationsRequestTest extends TestCase
 
         $dto = $response->dtoOrFail();
 
-        $this->assertInstanceOf(KodikTranslationsData::class, $dto);
-        $this->assertSame('5ms', $dto->time);
-        $this->assertSame(2, $dto->total);
-        $this->assertCount(2, $dto->results);
+        static::assertInstanceOf(KodikTranslationsData::class, $dto);
+        static::assertSame('5ms', $dto->time);
+        static::assertSame(2, $dto->total);
+        static::assertCount(2, $dto->results);
     }
 
     public function test_request_sends_filters_as_query_params(): void
@@ -77,7 +76,7 @@ class GetTranslationsRequestTest extends TestCase
         $connector = new KodikConnector();
         $connector->send(new GetTranslationsRequest(['types' => 'anime-serial']));
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
             return $request->query()->get('types') === 'anime-serial';
         });
     }
@@ -99,10 +98,12 @@ class GetTranslationsRequestTest extends TestCase
             'sort' => '',
         ]));
 
-        Saloon::assertSent(function (GetTranslationsRequest $request): bool {
-            return $request->query()->get('types') === 'anime-serial'
+        Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
+            return (
+                $request->query()->get('types') === 'anime-serial'
                 && $request->query()->get('year') === null
-                && $request->query()->get('sort') === null;
+                && $request->query()->get('sort') === null
+            );
         });
     }
 

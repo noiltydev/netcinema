@@ -1,0 +1,36 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - database
+        - routes
+        - tests
+
+    # 8 is the highest level
+    level: 5
+
+    # Every model in this app declares its casts via the `casts()` method rather than the
+    # `$casts` property, so Larastan has to be told to parse it. Without this, enum casts
+    # such as Source::$provider_name and Translation::$kind widen to `string`.
+    parseModelCastsMethod: true
+
+    ignoreErrors:
+        # These tests assert that tryFrom() rejects a value absent from the enum. PHPStan
+        # resolves the constant and proves the assertion statically, but the test is a guard
+        # against the enum later gaining the case.
+        -
+            message: '#with null will always evaluate to true#'
+            path: tests/Unit/Enums/KodikMaterialFieldTest.php
+        -
+            message: '#with null will always evaluate to true#'
+            path: tests/Unit/Enums/KodikMaterialTypeTest.php
+        -
+            message: '#with null will always evaluate to true#'
+            path: tests/Unit/Enums/KodikSearchFilterTest.php
+
+    excludePaths:
+        - ./routes/console.php
+
+    reportUnmatchedIgnoredErrors: false
