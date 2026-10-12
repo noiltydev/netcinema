@@ -6,7 +6,7 @@ namespace App\Enums;
 
 use App\Enums\Contracts\KodikFilterKey;
 
-enum KodikFilter: string implements KodikFilterKey
+enum KodikCommonFilter: string implements KodikFilterKey
 {
     case TYPES = 'types';
     case YEAR = 'year';

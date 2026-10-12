@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Services;
 
 use App\Enums\KodikAnimeKind;
-use App\Enums\KodikFilter;
+use App\Enums\KodikCommonFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
@@ -88,7 +88,7 @@ class KodikServiceTest extends TestCase
         $service->getTranslations(
             KodikTranslationsFilters::make()
                 ->withTypes(KodikMaterialType::ANIME_SERIAL)
-                ->with(KodikFilter::SORT, 'title'),
+                ->with(KodikCommonFilter::SORT, 'title'),
         );
 
         Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
@@ -195,8 +195,8 @@ class KodikServiceTest extends TestCase
         $service = new KodikService(new KodikConnector());
         $service->getList(
             KodikListFilters::make()
-                ->with(KodikFilter::TYPES, 'anime-serial')
-                ->with(KodikFilter::SORT, 'updated_at')
+                ->with(KodikCommonFilter::TYPES, 'anime-serial')
+                ->with(KodikCommonFilter::SORT, 'updated_at')
                 ->with(KodikListFilter::LIMIT, 100)
                 ->with(KodikListFilter::ORDER, 'asc'),
         );

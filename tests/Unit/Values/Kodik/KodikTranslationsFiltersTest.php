@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
-use App\Enums\KodikFilter;
+use App\Enums\KodikCommonFilter;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikStatus;
 use App\Values\Kodik\KodikTranslationsFilters;
@@ -19,7 +19,7 @@ class KodikTranslationsFiltersTest extends TestCase
 
     public function test_escape_hatch_accepts_any_shared_filter(): void
     {
-        $query = KodikTranslationsFilters::make()->with(KodikFilter::YEAR, '2023')->toQuery();
+        $query = KodikTranslationsFilters::make()->with(KodikCommonFilter::YEAR, '2023')->toQuery();
 
         static::assertSame(['year' => '2023'], $query);
     }

@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Tests\Unit\Values\Kodik;
 
 use App\Enums\KodikAnimeKind;
-use App\Enums\KodikFilter;
+use App\Enums\KodikCommonFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikRatingMpaa;
 use App\Enums\KodikStatus;
-use App\Values\Kodik\KodikFilters;
+use App\Values\Kodik\KodikCommonFilters;
 use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikSearchFilters;
 use App\Values\Kodik\KodikTranslationsFilters;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-class KodikFiltersTest extends TestCase
+class KodikCommonFiltersTest extends TestCase
 {
     public function test_with_types_joins_the_values_with_commas(): void
     {
@@ -101,17 +101,17 @@ class KodikFiltersTest extends TestCase
     {
         static::assertSame(
             ['sort' => 'title'],
-            KodikTranslationsFilters::make()->with(KodikFilter::SORT, 'title')->toQuery(),
+            KodikTranslationsFilters::make()->with(KodikCommonFilter::SORT, 'title')->toQuery(),
         );
 
         static::assertSame(
             ['sort' => 'updated_at'],
-            KodikListFilters::make()->with(KodikFilter::SORT, 'updated_at')->toQuery(),
+            KodikListFilters::make()->with(KodikCommonFilter::SORT, 'updated_at')->toQuery(),
         );
 
         static::assertSame(
             ['sort' => 'updated_at'],
-            KodikSearchFilters::make()->with(KodikFilter::SORT, 'updated_at')->toQuery(),
+            KodikSearchFilters::make()->with(KodikCommonFilter::SORT, 'updated_at')->toQuery(),
         );
     }
 
@@ -144,7 +144,7 @@ class KodikFiltersTest extends TestCase
 
     public function test_key_outside_the_scope_is_rejected(): void
     {
-        $filters = new readonly class([], []) extends KodikFilters {
+        $filters = new readonly class([], []) extends KodikCommonFilters {
             /**
              * @param array<string, string|int> $query
              * @param array<string> $allowedKeys
@@ -158,6 +158,6 @@ class KodikFiltersTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid filter key: year');
 
-        $filters->with(KodikFilter::YEAR, '2023');
+        $filters->with(KodikCommonFilter::YEAR, '2023');
     }
 }

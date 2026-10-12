@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
-use App\Enums\KodikFilter;
+use App\Enums\KodikCommonFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikSearchFilter;
@@ -61,7 +61,7 @@ class KodikSearchFiltersTest extends TestCase
         $query = KodikSearchFilters::make()
             ->withLimit(100)
             ->withTypes(KodikMaterialType::ANIME_SERIAL)
-            ->with(KodikFilter::SORT, 'updated_at')
+            ->with(KodikCommonFilter::SORT, 'updated_at')
             ->with(KodikListFilter::ORDER, 'asc')
             ->with(KodikSearchFilter::PLAYER_LINK, 'https://kodikplayer.com/video/19850')
             ->toQuery();
