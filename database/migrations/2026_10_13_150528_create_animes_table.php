@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('rating');
             $table->string('status');
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug')->unique('unq_animes_on_slug');
             $table->date('aired_at')->nullable();
             $table->year('aired_year');
             $table->string('aired_season', 8);
@@ -30,7 +30,6 @@ return new class extends Migration
             $table->dateTime('next_episode_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['id', 'slug'], 'unq_animes_on_id_and_slug');
             $table->index(['aired_year', 'aired_season'], 'idx_animes_on_aired_year_and_aired_season');
         });
     }
