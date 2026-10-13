@@ -8,5 +8,13 @@ enum EntryLocale: string
 {
     case RU = 'ru';
     case EN = 'en';
-    case JP = 'jp';
+    case JA = 'ja';
+
+    /**
+     * @return array<string>
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
 }
