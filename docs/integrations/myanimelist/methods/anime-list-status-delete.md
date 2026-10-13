@@ -1,0 +1,64 @@
+# MyAnimeList API: `DELETE /anime/{anime_id}/my_list_status`
+
+> Удаление аниме из своего списка.
+
+## Назначение
+
+Удаляет указанное аниме из списка пользователя. Если аниме нет в списке — ничего не делает и возвращает `404 Not Found`. Будьте осторожны при повторных попытках.
+
+## Endpoint
+
+`DELETE https://api.myanimelist.net/v2/anime/{anime_id}/my_list_status`
+
+## Авторизация
+
+- `main_auth` (OAuth2, scope `write:users`) — `Authorization: Bearer <ACCESS_TOKEN>`
+- **Требует OAuth2**. Client ID (`client_auth`) не поддерживается.
+
+## Параметры пути
+
+| Параметр | Обязательный | Тип | Описание |
+| --- | --- | --- | --- |
+| anime_id | Да | integer | ID аниме. |
+
+## Ответы
+
+| Код | Описание |
+| --- | --- |
+| 200 | OK — удалено (или не было в списке, но API возвращает 200) |
+| 404 | Not Found — аниме не было в списке (API может вернуть 404 вместо 200) |
+
+> **Важно**: Документация указывает, что если аниме нет в списке, эндпоинт «ничего не делает и возвращает 404 Not Found». Будьте осторожны при ретраях — повторный вызов после 404 может быть неидемпотентен.
+
+Тело ответа при 200: `null` (пустое тело).
+
+## Пример запроса
+
+```http
+DELETE https://api.myanimelist.net/v2/anime/30230/my_list_status
+Authorization: Bearer <MAL_ACCESS_TOKEN>
+```
+
+## Пример ответа (200)
+
+```
+(null body)
+```
+
+## Пример ответа (404)
+
+```json
+{
+  "error": "not_found",
+  "message": "Anime not found in user's list"
+}
+```
+
+> Формат ошибки может отличаться — опирайся на HTTP-код.
+
+## Правила для ИИ-агента
+
+- Требует OAuth2 авторизации (scope `write:users`).
+- При получении 404 не делай автоматических повторов — аниме уже отсутствует в списке.
+- Ответ 200 имеет пустое тело (`null`).
+- Для общих параметров сверяться с [`../parameters/common.md`](../parameters/common.md) и [`../parameters/parameter-index.md`](../parameters/parameter-index.md).
