@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Builders\AnimeBuilder;
 use App\Enums\AnimeKind;
 use App\Enums\EntryRating;
+use App\Enums\EntrySeason;
 use App\Enums\EntryStatus;
 use App\Models\Concerns\MorphsToSources;
 use Database\Factories\AnimeFactory;
@@ -46,6 +47,7 @@ class Anime extends Model
             'kind' => AnimeKind::class,
             'rating' => EntryRating::class,
             'status' => EntryStatus::class,
+            'aired_season' => EntrySeason::class,
             'aired_year' => 'integer',
             'episodes_count' => 'integer',
             'episodes_aired' => 'integer',

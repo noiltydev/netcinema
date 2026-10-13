@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
-use App\Enums\KodikCommonMaterialFilter;
 use App\Enums\KodikCommonFilter;
+use App\Enums\KodikCommonMaterialFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikSharedListSearchFilter;
 use App\Values\Kodik\Concerns\HasBlockTranslations;
@@ -37,8 +37,8 @@ final readonly class KodikListFilters extends KodikCommonFilters
                 KodikCommonFilter::values(),
                 KodikCommonMaterialFilter::values(),
                 KodikSharedListSearchFilter::values(),
-                KodikListFilter::values()
-            )
+                KodikListFilter::values(),
+            ),
         );
     }
 }

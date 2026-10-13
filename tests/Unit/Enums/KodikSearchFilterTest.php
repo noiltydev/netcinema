@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Enums;
 
 use App\Enums\KodikCommonFilter;
+use App\Enums\KodikCommonMaterialFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikSearchFilter;
-use App\Enums\KodikCommonMaterialFilter;
 use App\Enums\KodikSharedListSearchFilter;
 use PHPUnit\Framework\TestCase;
 
@@ -70,15 +70,12 @@ class KodikSearchFilterTest extends TestCase
     {
         static::assertSame(
             [],
-            array_intersect(
-                KodikSearchFilter::values(),
-                array_merge(
-                    KodikCommonFilter::values(),
-                    KodikCommonMaterialFilter::values(),
-                    KodikSharedListSearchFilter::values(),
-                    KodikListFilter::values()
-                )
-            ),
+            array_intersect(KodikSearchFilter::values(), array_merge(
+                KodikCommonFilter::values(),
+                KodikCommonMaterialFilter::values(),
+                KodikSharedListSearchFilter::values(),
+                KodikListFilter::values(),
+            )),
         );
     }
 

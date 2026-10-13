@@ -43,10 +43,11 @@ class KodikSharedListSearchFilterTest extends TestCase
     {
         static::assertSame(
             [],
-            array_intersect(
-                KodikSharedListSearchFilter::values(),
-                array_merge(KodikCommonFilter::values(), KodikListFilter::values(), KodikSearchFilter::values())
-            ),
+            array_intersect(KodikSharedListSearchFilter::values(), array_merge(
+                KodikCommonFilter::values(),
+                KodikListFilter::values(),
+                KodikSearchFilter::values(),
+            )),
         );
     }
 }

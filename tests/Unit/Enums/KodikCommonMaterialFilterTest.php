@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikCommonMaterialFilter;
 use App\Enums\KodikCommonFilter;
+use App\Enums\KodikCommonMaterialFilter;
 use PHPUnit\Framework\TestCase;
 
 class KodikCommonMaterialFilterTest extends TestCase
