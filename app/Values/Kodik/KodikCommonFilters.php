@@ -6,7 +6,7 @@ namespace App\Values\Kodik;
 
 use App\Enums\Contracts\KodikFilterKey;
 use App\Enums\KodikAnimeKind;
-use App\Enums\KodikFilter;
+use App\Enums\KodikCommonFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikRatingMpaa;
@@ -27,7 +27,7 @@ use InvalidArgumentException;
  *
  * @phpstan-consistent-constructor
  */
-abstract readonly class KodikFilters
+abstract readonly class KodikCommonFilters
 {
     /**
      * @param array<string, string|int> $query
@@ -43,7 +43,7 @@ abstract readonly class KodikFilters
      */
     public function withTypes(KodikMaterialType ...$types): static
     {
-        return $this->put(KodikFilter::TYPES, KodikMaterialType::commaSeparated($types));
+        return $this->put(KodikCommonFilter::TYPES, KodikMaterialType::commaSeparated($types));
     }
 
     /**
@@ -53,7 +53,7 @@ abstract readonly class KodikFilters
      */
     public function withField(KodikMaterialField ...$fields): static
     {
-        return $this->put(KodikFilter::HAS_FIELD, self::commaSeparated($fields));
+        return $this->put(KodikCommonFilter::HAS_FIELD, self::commaSeparated($fields));
     }
 
     /**
@@ -61,7 +61,7 @@ abstract readonly class KodikFilters
      */
     public function withAnimeKind(KodikAnimeKind ...$kinds): static
     {
-        return $this->put(KodikFilter::ANIME_KIND, self::commaSeparated($kinds));
+        return $this->put(KodikCommonFilter::ANIME_KIND, self::commaSeparated($kinds));
     }
 
     /**
@@ -69,7 +69,7 @@ abstract readonly class KodikFilters
      */
     public function withAnimeStatus(KodikStatus ...$statuses): static
     {
-        return $this->put(KodikFilter::ANIME_STATUS, self::commaSeparated($statuses));
+        return $this->put(KodikCommonFilter::ANIME_STATUS, self::commaSeparated($statuses));
     }
 
     /**
@@ -77,7 +77,7 @@ abstract readonly class KodikFilters
      */
     public function withDramaStatus(KodikStatus ...$statuses): static
     {
-        return $this->put(KodikFilter::DRAMA_STATUS, self::commaSeparated($statuses));
+        return $this->put(KodikCommonFilter::DRAMA_STATUS, self::commaSeparated($statuses));
     }
 
     /**
@@ -88,7 +88,7 @@ abstract readonly class KodikFilters
      */
     public function withAnyStatus(KodikStatus ...$statuses): static
     {
-        return $this->put(KodikFilter::ALL_STATUS, self::commaSeparated($statuses));
+        return $this->put(KodikCommonFilter::ALL_STATUS, self::commaSeparated($statuses));
     }
 
     /**
@@ -96,7 +96,7 @@ abstract readonly class KodikFilters
      */
     public function withRatingMpaa(KodikRatingMpaa ...$ratings): static
     {
-        return $this->put(KodikFilter::RATING_MPAA, self::commaSeparated($ratings));
+        return $this->put(KodikCommonFilter::RATING_MPAA, self::commaSeparated($ratings));
     }
 
     /**

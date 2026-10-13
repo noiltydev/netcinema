@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Values\Kodik;
 
 use App\Enums\KodikAnimeKind;
-use App\Enums\KodikFilter;
+use App\Enums\KodikCommonFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikRatingMpaa;
+use App\Enums\KodikSharedListSearchFilter;
 use App\Enums\KodikStatus;
 use App\Values\Kodik\KodikListFilters;
 use PHPUnit\Framework\TestCase;
@@ -31,8 +32,8 @@ class KodikListFiltersTest extends TestCase
     public function test_escape_hatch_accepts_shared_and_list_filters(): void
     {
         $query = KodikListFilters::make()
-            ->with(KodikFilter::TYPES, 'anime-serial')
-            ->with(KodikFilter::SORT, 'updated_at')
+            ->with(KodikCommonFilter::TYPES, 'anime-serial')
+            ->with(KodikCommonFilter::SORT, 'updated_at')
             ->with(KodikListFilter::LIMIT, 100)
             ->with(KodikListFilter::ORDER, 'asc')
             ->toQuery();
@@ -72,9 +73,9 @@ class KodikListFiltersTest extends TestCase
         );
     }
 
-    public function test_boolean_list_filter_is_normalized(): void
+    public function test_boolean_shared_filter_is_normalized(): void
     {
-        $query = KodikListFilters::make()->with(KodikListFilter::CAMRIP, false)->toQuery();
+        $query = KodikListFilters::make()->with(KodikSharedListSearchFilter::CAMRIP, false)->toQuery();
 
         static::assertSame(['camrip' => '0'], $query);
     }

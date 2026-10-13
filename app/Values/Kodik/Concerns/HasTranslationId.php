@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik\Concerns;
 
-use App\Enums\KodikListFilter;
+use App\Enums\KodikCommonMaterialFilter;
 use InvalidArgumentException;
 
 trait HasTranslationId
@@ -14,6 +14,6 @@ trait HasTranslationId
      */
     public function withTranslationId(int ...$ids): static
     {
-        return $this->put(KodikListFilter::TRANSLATION_ID, implode(',', $ids));
+        return $this->put(KodikCommonMaterialFilter::TRANSLATION_ID, implode(',', $ids));
     }
 }
