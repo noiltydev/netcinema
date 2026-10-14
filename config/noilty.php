@@ -12,7 +12,7 @@ return [
         'myanimelist' => [
             'client_id' => env('MYANIMELIST_CLIENT_ID'),
             'client_secret' => env('MYANIMELIST_CLIENT_SECRET'),
-            'endpoint' => env('MYANIMELIST_API_ENDPOINT', 'https://api.myanimelist.net/v2'),
+            'endpoint' => env('MYANIMELIST_API_ENDPOINT', 'https://api.myanimelist.net'),
         ],
 
         'shikimori' => [

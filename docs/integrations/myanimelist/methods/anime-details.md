@@ -175,8 +175,8 @@ Authorization: Bearer <MAL_ACCESS_TOKEN>
   "related_manga": [
     {
       "node": {"id": 13, "title": "One Piece", "main_picture": {...}},
-      "relation_type": "manga",
-      "relation_type_formatted": "Manga"
+      "relation_type": "side_story",
+      "relation_type_formatted": "Side story"
     }
   ],
   "recommendations": [

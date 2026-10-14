@@ -57,6 +57,12 @@
 - `rating` — string (`g`, `pg`, `pg_13`, `r`, `r+`, `rx`) или null
 - `studios` — array of objects `{id, name}`
 
+> **Значения выходят за рамки документации**: перечисленные выше enum'ы ниже не ограничены схемой —
+> API возвращает для них обычные строки без валидации. В реальных ответах встречались
+> `media_type: tv_special`, `source: web_novel` и `source: mixed_media`, которых нет ни в этом
+> списке, ни в спецификации MAL. Приводи значения к доменным enum через безопасный `tryFrom()`
+> с fallback в null, а не через строгий `match` с исключением.
+
 Поля `my_list_status` (требуют OAuth2, указываются как `my_list_status{status,score,...}`):
 - `status` — string (`watching`, `completed`, `on_hold`, `dropped`, `plan_to_watch`)
 - `score` — integer (0–10)
