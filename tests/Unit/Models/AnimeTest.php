@@ -34,10 +34,6 @@ class AnimeTest extends TestCase
 
     public function test_uses_morphs_to_sources_trait(): void
     {
-        static::assertTrue(in_array(
-            MorphsToSources::class,
-            class_uses_recursive(Anime::class),
-            true,
-        ));
+        static::assertTrue(in_array(MorphsToSources::class, class_uses_recursive(Anime::class), true));
     }
 }
