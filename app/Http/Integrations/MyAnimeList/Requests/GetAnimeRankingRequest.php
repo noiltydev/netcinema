@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Integrations\MyAnimeList\Requests;
 
-use App\Enums\MyAnimeList\MyAnimeListRankingType;
-use App\Values\MyAnimeList\MyAnimeListRankingData;
+use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 
 class GetAnimeRankingRequest extends Request
 {
+    /** @see MyAnimeListRankingTypeAnimeFilter */
     private const string RANKING_TYPE_QUERY_KEY = 'ranking_type';
 
+    /** @see MyAnimeListCommonFilter */
     private const string OFFSET_QUERY_KEY = 'offset';
 
     /**
@@ -22,13 +23,10 @@ class GetAnimeRankingRequest extends Request
     protected Method $method = Method::GET;
 
     /**
-     * ranking_type is a constructor argument rather than a filter because the endpoint
-     * requires it: a filters object that omitted it could never describe a valid request.
-     *
      * @param array<string, string|int|null> $filters
      */
     public function __construct(
-        protected readonly MyAnimeListRankingType $rankingType,
+        protected readonly MyAnimeListRankingTypeAnimeFilter $rankingType,
         protected readonly array $filters = [],
         protected readonly ?int $offset = null,
     ) {}
@@ -56,8 +54,9 @@ class GetAnimeRankingRequest extends Request
         return $query;
     }
 
-    public function createDtoFromResponse(Response $response): MyAnimeListRankingData
-    {
-        return MyAnimeListRankingData::fromSaloonResponse($response);
-    }
+    // @todo
+//    public function createDtoFromResponse(Response $response): MyAnimeListRankingData
+//    {
+//        return MyAnimeListRankingData::fromSaloonResponse($response);
+//    }
 }

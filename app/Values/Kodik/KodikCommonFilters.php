@@ -149,7 +149,7 @@ abstract readonly class KodikCommonFilters
     private static function normalizeValue(string|int|bool $value): string|int
     {
         if (is_bool($value)) {
-            return $value ? '1' : '0';
+            return $value ? 'true' : 'false';
         }
 
         return $value;

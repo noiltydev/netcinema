@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums\MyAnimeList;
 
-enum MyAnimeListNsfw: string
+enum MyAnimeListNodeNsfw: string
 {
-    case SAFE = 'white';
-    case MAY_BE_UNSAFE = 'gray';
-    case UNSAFE = 'black';
+    case WHITE = 'white';
+    case GRAY = 'gray';
+    case BLACK = 'black';
 
     /**
      * @return array<string>

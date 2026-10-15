@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Values\MyAnimeList;
 
 use App\Enums\Contracts\MyAnimeListFilterKey;
-use App\Enums\MyAnimeList\MyAnimeListRankingFilter;
+use App\Enums\MyAnimeList\MyAnimeListCommonField;
+use App\Enums\MyAnimeList\MyAnimeListCommonFilter;
+use BackedEnum;
 use InvalidArgumentException;
 
 /**
@@ -17,28 +19,23 @@ use InvalidArgumentException;
  *
  * @see \App\Http\Integrations\MyAnimeList\Requests\GetAnimeRankingRequest
  */
-final readonly class MyAnimeListRankingFilters
+abstract readonly class MyAnimeListCommonFilters
 {
     /**
      * @param array<string, string|int> $query
      * @param array<string> $allowedKeys
      */
-    private function __construct(
+    protected function __construct(
         private array $query,
         private array $allowedKeys,
     ) {}
-
-    public static function make(): self
-    {
-        return new self([], MyAnimeListRankingFilter::values());
-    }
 
     /**
      * @throws InvalidArgumentException
      */
     public function withLimit(int $limit): static
     {
-        return $this->put(MyAnimeListRankingFilter::LIMIT, $limit);
+        return $this->put(MyAnimeListCommonFilter::LIMIT, $limit);
     }
 
     /**
@@ -46,9 +43,9 @@ final readonly class MyAnimeListRankingFilters
      *
      * @throws InvalidArgumentException
      */
-    public function withFields(string ...$fields): static
+    public function withFields(MyAnimeListCommonField ...$fields): static
     {
-        return $this->put(MyAnimeListRankingFilter::FIELDS, implode(',', $fields));
+        return $this->put(MyAnimeListCommonFilter::FIELDS, self::commaSeparated($fields));
     }
 
     /**
@@ -58,7 +55,15 @@ final readonly class MyAnimeListRankingFilters
      */
     public function withNsfw(bool $nsfw = true): static
     {
-        return $this->put(MyAnimeListRankingFilter::NSFW, $nsfw);
+        return $this->put(MyAnimeListCommonFilter::NSFW, $nsfw);
+    }
+
+    /**
+     * @return array<string, string|int>
+     */
+    public function toQuery(): array
+    {
+        return $this->query;
     }
 
     /**
@@ -72,20 +77,12 @@ final readonly class MyAnimeListRankingFilters
     }
 
     /**
-     * @return array<string, string|int>
-     */
-    public function toQuery(): array
-    {
-        return $this->query;
-    }
-
-    /**
      * Writes a key this endpoint accepts, rejecting anything outside it rather than letting
      * it reach the API.
      *
      * @throws InvalidArgumentException
      */
-    private function put(MyAnimeListFilterKey $key, string|int|bool $value): static
+    protected function put(MyAnimeListFilterKey $key, string|int|bool $value): static
     {
         $keyName = $key->queryKey();
 
@@ -97,7 +94,15 @@ final readonly class MyAnimeListRankingFilters
 
         $query = [...$this->query, $keyName => self::normalizeValue($value)];
 
-        return new self($query, $this->allowedKeys);
+        return new static($query, $this->allowedKeys);
+    }
+
+    /**
+     * @param array<array-key, BackedEnum> $values
+     */
+    private static function commaSeparated(array $values): string
+    {
+        return implode(',', array_column($values, 'value'));
     }
 
     private static function normalizeValue(string|int|bool $value): string|int

@@ -6,9 +6,11 @@ namespace App\Enums\MyAnimeList;
 
 use App\Enums\Contracts\MyAnimeListFilterKey;
 
-enum MyAnimeListRankingFilter: string implements MyAnimeListFilterKey
+enum MyAnimeListCommonFilter: string implements MyAnimeListFilterKey
 {
     case LIMIT = 'limit';
+    case OFFSET = 'offset';
+    /** @see MyAnimeListCommonField */
     case FIELDS = 'fields';
     case NSFW = 'nsfw';
 

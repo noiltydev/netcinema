@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums\MyAnimeList;
 
-enum MyAnimeListRankingType: string
+use App\Enums\Contracts\MyAnimeListFilterRankingTypeKey;
+
+enum MyAnimeListRankingTypeAnimeFilter: string implements MyAnimeListFilterRankingTypeKey
 {
     case ALL = 'all';
     case AIRING = 'airing';
@@ -13,8 +15,13 @@ enum MyAnimeListRankingType: string
     case OVA = 'ova';
     case MOVIE = 'movie';
     case SPECIAL = 'special';
-    case BY_POPULARITY = 'bypopularity';
+    case BYPOPULARITY = 'bypopularity';
     case FAVORITE = 'favorite';
+
+    public static function queryRankingTypeKey(): string
+    {
+        return 'ranking_type';
+    }
 
     /**
      * @return array<string>

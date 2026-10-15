@@ -8,10 +8,15 @@ use App\Enums\KodikCommonFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
+use App\Enums\MyAnimeList\MyAnimeListCommonField;
+use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Jobs\TestJob;
 use App\Services\KodikService;
+use App\Services\MyAnimeListService;
 use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikMaterial;
+use App\Values\MyAnimeList\MyAnimeListAnimeFilters;
+use App\Values\MyAnimeList\MyAnimeListCommonFilters;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -25,7 +30,7 @@ class TestCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(KodikService $kodikService): int
+    public function handle(KodikService $kodikService, MyAnimeListService $myAnimeListService): int
     {
         $seen = [];
         $buffer = [];
