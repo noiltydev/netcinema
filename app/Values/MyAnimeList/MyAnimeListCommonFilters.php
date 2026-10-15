@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace App\Values\MyAnimeList;
 
 use App\Enums\Contracts\MyAnimeListFilterKey;
-use App\Enums\MyAnimeList\MyAnimeListCommonField;
 use App\Enums\MyAnimeList\MyAnimeListCommonFilter;
 use App\Values\Concerns\CommonQueryFilters;
 use InvalidArgumentException;
 
 /**
- * Filters accepted by the /anime/ranking endpoint.
+ * Filters every MyAnimeList list and details endpoint accepts.
  *
- * No field set is seeded: MyAnimeList returns only id, title and main_picture unless fields
- * is sent explicitly, so a caller that forgets it gets a near-empty node rather than a
- * wrong one. Request the fields the importer actually reads.
+ * Each endpoint scope is its own subclass so that a named builder only exists where the endpoint
+ * understands the filter, which is also what makes with()'s rejection meaningful. with() is the
+ * escape hatch for everything else: it accepts any key enum, and put() rejects the ones this
+ * endpoint does not accept.
  *
- * @see \App\Http\Integrations\MyAnimeList\Requests\GetAnimeRankingRequest
+ * @see MyAnimeListAnimeRankingFilters
+ * @see MyAnimeListAnimeFilters
  *
  * @phpstan-consistent-constructor
  */
@@ -28,19 +29,23 @@ abstract readonly class MyAnimeListCommonFilters
     /**
      * @throws InvalidArgumentException
      */
-    public function withLimit(int $limit): static
+    public function withOffset(int $offset): static
     {
-        return $this->put(MyAnimeListCommonFilter::LIMIT, $limit);
+        throw_if(
+            $offset < 0,
+            InvalidArgumentException::class,
+            sprintf('Offset must not be negative, got %d.', $offset),
+        );
+
+        return $this->put(MyAnimeListCommonFilter::OFFSET, $offset);
     }
 
     /**
-     * MyAnimeList caps this endpoint's limit at 500; anything above is a 400.
-     *
      * @throws InvalidArgumentException
      */
-    public function withFields(MyAnimeListCommonField ...$fields): static
+    public function withFields(MyAnimeListFields $fields): static
     {
-        return $this->put(MyAnimeListCommonFilter::FIELDS, self::commaSeparated($fields));
+        return $this->put(MyAnimeListCommonFilter::FIELDS, $fields->toQueryValue());
     }
 
     /**

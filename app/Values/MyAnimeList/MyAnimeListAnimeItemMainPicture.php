@@ -4,27 +4,49 @@ declare(strict_types=1);
 
 namespace App\Values\MyAnimeList;
 
+use App\Values\MyAnimeList\Concerns\ReadsRequiredFields;
 use Illuminate\Contracts\Support\Arrayable;
 
-class MyAnimeListAnimeItemMainPicture implements Arrayable
+/**
+ * @implements Arrayable<string, mixed>
+ *
+ * @phpstan-consistent-constructor
+ */
+final readonly class MyAnimeListAnimeItemMainPicture implements Arrayable
 {
+    use ReadsRequiredFields;
+
     private function __construct(
         public string $medium,
-        public string $large,
+        public ?string $large,
     ) {}
 
-    public static function make(string $medium, string $large): self
+    public static function make(string $medium, ?string $large = null): self
     {
         return new self(medium: $medium, large: $large);
     }
 
-    public static function fromArray(array $data): self
+    /**
+     * MyAnimeList sends no main_picture at all for entries that have no artwork.
+     */
+    public static function fromArray(?array $data): ?self
     {
-        return self::make(medium: $data['medium'], large: $data['large']);
+        if ($data === null) {
+            return null;
+        }
+
+        return self::make(
+            medium: (string) self::required($data, 'medium'),
+            large: isset($data['large']) ? (string) $data['large'] : null,
+        );
     }
 
-    public function toArray()
+    /** @inheritdoc */
+    public function toArray(): array
     {
-        // TODO: Implement toArray() method.
+        return [
+            'medium' => $this->medium,
+            'large' => $this->large,
+        ];
     }
 }

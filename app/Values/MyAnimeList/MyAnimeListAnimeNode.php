@@ -4,10 +4,20 @@ declare(strict_types=1);
 
 namespace App\Values\MyAnimeList;
 
+use App\Values\MyAnimeList\Concerns\ReadsRequiredFields;
 use Illuminate\Contracts\Support\Arrayable;
 
-class MyAnimeListAnimeNode implements Arrayable
+/**
+ * One entry of a ranking response: the anime node plus the rank it holds.
+ *
+ * @implements Arrayable<string, mixed>
+ *
+ * @phpstan-consistent-constructor
+ */
+final readonly class MyAnimeListAnimeNode implements Arrayable
 {
+    use ReadsRequiredFields;
+
     private function __construct(
         public MyAnimeListAnimeItem $node,
         public MyAnimeListRanking $ranking,
@@ -21,13 +31,17 @@ class MyAnimeListAnimeNode implements Arrayable
     public static function fromArray(array $data): self
     {
         return self::make(
-            MyAnimeListAnimeItem::fromArray($data['node']),
-            MyAnimeListRanking::fromArray($data['ranking']),
+            node: MyAnimeListAnimeItem::fromArray(self::requiredArray($data, 'node')),
+            ranking: MyAnimeListRanking::fromArray(self::requiredArray($data, 'ranking')),
         );
     }
 
-    public function toArray()
+    /** @inheritdoc */
+    public function toArray(): array
     {
-        // TODO: Implement toArray() method.
+        return [
+            'node' => $this->node->toArray(),
+            'ranking' => $this->ranking->toArray(),
+        ];
     }
 }

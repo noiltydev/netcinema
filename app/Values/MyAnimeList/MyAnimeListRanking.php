@@ -4,15 +4,28 @@ declare(strict_types=1);
 
 namespace App\Values\MyAnimeList;
 
+use App\Values\MyAnimeList\Concerns\ReadsRequiredFields;
 use Illuminate\Contracts\Support\Arrayable;
 
-class MyAnimeListRanking implements Arrayable
+/**
+ * The ranking block the ranking endpoints add to every node they return.
+ *
+ * @implements Arrayable<string, mixed>
+ *
+ * @phpstan-consistent-constructor
+ */
+final readonly class MyAnimeListRanking implements Arrayable
 {
+    use ReadsRequiredFields;
+
     private function __construct(
         public int $rank,
-        public ?int $previousRank = null,
+        public ?int $previousRank,
     ) {}
 
+    /**
+     * MyAnimeList declares previous_rank in the schema but does not send it, so it stays null.
+     */
     public static function make(int $rank, ?int $previousRank = null): self
     {
         return new self(rank: $rank, previousRank: $previousRank);
@@ -20,11 +33,18 @@ class MyAnimeListRanking implements Arrayable
 
     public static function fromArray(array $data): self
     {
-        return self::make(rank: $data['rank'], previousRank: $data['previous_rank'] ?? null);
+        return self::make(
+            rank: (int) self::required($data, 'rank'),
+            previousRank: isset($data['previous_rank']) ? (int) $data['previous_rank'] : null,
+        );
     }
 
-    public function toArray()
+    /** @inheritdoc */
+    public function toArray(): array
     {
-        // TODO: Implement toArray() method.
+        return [
+            'rank' => $this->rank,
+            'previous_rank' => $this->previousRank,
+        ];
     }
 }

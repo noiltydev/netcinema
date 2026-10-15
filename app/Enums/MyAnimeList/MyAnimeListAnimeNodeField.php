@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Enums\MyAnimeList;
 
-enum MyAnimeListCommonField: string
+/**
+ * Fields a node returned by /anime, /anime/ranking and /anime/season accepts in the fields filter.
+ *
+ * @see \App\Values\MyAnimeList\MyAnimeListFields
+ */
+enum MyAnimeListAnimeNodeField: string
 {
     case ID = 'id';
     case TITLE = 'title';
@@ -19,11 +24,11 @@ enum MyAnimeListCommonField: string
     case NUM_LIST_USERS = 'num_list_users';
     case NUM_SCORING_USERS = 'num_scoring_users';
     case NSFW = 'nsfw';
+    case GENRES = 'genres';
     case CREATED_AT = 'created_at';
     case UPDATED_AT = 'updated_at';
     case MEDIA_TYPE = 'media_type';
     case STATUS = 'status';
-    case GENRES = 'genres';
     case MY_LIST_STATUS = 'my_list_status';
     case NUM_EPISODES = 'num_episodes';
     case START_SEASON = 'start_season';
@@ -31,17 +36,7 @@ enum MyAnimeListCommonField: string
     case SOURCE = 'source';
     case AVERAGE_EPISODE_DURATION = 'average_episode_duration';
     case RATING = 'rating';
-    case PICTURES = 'pictures';
-    case BACKGROUND = 'background';
-    case RELATED_ANIME = 'related_anime';
-    case RELATED_MANGA = 'related_manga';
-    case RECOMMENDATIONS = 'recommendations';
     case STUDIOS = 'studios';
-    case STATISTICS = 'statistics';
-    case NUM_VOLUMES = 'num_volumes';
-    case NUM_CHAPTERS = 'num_chapters';
-    case AUTHORS = 'authors';
-    case SERIALIZATION = 'serialization';
 
     /**
      * @return array<string>

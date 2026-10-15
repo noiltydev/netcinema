@@ -12,12 +12,6 @@ use Saloon\Http\Response;
 
 class GetAnimeRankingRequest extends Request
 {
-    /** @see MyAnimeListRankingTypeAnimeFilter */
-    private const string RANKING_TYPE_QUERY_KEY = 'ranking_type';
-
-    /** @see MyAnimeListCommonFilter */
-    private const string OFFSET_QUERY_KEY = 'offset';
-
     /**
      * The HTTP method of the request
      */
@@ -25,11 +19,12 @@ class GetAnimeRankingRequest extends Request
 
     /**
      * @param array<string, string|int|null> $filters
+     *
+     * @see \App\Values\MyAnimeList\MyAnimeListAnimeRankingFilters
      */
     public function __construct(
         protected readonly MyAnimeListRankingTypeAnimeFilter $rankingType,
         protected readonly array $filters = [],
-        protected readonly ?int $offset = null,
     ) {}
 
     /**
@@ -46,13 +41,8 @@ class GetAnimeRankingRequest extends Request
     protected function defaultQuery(): array
     {
         $query = array_filter($this->filters, static fn ($value): bool => $value !== null && $value !== '');
-        $query[self::RANKING_TYPE_QUERY_KEY] = $this->rankingType->value;
 
-        if ($this->offset !== null) {
-            $query[self::OFFSET_QUERY_KEY] = $this->offset;
-        }
-
-        return $query;
+        return [...$query, $this->rankingType::queryRankingTypeKey() => $this->rankingType->value];
     }
 
     public function createDtoFromResponse(Response $response): MyAnimeListAnimeRankingData

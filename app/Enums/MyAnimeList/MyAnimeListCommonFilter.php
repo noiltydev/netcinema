@@ -6,11 +6,14 @@ namespace App\Enums\MyAnimeList;
 
 use App\Enums\Contracts\MyAnimeListFilterKey;
 
+/**
+ * Filters every MyAnimeList list endpoint accepts, whatever else it adds on top.
+ */
 enum MyAnimeListCommonFilter: string implements MyAnimeListFilterKey
 {
     case LIMIT = 'limit';
     case OFFSET = 'offset';
-    /** @see MyAnimeListCommonField */
+    /** @see \App\Values\MyAnimeList\MyAnimeListFields */
     case FIELDS = 'fields';
     case NSFW = 'nsfw';
 

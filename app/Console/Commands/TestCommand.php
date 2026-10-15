@@ -8,14 +8,15 @@ use App\Enums\KodikCommonFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
-use App\Enums\MyAnimeList\MyAnimeListCommonField;
+use App\Enums\MyAnimeList\MyAnimeListAnimeNodeField;
 use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Jobs\TestJob;
 use App\Services\KodikService;
 use App\Services\MyAnimeListService;
 use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikMaterial;
-use App\Values\MyAnimeList\MyAnimeListAnimeFilters;
+use App\Values\MyAnimeList\MyAnimeListAnimeRankingFilters;
+use App\Values\MyAnimeList\MyAnimeListFields;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -35,10 +36,24 @@ class TestCommand extends Command
         $buffer = [];
         $jobs = [];
 
-        dd($myAnimeListService->getAnimeRanking(
+        $myAnimeListRanking = $myAnimeListService->getAnimeRanking(
             MyAnimeListRankingTypeAnimeFilter::ALL,
-            MyAnimeListAnimeFilters::make()->withLimit(3)->withFields(MyAnimeListCommonField::ALTERNATIVE_TITLES),
+            MyAnimeListAnimeRankingFilters::make()
+                ->withLimit(3)
+                ->withFields(MyAnimeListFields::fromAnimeNode(
+                    MyAnimeListAnimeNodeField::ID,
+                    MyAnimeListAnimeNodeField::TITLE,
+                    MyAnimeListAnimeNodeField::ALTERNATIVE_TITLES,
+                )),
+        );
+
+        $this->components->info(sprintf(
+            'MyAnimeList returned %d entries; the next page starts at offset %s.',
+            count($myAnimeListRanking->data),
+            $myAnimeListRanking->paging->nextOffset() ?? 'nothing',
         ));
+
+        dd($myAnimeListRanking);
 
         $filters = KodikListFilters::make()
             ->with(KodikCommonFilter::SORT, 'year')
