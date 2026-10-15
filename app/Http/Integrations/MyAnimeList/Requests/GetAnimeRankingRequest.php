@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Integrations\MyAnimeList\Requests;
 
 use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
+use App\Values\MyAnimeList\MyAnimeListAnimeRankingData;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -54,9 +55,8 @@ class GetAnimeRankingRequest extends Request
         return $query;
     }
 
-    // @todo
-//    public function createDtoFromResponse(Response $response): MyAnimeListRankingData
-//    {
-//        return MyAnimeListRankingData::fromSaloonResponse($response);
-//    }
+    public function createDtoFromResponse(Response $response): MyAnimeListAnimeRankingData
+    {
+        return MyAnimeListAnimeRankingData::fromSaloonResponse($response);
+    }
 }

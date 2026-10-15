@@ -8,6 +8,7 @@ use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Http\Integrations\MyAnimeList\MyAnimeListConnector;
 use App\Http\Integrations\MyAnimeList\Requests\GetAnimeRankingRequest;
 use App\Values\MyAnimeList\MyAnimeListAnimeFilters;
+use App\Values\MyAnimeList\MyAnimeListAnimeRankingData;
 use App\Values\MyAnimeList\MyAnimeListCommonFilters;
 use Saloon\Exceptions\Request\RequestException;
 
@@ -24,15 +25,11 @@ class MyAnimeListService
         MyAnimeListRankingTypeAnimeFilter $rankingType,
         ?MyAnimeListCommonFilters $filters = null,
         ?int $offset = null,
-    ): array {
+    ): MyAnimeListAnimeRankingData {
         $response = $this->connector->send(
-            new GetAnimeRankingRequest(
-                $rankingType,
-                ($filters ?? MyAnimeListAnimeFilters::make())->toQuery(),
-                $offset,
-            ),
+            new GetAnimeRankingRequest($rankingType, ($filters ?? MyAnimeListAnimeFilters::make())->toQuery(), $offset),
         );
 
-        return $response->array(); // @todo: $response->dtoOrFail()
+        return $response->dtoOrFail();
     }
 }

@@ -8,11 +8,14 @@ use App\Enums\KodikCommonFilter;
 use App\Enums\KodikListFilter;
 use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
+use App\Enums\MyAnimeList\MyAnimeListCommonField;
+use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Jobs\TestJob;
 use App\Services\KodikService;
 use App\Services\MyAnimeListService;
 use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikMaterial;
+use App\Values\MyAnimeList\MyAnimeListAnimeFilters;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -31,6 +34,11 @@ class TestCommand extends Command
         $seen = [];
         $buffer = [];
         $jobs = [];
+
+        dd($myAnimeListService->getAnimeRanking(
+            MyAnimeListRankingTypeAnimeFilter::ALL,
+            MyAnimeListAnimeFilters::make()->withLimit(3)->withFields(MyAnimeListCommonField::ALTERNATIVE_TITLES),
+        ));
 
         $filters = KodikListFilters::make()
             ->with(KodikCommonFilter::SORT, 'year')
