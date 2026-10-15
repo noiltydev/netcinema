@@ -11,7 +11,7 @@ use App\Enums\KodikMaterialField;
 use App\Enums\KodikMaterialType;
 use App\Enums\KodikRatingMpaa;
 use App\Enums\KodikStatus;
-use BackedEnum;
+use App\Values\Concerns\CommonQueryFilters;
 use InvalidArgumentException;
 
 /**
@@ -29,14 +29,7 @@ use InvalidArgumentException;
  */
 abstract readonly class KodikCommonFilters
 {
-    /**
-     * @param array<string, string|int> $query
-     * @param array<string> $allowedKeys
-     */
-    protected function __construct(
-        private array $query,
-        private array $allowedKeys,
-    ) {}
+    use CommonQueryFilters;
 
     /**
      * @throws InvalidArgumentException
@@ -100,14 +93,6 @@ abstract readonly class KodikCommonFilters
     }
 
     /**
-     * @return array<string, string|int>
-     */
-    public function toQuery(): array
-    {
-        return $this->query;
-    }
-
-    /**
      * Escape hatch for filters without a dedicated method.
      *
      * @throws InvalidArgumentException
@@ -136,22 +121,5 @@ abstract readonly class KodikCommonFilters
         $query = [...$this->query, $keyName => self::normalizeValue($value)];
 
         return new static($query, $this->allowedKeys);
-    }
-
-    /**
-     * @param array<array-key, BackedEnum> $values
-     */
-    private static function commaSeparated(array $values): string
-    {
-        return implode(',', array_column($values, 'value'));
-    }
-
-    private static function normalizeValue(string|int|bool $value): string|int
-    {
-        if (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-
-        return $value;
     }
 }

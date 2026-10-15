@@ -7,7 +7,7 @@ namespace App\Values\MyAnimeList;
 use App\Enums\Contracts\MyAnimeListFilterKey;
 use App\Enums\MyAnimeList\MyAnimeListCommonField;
 use App\Enums\MyAnimeList\MyAnimeListCommonFilter;
-use BackedEnum;
+use App\Values\Concerns\CommonQueryFilters;
 use InvalidArgumentException;
 
 /**
@@ -18,17 +18,12 @@ use InvalidArgumentException;
  * wrong one. Request the fields the importer actually reads.
  *
  * @see \App\Http\Integrations\MyAnimeList\Requests\GetAnimeRankingRequest
+ *
+ * @phpstan-consistent-constructor
  */
 abstract readonly class MyAnimeListCommonFilters
 {
-    /**
-     * @param array<string, string|int> $query
-     * @param array<string> $allowedKeys
-     */
-    protected function __construct(
-        private array $query,
-        private array $allowedKeys,
-    ) {}
+    use CommonQueryFilters;
 
     /**
      * @throws InvalidArgumentException
@@ -59,14 +54,6 @@ abstract readonly class MyAnimeListCommonFilters
     }
 
     /**
-     * @return array<string, string|int>
-     */
-    public function toQuery(): array
-    {
-        return $this->query;
-    }
-
-    /**
      * Escape hatch for filters without a dedicated method.
      *
      * @throws InvalidArgumentException
@@ -77,8 +64,8 @@ abstract readonly class MyAnimeListCommonFilters
     }
 
     /**
-     * Writes a key this endpoint accepts, rejecting anything outside it rather than letting
-     * it reach the API.
+     * Writes a key the endpoint scope accepts, rejecting anything outside it rather than
+     * letting it reach the API.
      *
      * @throws InvalidArgumentException
      */
@@ -95,22 +82,5 @@ abstract readonly class MyAnimeListCommonFilters
         $query = [...$this->query, $keyName => self::normalizeValue($value)];
 
         return new static($query, $this->allowedKeys);
-    }
-
-    /**
-     * @param array<array-key, BackedEnum> $values
-     */
-    private static function commaSeparated(array $values): string
-    {
-        return implode(',', array_column($values, 'value'));
-    }
-
-    private static function normalizeValue(string|int|bool $value): string|int
-    {
-        if (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-
-        return $value;
     }
 }
