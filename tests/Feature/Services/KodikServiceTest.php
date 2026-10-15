@@ -289,7 +289,7 @@ class KodikServiceTest extends TestCase
         Saloon::assertSent(static function (GetSearchRequest $request): bool {
             return (
                 $request->query()->get('title') === 'Спортлото-82'
-                && $request->query()->get('strict') === '1'
+                && $request->query()->get('strict') === 'true'
                 && $request->query()->get('limit') === 20
                 && $request->query()->get('types') === 'foreign-movie'
             );

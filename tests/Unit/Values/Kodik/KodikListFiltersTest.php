@@ -77,7 +77,7 @@ class KodikListFiltersTest extends TestCase
     {
         $query = KodikListFilters::make()->with(KodikSharedListSearchFilter::CAMRIP, false)->toQuery();
 
-        static::assertSame(['camrip' => '0'], $query);
+        static::assertSame(['camrip' => 'false'], $query);
     }
 
     public function test_with_translation_id_joins_the_ids_with_commas(): void

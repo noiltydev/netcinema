@@ -53,8 +53,6 @@ class TestCommand extends Command
             $myAnimeListRanking->paging->nextOffset() ?? 'nothing',
         ));
 
-        dd($myAnimeListRanking);
-
         $filters = KodikListFilters::make()
             ->with(KodikCommonFilter::SORT, 'year')
             ->with(KodikListFilter::ORDER, 'desc')

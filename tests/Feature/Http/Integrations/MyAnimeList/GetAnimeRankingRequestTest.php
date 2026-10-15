@@ -57,7 +57,7 @@ class GetAnimeRankingRequestTest extends TestCase
         );
 
         Saloon::assertSent(
-            static fn (GetAnimeRankingRequest $request): bool => $request->resolveEndpoint() === '/anime/ranking',
+            static fn (GetAnimeRankingRequest $request): bool => $request->resolveEndpoint() === '/v2/anime/ranking',
         );
 
         static::assertTrue($response->successful());

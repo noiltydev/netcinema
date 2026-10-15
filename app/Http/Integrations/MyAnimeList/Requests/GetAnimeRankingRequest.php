@@ -42,7 +42,10 @@ class GetAnimeRankingRequest extends Request
     {
         $query = array_filter($this->filters, static fn ($value): bool => $value !== null && $value !== '');
 
-        return [...$query, $this->rankingType::queryRankingTypeKey() => $this->rankingType->value];
+        return [
+            $this->rankingType::queryRankingTypeKey() => $this->rankingType->value,
+            ...$query,
+        ];
     }
 
     public function createDtoFromResponse(Response $response): MyAnimeListAnimeRankingData

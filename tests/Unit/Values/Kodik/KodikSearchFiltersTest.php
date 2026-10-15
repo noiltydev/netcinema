@@ -24,8 +24,8 @@ class KodikSearchFiltersTest extends TestCase
             [
                 'title' => 'Спортлото-82',
                 'title_orig' => 'Спортлото-82',
-                'strict' => '1',
-                'full_match' => '1',
+                'strict' => 'true',
+                'full_match' => 'true',
                 'id' => 'movie-452654',
                 'kinopoisk_id' => '43949',
                 'imdb_id' => 'tt0084716',
@@ -48,10 +48,10 @@ class KodikSearchFiltersTest extends TestCase
         );
     }
 
-    public function test_disabled_boolean_search_builders_send_zero(): void
+    public function test_disabled_boolean_search_builders_send_false(): void
     {
         static::assertSame(
-            ['strict' => '0', 'full_match' => '0'],
+            ['strict' => 'false', 'full_match' => 'false'],
             KodikSearchFilters::make()->withStrictMatch(false)->withFullMatch(false)->toQuery(),
         );
     }
@@ -82,7 +82,7 @@ class KodikSearchFiltersTest extends TestCase
     {
         $query = KodikSearchFilters::make()->with(KodikSearchFilter::STRICT, true)->toQuery();
 
-        static::assertSame(['strict' => '1'], $query);
+        static::assertSame(['strict' => 'true'], $query);
     }
 
     public function test_with_translation_id_joins_the_ids_with_commas(): void
