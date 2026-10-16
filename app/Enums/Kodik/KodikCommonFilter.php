@@ -13,8 +13,6 @@ enum KodikCommonFilter: string implements KodikFilterKey
     case TRANSLATION_TYPE = 'translation_type';
     case HAS_FIELD = 'has_field';
     case LGBT = 'lgbt';
-    case SORT = 'sort';
-    case WITH_MATERIAL_DATA = 'with_material_data';
     case COUNTRIES = 'countries';
     case GENRES = 'genres';
     case ANIME_GENRES = 'anime_genres';

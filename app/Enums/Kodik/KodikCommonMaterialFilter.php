@@ -7,8 +7,9 @@ namespace App\Enums\Kodik;
 use App\Enums\Contracts\KodikFilterKey;
 
 /**
- * Filters shared across material-listing endpoints:
- * /list, /search, /years, /genres, /countries, /qualities/v2
+ * Filters shared by the endpoints that return materials rather than a catalogue.
+ *
+ * translation_id also reaches /qualities/v2, which block_translations does not.
  */
 enum KodikCommonMaterialFilter: string implements KodikFilterKey
 {

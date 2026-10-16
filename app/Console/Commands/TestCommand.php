@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Enums\Kodik\KodikCommonFilter;
-use App\Enums\Kodik\KodikListFilter;
+use App\Enums\Kodik\KodikListSort;
 use App\Enums\Kodik\KodikMaterialField;
 use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikOrder;
 use App\Enums\MyAnimeList\MyAnimeListAnimeNodeField;
 use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Jobs\TestJob;
@@ -54,8 +54,8 @@ class TestCommand extends Command
         ));
 
         $filters = KodikListFilters::make()
-            ->with(KodikCommonFilter::SORT, 'year')
-            ->with(KodikListFilter::ORDER, 'desc')
+            ->withSort(KodikListSort::YEAR)
+            ->withOrder(KodikOrder::DESC)
             ->withField(KodikMaterialField::SHIKIMORI_ID)
             ->withTypes(KodikMaterialType::ANIME, KodikMaterialType::ANIME_SERIAL)
             ->withLimit(100);

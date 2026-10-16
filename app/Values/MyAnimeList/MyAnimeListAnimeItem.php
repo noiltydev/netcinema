@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\MyAnimeList;
 
-use App\Values\MyAnimeList\Concerns\ReadsRequiredFields;
+use App\Values\Concerns\ReadsRequiredFields;
 use Illuminate\Contracts\Support\Arrayable;
 
 /**

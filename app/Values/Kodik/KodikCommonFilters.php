@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Values\Kodik;
 
 use App\Enums\Contracts\KodikFilterKey;
+use App\Enums\Kodik\KodikAllOfFilter;
 use App\Enums\Kodik\KodikAnimeKind;
 use App\Enums\Kodik\KodikCommonFilter;
 use App\Enums\Kodik\KodikMaterialField;
@@ -47,6 +48,28 @@ abstract readonly class KodikCommonFilters
     public function withField(KodikMaterialField ...$fields): static
     {
         return $this->put(KodikCommonFilter::HAS_FIELD, self::commaSeparated($fields));
+    }
+
+    /**
+     * Restricts results to materials carrying all of the given external identifiers.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withAllFields(KodikMaterialField ...$fields): static
+    {
+        return $this->withAllOf(KodikAllOfFilter::HAS_FIELD, ...array_column($fields, 'value'));
+    }
+
+    /**
+     * Requires the material to hold every one of the given values, the counterpart of the plain
+     * filters that only require one of them. Values are free-form text rather than an enum
+     * because the API matches them case-insensitively against its own vocabulary.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withAllOf(KodikAllOfFilter $filter, string ...$values): static
+    {
+        return $this->put($filter, implode(',', $values));
     }
 
     /**

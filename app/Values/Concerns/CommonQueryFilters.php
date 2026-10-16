@@ -19,7 +19,7 @@ trait CommonQueryFilters
     /**
      * @var array<string, string|int>
      */
-    private readonly array $query;
+    protected readonly array $query;
 
     /**
      * @var array<string>

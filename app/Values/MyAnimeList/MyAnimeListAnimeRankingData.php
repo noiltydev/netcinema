@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Values\MyAnimeList;
 
-use App\Values\MyAnimeList\Concerns\ReadsRequiredFields;
+use App\Values\Concerns\ReadsRequiredFields;
+use App\Values\Concerns\ReadsResponseBody;
 use Illuminate\Contracts\Support\Arrayable;
 use InvalidArgumentException;
 use Saloon\Http\Response;
@@ -17,6 +18,7 @@ use Saloon\Http\Response;
 final readonly class MyAnimeListAnimeRankingData implements Arrayable
 {
     use ReadsRequiredFields;
+    use ReadsResponseBody;
 
     /**
      * @param list<MyAnimeListAnimeNode> $data
@@ -39,7 +41,7 @@ final readonly class MyAnimeListAnimeRankingData implements Arrayable
      */
     public static function fromSaloonResponse(Response $response): self
     {
-        return self::fromArray($response->json());
+        return self::fromArray(self::responseBody($response));
     }
 
     /**

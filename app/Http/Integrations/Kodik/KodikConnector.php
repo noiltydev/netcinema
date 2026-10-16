@@ -9,6 +9,10 @@ use Saloon\Http\Connector;
 use Saloon\Traits\Plugins\AcceptsJson;
 use Saloon\Traits\Plugins\AlwaysThrowOnErrors;
 
+/**
+ * Every documented endpoint answers a GET with the token as a query parameter, and so does this
+ * connector.
+ */
 class KodikConnector extends Connector
 {
     use AcceptsJson;

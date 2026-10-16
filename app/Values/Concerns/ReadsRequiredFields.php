@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Values\MyAnimeList\Concerns;
+namespace App\Values\Concerns;
 
 use InvalidArgumentException;
 

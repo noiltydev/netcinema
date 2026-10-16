@@ -5,11 +5,20 @@ declare(strict_types=1);
 namespace App\Values\Kodik;
 
 use App\Enums\Kodik\KodikMaterialType;
+use App\Values\Concerns\ReadsRequiredFields;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Support\Arrayable;
+use InvalidArgumentException;
 
+/**
+ * @implements Arrayable<string, mixed>
+ *
+ * @phpstan-consistent-constructor
+ */
 final readonly class KodikMaterial implements Arrayable
 {
+    use ReadsRequiredFields;
+
     /**
      * @param array<int, string> $blockedCountries
      * @param array<int, string> $screenshots
@@ -36,6 +45,11 @@ final readonly class KodikMaterial implements Arrayable
         public ?CarbonImmutable $updatedAt,
         public array $blockedCountries,
         public array $screenshots,
+        public ?int $lastSeason,
+        public ?int $lastEpisode,
+        public ?int $episodesCount,
+        public ?KodikBlockedSeasons $blockedSeasons,
+        public ?KodikMaterialSeasons $seasons,
     ) {}
 
     /**
@@ -64,6 +78,11 @@ final readonly class KodikMaterial implements Arrayable
         ?CarbonImmutable $updatedAt = null,
         array $blockedCountries = [],
         array $screenshots = [],
+        ?int $lastSeason = null,
+        ?int $lastEpisode = null,
+        ?int $episodesCount = null,
+        ?KodikBlockedSeasons $blockedSeasons = null,
+        ?KodikMaterialSeasons $seasons = null,
     ): self {
         $rawTypeValue = $typeValue ?? $type->value ?? '';
 
@@ -89,34 +108,51 @@ final readonly class KodikMaterial implements Arrayable
             updatedAt: $updatedAt,
             blockedCountries: $blockedCountries,
             screenshots: $screenshots,
+            lastSeason: $lastSeason,
+            lastEpisode: $lastEpisode,
+            episodesCount: $episodesCount,
+            blockedSeasons: $blockedSeasons,
+            seasons: $seasons,
         );
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function fromArray(array $data): self
     {
         return self::make(
-            id: (string) ($data['id'] ?? ''),
-            title: (string) ($data['title'] ?? ''),
-            typeValue: (string) ($data['type'] ?? ''),
+            id: (string) self::required($data, 'id'),
+            title: (string) self::required($data, 'title'),
+            typeValue: (string) self::required($data, 'type'),
             link: self::nullableString($data['link'] ?? null),
             titleOrig: self::nullableString($data['title_orig'] ?? null),
             otherTitle: self::nullableString($data['other_title'] ?? null),
             translation: isset($data['translation']) && is_array($data['translation'])
                 ? KodikMaterialTranslation::fromArray($data['translation'])
                 : null,
-            year: isset($data['year']) ? (int) $data['year'] : null,
+            year: self::nullableInt($data['year'] ?? null),
             kinopoiskId: self::nullableString($data['kinopoisk_id'] ?? null),
             imdbId: self::nullableString($data['imdb_id'] ?? null),
             mdlId: self::nullableString($data['mdl_id'] ?? null),
             worldartLink: self::nullableString($data['worldart_link'] ?? null),
             shikimoriId: self::nullableString($data['shikimori_id'] ?? null),
             quality: self::nullableString($data['quality'] ?? null),
-            camrip: isset($data['camrip']) ? (bool) $data['camrip'] : null,
-            lgbt: isset($data['lgbt']) ? (bool) $data['lgbt'] : null,
+            camrip: self::nullableBool($data['camrip'] ?? null),
+            lgbt: self::nullableBool($data['lgbt'] ?? null),
             createdAt: self::parseDate($data['created_at'] ?? null),
             updatedAt: self::parseDate($data['updated_at'] ?? null),
             blockedCountries: self::stringList($data['blocked_countries'] ?? []),
             screenshots: self::stringList($data['screenshots'] ?? []),
+            lastSeason: self::nullableInt($data['last_season'] ?? null),
+            lastEpisode: self::nullableInt($data['last_episode'] ?? null),
+            episodesCount: self::nullableInt($data['episodes_count'] ?? null),
+            blockedSeasons: isset($data['blocked_seasons'])
+                ? KodikBlockedSeasons::fromArray($data['blocked_seasons'])
+                : null,
+            seasons: isset($data['seasons']) && is_array($data['seasons'])
+                ? KodikMaterialSeasons::fromArray($data['seasons'])
+                : null,
         );
     }
 
@@ -144,12 +180,27 @@ final readonly class KodikMaterial implements Arrayable
             'updated_at' => $this->updatedAt?->toIso8601String(),
             'blocked_countries' => $this->blockedCountries,
             'screenshots' => $this->screenshots,
+            'last_season' => $this->lastSeason,
+            'last_episode' => $this->lastEpisode,
+            'episodes_count' => $this->episodesCount,
+            'blocked_seasons' => $this->blockedSeasons?->toArray(),
+            'seasons' => $this->seasons?->toArray(),
         ];
     }
 
     private static function nullableString(mixed $value): ?string
     {
         return $value === null ? null : (string) $value;
+    }
+
+    private static function nullableInt(mixed $value): ?int
+    {
+        return $value === null ? null : (int) $value;
+    }
+
+    private static function nullableBool(mixed $value): ?bool
+    {
+        return $value === null ? null : (bool) $value;
     }
 
     /**

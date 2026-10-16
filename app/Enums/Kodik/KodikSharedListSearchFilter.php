@@ -11,10 +11,12 @@ use App\Enums\Contracts\KodikFilterKey;
  */
 enum KodikSharedListSearchFilter: string implements KodikFilterKey
 {
+    case LIMIT = 'limit';
     case CAMRIP = 'camrip';
     case WITH_SEASONS = 'with_seasons';
     case WITH_EPISODES = 'with_episodes';
     case WITH_EPISODES_DATA = 'with_episodes_data';
+    case WITH_MATERIAL_DATA = 'with_material_data';
     case WITH_PAGE_LINKS = 'with_page_links';
     case NOT_BLOCKED_IN = 'not_blocked_in';
     case NOT_BLOCKED_FOR_ME = 'not_blocked_for_me';

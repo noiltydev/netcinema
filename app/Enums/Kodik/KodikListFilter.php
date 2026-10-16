@@ -11,7 +11,7 @@ use App\Enums\Contracts\KodikFilterKey;
  */
 enum KodikListFilter: string implements KodikFilterKey
 {
-    case LIMIT = 'limit';
+    case SORT = 'sort';
     case ORDER = 'order';
 
     public function queryKey(): string

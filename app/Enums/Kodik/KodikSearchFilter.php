@@ -23,7 +23,6 @@ enum KodikSearchFilter: string implements KodikFilterKey
     case SHIKIMORI_ID = 'shikimori_id';
     case SEASON = 'season';
     case EPISODE = 'episode';
-    case HAS_FIELD_AND = 'has_field_and';
     case PRIORITIZE_TRANSLATIONS = 'prioritize_translations';
     case UNPRIORITIZE_TRANSLATIONS = 'unprioritize_translations';
     case PRIORITIZE_TRANSLATION_TYPE = 'prioritize_translation_type';
