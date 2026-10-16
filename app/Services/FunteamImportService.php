@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class FunteamService
+class FunteamImportService
 {
     private const int UPSERT_CHUNK_SIZE = 100;
 
@@ -48,37 +48,39 @@ class FunteamService
     /**
      * @param array<int, KodikTranslation> $translations
      *
-     * @return Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}>
+     * @return Collection<int, array{name: string, slug: string, kodik_ids: non-empty-list<int>}>
      */
     private function makeImportRows(array $translations): Collection
     {
-        return collect($translations)
-            ->map(static fn (KodikTranslation $translation): array => [
-                'name' => $translation->name(),
-                'slug' => $translation->slug(),
-                'kodik_id' => $translation->id,
-            ])
-            ->reject(static fn (array $row): bool => $row['slug'] === '')
-            ->groupBy('slug')
-            ->map(static function (Collection $slugGroup): array {
-                $firstRow = $slugGroup->first();
+        $namesBySlug = [];
+        $kodikIdsBySlug = [];
 
-                return [
-                    'name' => $firstRow['name'],
-                    'slug' => $firstRow['slug'],
-                    'kodik_ids' => $slugGroup
-                        ->pluck('kodik_id')
-                        ->unique()
-                        ->values()
-                        ->map(static fn (mixed $kodikId): int => (int) $kodikId)
-                        ->all(),
-                ];
-            })
-            ->values();
+        foreach ($translations as $translation) {
+            $slug = $translation->slug();
+
+            if ($slug === '') {
+                continue;
+            }
+
+            $namesBySlug[$slug] ??= $translation->name();
+            $kodikIdsBySlug[$slug][$translation->id] = $translation->id;
+        }
+
+        $rows = [];
+
+        foreach ($namesBySlug as $slug => $name) {
+            $rows[] = [
+                'name' => $name,
+                'slug' => $slug,
+                'kodik_ids' => array_values($kodikIdsBySlug[$slug]),
+            ];
+        }
+
+        return collect($rows);
     }
 
     /**
-     * @param Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}> $rows
+     * @param Collection<int, array{name: string, slug: string, kodik_ids: non-empty-list<int>}> $rows
      *
      * @throws RuntimeException
      */
@@ -100,7 +102,7 @@ class FunteamService
     }
 
     /**
-     * @param Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}> $rows
+     * @param Collection<int, array{name: string, slug: string, kodik_ids: non-empty-list<int>}> $rows
      * @param Collection<string, int> $linkedKodikFunteamIds
      */
     private function upsertFunteams(
@@ -128,7 +130,7 @@ class FunteamService
     }
 
     /**
-     * @param Collection<int, array{name: string, slug: string, kodik_ids: array<int, int>}> $rows
+     * @param Collection<int, array{name: string, slug: string, kodik_ids: non-empty-list<int>}> $rows
      * @param Collection<string, int> $linkedKodikFunteamIds
      *
      * @throws RuntimeException
@@ -160,7 +162,7 @@ class FunteamService
     }
 
     /**
-     * @param array{name: string, slug: string, kodik_ids: array<int, int>} $row
+     * @param array{name: string, slug: string, kodik_ids: non-empty-list<int>} $row
      * @param Collection<string, int> $linkedKodikFunteamIds
      *
      * @return array<int, array<string, mixed>>
@@ -189,7 +191,7 @@ class FunteamService
     }
 
     /**
-     * @param array{name: string, slug: string, kodik_ids: array<int, int>} $row
+     * @param array{name: string, slug: string, kodik_ids: non-empty-list<int>} $row
      * @param Collection<string, int> $linkedKodikFunteamIds
      */
     private function hasLinkedKodikId(array $row, Collection $linkedKodikFunteamIds): bool
@@ -199,7 +201,7 @@ class FunteamService
     }
 
     /**
-     * @param array{name: string, slug: string, kodik_ids: array<int, int>} $row
+     * @param array{name: string, slug: string, kodik_ids: non-empty-list<int>} $row
      * @param Collection<string, int> $linkedKodikFunteamIds
      *
      * @return array<int, int>

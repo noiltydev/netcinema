@@ -7,9 +7,10 @@ namespace Tests\Feature\Services;
 use App\Enums\SourceProviderName;
 use App\Models\Funteam;
 use App\Models\Source;
-use App\Services\FunteamService;
+use App\Services\FunteamImportService;
 use App\Values\Kodik\KodikTranslation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -30,7 +31,7 @@ class FunteamServiceTest extends TestCase
     public function test_import_links_every_imported_funteam_to_its_kodik_translation(): void
     {
         $this->app
-            ->make(FunteamService::class)
+            ->make(FunteamImportService::class)
             ->importFromKodik($this->makeTranslations([
                 ['id' => 735, 'title' => '2x2', 'count' => 26],
                 ['id' => 824, 'title' => '3df voice', 'count' => 16],
@@ -41,17 +42,22 @@ class FunteamServiceTest extends TestCase
         /** @var Funteam $secondFunteam */
         $secondFunteam = Funteam::query()->where('slug', '3df-voice')->sole();
 
+        /** @var Source $firstSource */
+        $firstSource = $firstFunteam->sources()->sole();
+        /** @var Source $secondSource */
+        $secondSource = $secondFunteam->sources()->sole();
+
         $this->assertDatabaseCount('sources', 2);
-        static::assertSame(SourceProviderName::KODIK, $firstFunteam->sources()->sole()->provider_name);
-        static::assertSame('735', $firstFunteam->sources()->sole()->external_id);
-        static::assertSame(SourceProviderName::KODIK, $secondFunteam->sources()->sole()->provider_name);
-        static::assertSame('824', $secondFunteam->sources()->sole()->external_id);
+        static::assertSame(SourceProviderName::KODIK, $firstSource->provider_name);
+        static::assertSame('735', $firstSource->external_id);
+        static::assertSame(SourceProviderName::KODIK, $secondSource->provider_name);
+        static::assertSame('824', $secondSource->external_id);
     }
 
     public function test_import_links_the_voice_and_subtitles_translations_of_a_funteam_to_that_funteam(): void
     {
         $this->app
-            ->make(FunteamService::class)
+            ->make(FunteamImportService::class)
             ->importFromKodik($this->makeTranslations([
                 ['id' => 735, 'title' => '2x2', 'count' => 26],
                 ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
@@ -67,7 +73,7 @@ class FunteamServiceTest extends TestCase
 
     public function test_import_is_idempotent_for_a_funteam_with_two_kodik_translations(): void
     {
-        $service = $this->app->make(FunteamService::class);
+        $service = $this->app->make(FunteamImportService::class);
         $translations = $this->makeTranslations([
             ['id' => 735, 'title' => '2x2', 'count' => 26],
             ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
@@ -88,7 +94,7 @@ class FunteamServiceTest extends TestCase
         ]);
 
         $this->app
-            ->make(FunteamService::class)
+            ->make(FunteamImportService::class)
             ->importFromKodik($this->makeTranslations([
                 ['id' => 735, 'title' => '2x2', 'count' => 26],
             ]));
@@ -112,23 +118,27 @@ class FunteamServiceTest extends TestCase
         ]);
 
         $this->app
-            ->make(FunteamService::class)
+            ->make(FunteamImportService::class)
             ->importFromKodik($this->makeTranslations([
                 ['id' => 735, 'title' => '2x2', 'count' => 26],
             ]));
 
+        /** @var Collection<int, Source> $providers */
         $providers = $funteam->sources()->orderBy('provider_name')->get();
 
-        static::assertCount(2, $providers);
-        static::assertSame(SourceProviderName::KODIK, $providers->first()->provider_name);
-        static::assertSame(SourceProviderName::MYANIMELIST, $providers->last()->provider_name);
-        static::assertSame('735', $providers->first()->external_id);
-        static::assertSame('42', $providers->last()->external_id);
+        static::assertSame(
+            [SourceProviderName::KODIK, SourceProviderName::MYANIMELIST],
+            $providers->map(static fn (Source $source): SourceProviderName => $source->provider_name)->all(),
+        );
+        static::assertSame(
+            ['735', '42'],
+            $providers->map(static fn (Source $source): string => $source->external_id)->all(),
+        );
     }
 
     public function test_import_is_idempotent(): void
     {
-        $service = $this->app->make(FunteamService::class);
+        $service = $this->app->make(FunteamImportService::class);
         $translations = $this->makeTranslations([
             ['id' => 735, 'title' => '2x2', 'count' => 26],
         ]);
@@ -146,7 +156,7 @@ class FunteamServiceTest extends TestCase
 
     public function test_import_keeps_the_name_of_an_already_linked_funteam(): void
     {
-        $service = $this->app->make(FunteamService::class);
+        $service = $this->app->make(FunteamImportService::class);
 
         $service->importFromKodik($this->makeTranslations([
             ['id' => 735, 'title' => '2x2', 'count' => 26],
@@ -176,7 +186,7 @@ class FunteamServiceTest extends TestCase
 
         $this->assertThrows(
             fn () => $this->app
-                ->make(FunteamService::class)
+                ->make(FunteamImportService::class)
                 ->importFromKodik($this->makeTranslations([
                     ['id' => 735, 'title' => '2x2', 'count' => 26],
                 ])),
@@ -209,7 +219,7 @@ class FunteamServiceTest extends TestCase
 
         $this->assertThrows(
             fn () => $this->app
-                ->make(FunteamService::class)
+                ->make(FunteamImportService::class)
                 ->importFromKodik($this->makeTranslations([
                     ['id' => 824, 'title' => '3df voice', 'count' => 16],
                     ['id' => 735, 'title' => '2x2', 'count' => 26],
@@ -226,7 +236,7 @@ class FunteamServiceTest extends TestCase
     {
         $processedCount = 0;
 
-        $importedCount = $this->app->make(FunteamService::class)->importFromKodik(
+        $importedCount = $this->app->make(FunteamImportService::class)->importFromKodik(
             $this->makeTranslations([
                 ['id' => 735, 'title' => '2x2', 'count' => 26],
                 ['id' => 824, 'title' => '!!!', 'count' => 16],
