@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
-use App\Enums\KodikTranslationType;
+use App\Enums\Kodik\KodikTranslationType;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 

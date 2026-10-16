@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Enums;
+namespace App\Enums\Kodik;
 
 /**
  * External source identifier a material may carry, used by the has_field filter.

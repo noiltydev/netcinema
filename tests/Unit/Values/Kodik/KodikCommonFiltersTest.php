@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
-use App\Enums\KodikAnimeKind;
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikMaterialField;
-use App\Enums\KodikMaterialType;
-use App\Enums\KodikRatingMpaa;
-use App\Enums\KodikStatus;
+use App\Enums\Kodik\KodikAnimeKind;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikMaterialField;
+use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikRatingMpaa;
+use App\Enums\Kodik\KodikStatus;
 use App\Values\Kodik\KodikCommonFilters;
 use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikSearchFilters;

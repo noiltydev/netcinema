@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikListFilter;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikListFilter;
 use PHPUnit\Framework\TestCase;
 
 class KodikListFilterTest extends TestCase

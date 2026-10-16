@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik\Concerns;
 
-use App\Enums\KodikListFilter;
+use App\Enums\Kodik\KodikListFilter;
 use InvalidArgumentException;
 
 trait HasLimit

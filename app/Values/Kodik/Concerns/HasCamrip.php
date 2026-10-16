@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik\Concerns;
 
-use App\Enums\KodikSharedListSearchFilter;
+use App\Enums\Kodik\KodikSharedListSearchFilter;
 use InvalidArgumentException;
 
 trait HasCamrip

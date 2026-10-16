@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Enums;
+namespace App\Enums\Kodik;
 
 /**
  * Material status, shared by the anime_status, drama_status and all_status filters.

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikListFilter;
-use App\Enums\KodikMaterialType;
-use App\Enums\KodikSearchFilter;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikListFilter;
+use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikSearchFilter;
 use App\Values\Kodik\KodikSearchFilters;
 use PHPUnit\Framework\TestCase;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
-use App\Enums\KodikCommonFilter;
+use App\Enums\Kodik\KodikCommonFilter;
 
 /**
  * Filters accepted by the /translations/v2 endpoint.

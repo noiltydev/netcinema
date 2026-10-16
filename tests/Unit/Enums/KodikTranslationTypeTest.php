@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikTranslationType;
+use App\Enums\Kodik\KodikTranslationType;
 use PHPUnit\Framework\TestCase;
 
 class KodikTranslationTypeTest extends TestCase

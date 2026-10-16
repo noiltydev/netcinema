@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikAnimeKind;
+use App\Enums\Kodik\KodikAnimeKind;
 use PHPUnit\Framework\TestCase;
 
 class KodikAnimeKindTest extends TestCase

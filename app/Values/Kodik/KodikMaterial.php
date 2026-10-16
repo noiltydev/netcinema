@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
-use App\Enums\KodikMaterialType;
+use App\Enums\Kodik\KodikMaterialType;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Support\Arrayable;
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Enums\Contracts;
 
 use App\Enums\Contracts\KodikFilterKey;
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikListFilter;
-use App\Enums\KodikSearchFilter;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikListFilter;
+use App\Enums\Kodik\KodikSearchFilter;
 use PHPUnit\Framework\TestCase;
 
 class KodikFilterKeyTest extends TestCase

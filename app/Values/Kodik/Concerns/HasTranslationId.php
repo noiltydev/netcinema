@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik\Concerns;
 
-use App\Enums\KodikCommonMaterialFilter;
+use App\Enums\Kodik\KodikCommonMaterialFilter;
 use InvalidArgumentException;
 
 trait HasTranslationId

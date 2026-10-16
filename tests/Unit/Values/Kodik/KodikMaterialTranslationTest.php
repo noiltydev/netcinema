@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
-use App\Enums\KodikTranslationType;
+use App\Enums\Kodik\KodikTranslationType;
 use App\Values\Kodik\KodikMaterialTranslation;
 use PHPUnit\Framework\TestCase;
 

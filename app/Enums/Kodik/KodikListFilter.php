@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Enums;
+namespace App\Enums\Kodik;
 
 use App\Enums\Contracts\KodikFilterKey;
 
 /**
- * Filters shared across material-listing endpoints:
- * /list, /search, /years, /genres, /countries, /qualities/v2
+ * Filters specific to the /list endpoint only.
  */
-enum KodikCommonMaterialFilter: string implements KodikFilterKey
+enum KodikListFilter: string implements KodikFilterKey
 {
-    case TRANSLATION_ID = 'translation_id';
-    case BLOCK_TRANSLATIONS = 'block_translations';
+    case LIMIT = 'limit';
+    case ORDER = 'order';
 
     public function queryKey(): string
     {

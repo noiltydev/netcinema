@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Kodik;
 
-use App\Enums\KodikMaterialType;
+use App\Enums\Kodik\KodikMaterialType;
 use App\Services\FunteamService;
 use App\Services\KodikService;
 use App\Values\Kodik\KodikTranslationsFilters;

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikListFilter;
-use App\Enums\KodikMaterialField;
-use App\Enums\KodikMaterialType;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikListFilter;
+use App\Enums\Kodik\KodikMaterialField;
+use App\Enums\Kodik\KodikMaterialType;
 use App\Enums\MyAnimeList\MyAnimeListAnimeNodeField;
 use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Jobs\TestJob;

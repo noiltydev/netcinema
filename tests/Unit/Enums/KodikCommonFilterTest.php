@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikCommonFilter;
+use App\Enums\Kodik\KodikCommonFilter;
 use PHPUnit\Framework\TestCase;
 
 class KodikCommonFilterTest extends TestCase
