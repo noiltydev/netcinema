@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
 class FunteamRepository extends Repository
 {
     /**
-     * @param Collection<int, string> $slugs
+     * @param Collection<non-negative-int, string> $slugs
      *
      * @return Collection<int, Funteam>
      */

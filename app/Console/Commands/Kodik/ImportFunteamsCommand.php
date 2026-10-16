@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Kodik;
 
 use App\Enums\Kodik\KodikMaterialType;
-use App\Services\FunteamService;
+use App\Services\FunteamImportService;
 use App\Services\KodikService;
 use App\Values\Kodik\KodikTranslationsFilters;
 use Illuminate\Console\Attributes\Description;
@@ -16,7 +16,7 @@ use Illuminate\Console\Command;
 #[Description('Populate the funteams table from Kodik translations')]
 class ImportFunteamsCommand extends Command
 {
-    public function handle(KodikService $kodikService, FunteamService $funteamService): int
+    public function handle(KodikService $kodikService, FunteamImportService $funteamImportService): int
     {
         $filters = KodikTranslationsFilters::make()->withTypes(
             KodikMaterialType::ANIME,
@@ -31,7 +31,7 @@ class ImportFunteamsCommand extends Command
         $progressBar->setMessage('Importing funteams');
         $progressBar->start();
 
-        $importedCount = $funteamService->importFromKodik($translations, $progressBar->advance(...));
+        $importedCount = $funteamImportService->importFromKodik($translations, $progressBar->advance(...));
 
         $progressBar->finish();
 

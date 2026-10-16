@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 class SourceRepository extends Repository
 {
     /**
-     * @param Collection<int, string> $externalIds
+     * @param Collection<non-negative-int, string> $externalIds
      *
      * @return Collection<string, int>
      */
