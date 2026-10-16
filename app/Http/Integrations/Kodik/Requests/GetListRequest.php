@@ -16,7 +16,7 @@ class GetListRequest extends Request
     /**
      * The HTTP method of the request
      */
-    protected Method $method = Method::POST;
+    protected Method $method = Method::GET;
 
     /**
      * @param array<string, string|int|null> $filters

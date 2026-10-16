@@ -10,6 +10,12 @@
 
 `PUT https://api.myanimelist.net/v2/anime/{anime_id}/my_list_status`
 
+> **Неоднозначность в документации MAL**: в OpenAPI-спецификации операция объявлена как **PATCH**
+> (`operation/anime_anime_id_my_list_status_put` с HTTP-методом `patch`), тогда как пример curl
+> в самой документации MAL использует `-X PUT`. Оба варианта встречаются в разных частях
+> официальной документации; какой из них работает на практике — не проверено.
+> Перед реализацией проверь фактический метод запроса.
+
 ## Авторизация
 
 - `main_auth` (OAuth2, scope `write:users`) — `Authorization: Bearer <ACCESS_TOKEN>`
@@ -104,6 +110,7 @@ status=completed&score=9&num_watched_episodes=1100
 ## Правила для ИИ-агента
 
 - Требует OAuth2 авторизации (scope `write:users`).
+- HTTP-метод неоднозначен: спецификация говорит `PATCH`, пример curl в документации MAL — `PUT`. Проверь перед реализацией.
 - Обновляются только переданные параметры — не нужно отправлять все поля.
 - `Content-Type: application/x-www-form-urlencoded` обязателен.
 - Если аниме не было в списке — оно добавляется.

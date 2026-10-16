@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
-use App\Enums\KodikCommonMaterialFilter;
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikListFilter;
-use App\Enums\KodikSearchFilter;
-use App\Enums\KodikSharedListSearchFilter;
+use App\Enums\Kodik\KodikAllOfFilter;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikCommonMaterialFilter;
+use App\Enums\Kodik\KodikSearchFilter;
+use App\Enums\Kodik\KodikSharedListSearchFilter;
+use App\Enums\Kodik\KodikTranslationType;
 use App\Values\Kodik\Concerns\HasBlockTranslations;
 use App\Values\Kodik\Concerns\HasCamrip;
+use App\Values\Kodik\Concerns\HasExternalIds;
 use App\Values\Kodik\Concerns\HasLimit;
 use App\Values\Kodik\Concerns\HasNotBlocked;
 use App\Values\Kodik\Concerns\HasSeasonsEpisodes;
@@ -30,6 +32,7 @@ final readonly class KodikSearchFilters extends KodikCommonFilters
     use HasCamrip;
     use HasSeasonsEpisodes;
     use HasNotBlocked;
+    use HasExternalIds;
 
     public static function make(): self
     {
@@ -37,12 +40,17 @@ final readonly class KodikSearchFilters extends KodikCommonFilters
             [],
             array_merge(
                 KodikCommonFilter::values(),
+                KodikAllOfFilter::values(),
                 KodikCommonMaterialFilter::values(),
                 KodikSharedListSearchFilter::values(),
-                KodikListFilter::values(),
-                KodikSearchFilter::values()
-            )
+                KodikSearchFilter::values(),
+            ),
         );
+    }
+
+    public static function maxLimit(): int
+    {
+        return 100;
     }
 
     /**
@@ -97,28 +105,14 @@ final readonly class KodikSearchFilters extends KodikCommonFilters
     /**
      * @throws InvalidArgumentException
      */
-    public function withKinopoiskId(string $kinopoiskId): static
+    public function withPlayerLink(string $playerLink): static
     {
-        return $this->put(KodikSearchFilter::KINOPOISK_ID, $kinopoiskId);
+        return $this->put(KodikSearchFilter::PLAYER_LINK, $playerLink);
     }
 
     /**
-     * @throws InvalidArgumentException
-     */
-    public function withImdbId(string $imdbId): static
-    {
-        return $this->put(KodikSearchFilter::IMDB_ID, $imdbId);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withShikimoriId(string $shikimoriId): static
-    {
-        return $this->put(KodikSearchFilter::SHIKIMORI_ID, $shikimoriId);
-    }
-
-    /**
+     * The API turns on with_seasons by itself when a season is asked for.
+     *
      * @throws InvalidArgumentException
      */
     public function withSeason(int $season): static
@@ -127,10 +121,46 @@ final readonly class KodikSearchFilters extends KodikCommonFilters
     }
 
     /**
+     * The API only accepts an episode alongside the season it belongs to, so sending one alone
+     * would be an error rather than a narrower search.
+     *
      * @throws InvalidArgumentException
      */
     public function withEpisode(int $episode): static
     {
+        throw_if(
+            !array_key_exists(KodikSearchFilter::SEASON->queryKey(), $this->query),
+            InvalidArgumentException::class,
+            'Episode requires a season, call withSeason() first.',
+        );
+
         return $this->put(KodikSearchFilter::EPISODE, $episode);
+    }
+
+    /**
+     * Accepts translation ids and the voice/subtitles shorthand, where 0 clears the prioritization
+     * the API applies by default.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withPrioritizeTranslations(int|string ...$translations): static
+    {
+        return $this->put(KodikSearchFilter::PRIORITIZE_TRANSLATIONS, implode(',', $translations));
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withUnprioritizeTranslations(int|string ...$translations): static
+    {
+        return $this->put(KodikSearchFilter::UNPRIORITIZE_TRANSLATIONS, implode(',', $translations));
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function withPrioritizeTranslationType(KodikTranslationType $type): static
+    {
+        return $this->put(KodikSearchFilter::PRIORITIZE_TRANSLATION_TYPE, $type->value);
     }
 }

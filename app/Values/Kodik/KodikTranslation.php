@@ -4,12 +4,25 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
-use App\Enums\KodikTranslationType;
+use App\Enums\Kodik\KodikTranslationType;
+use App\Values\Concerns\ReadsRequiredFields;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
+/**
+ * @implements Arrayable<string, mixed>
+ *
+ * @phpstan-consistent-constructor
+ */
 final readonly class KodikTranslation implements Arrayable
 {
+    use ReadsRequiredFields;
+
+    /**
+     * The endpoint documents id, title and count only, so the translation kind has to be read off
+     * the title: the API marks a subtitle track by suffixing its name.
+     */
     private const string SUBTITLES_SUFFIX = '.Subtitles';
 
     private function __construct(
@@ -23,9 +36,16 @@ final readonly class KodikTranslation implements Arrayable
         return new self(id: $id, title: $title, count: $count);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function fromArray(array $data): self
     {
-        return self::make(id: (int) $data['id'], title: (string) $data['title'], count: (int) $data['count']);
+        return self::make(
+            id: (int) self::required($data, 'id'),
+            title: (string) self::required($data, 'title'),
+            count: (int) self::required($data, 'count'),
+        );
     }
 
     public function name(): string

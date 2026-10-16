@@ -4,11 +4,22 @@ declare(strict_types=1);
 
 namespace App\Values\Kodik;
 
+use App\Values\Concerns\ReadsRequiredFields;
+use App\Values\Concerns\ReadsResponseBody;
 use Illuminate\Contracts\Support\Arrayable;
+use InvalidArgumentException;
 use Saloon\Http\Response;
 
+/**
+ * @implements Arrayable<string, mixed>
+ *
+ * @phpstan-consistent-constructor
+ */
 final readonly class KodikTranslationsData implements Arrayable
 {
+    use ReadsRequiredFields;
+    use ReadsResponseBody;
+
     /**
      * @param array<int, KodikTranslation> $results
      */
@@ -26,17 +37,20 @@ final readonly class KodikTranslationsData implements Arrayable
         return new self(time: $time, total: $total, results: $results);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function fromSaloonResponse(Response $response): self
     {
-        /** @var array $data */
-        $data = $response->json();
-
-        return self::fromArray($data);
+        return self::fromArray(self::responseBody($response));
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public static function fromArray(array $data): self
     {
-        $results = array_map(KodikTranslation::fromArray(...), $data['results'] ?? []);
+        $results = array_map(KodikTranslation::fromArray(...), array_values(self::requiredArray($data, 'results')));
 
         return self::make(time: (string) ($data['time'] ?? ''), total: (int) ($data['total'] ?? 0), results: $results);
     }

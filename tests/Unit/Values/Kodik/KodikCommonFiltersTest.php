@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
-use App\Enums\KodikAnimeKind;
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikMaterialField;
-use App\Enums\KodikMaterialType;
-use App\Enums\KodikRatingMpaa;
-use App\Enums\KodikStatus;
+use App\Enums\Kodik\KodikAllOfFilter;
+use App\Enums\Kodik\KodikAnimeKind;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikMaterialField;
+use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikRatingMpaa;
+use App\Enums\Kodik\KodikStatus;
 use App\Values\Kodik\KodikCommonFilters;
 use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikSearchFilters;
@@ -97,22 +98,33 @@ class KodikCommonFiltersTest extends TestCase
         );
     }
 
-    public function test_shared_filters_are_available_in_every_scope(): void
+    public function test_all_of_filters_are_available_in_every_scope(): void
     {
         static::assertSame(
-            ['sort' => 'title'],
-            KodikTranslationsFilters::make()->with(KodikCommonFilter::SORT, 'title')->toQuery(),
+            ['countries_and' => 'США'],
+            KodikTranslationsFilters::make()->withAllOf(KodikAllOfFilter::COUNTRIES, 'США')->toQuery(),
         );
 
         static::assertSame(
-            ['sort' => 'updated_at'],
-            KodikListFilters::make()->with(KodikCommonFilter::SORT, 'updated_at')->toQuery(),
+            ['genres_and' => 'боевик'],
+            KodikListFilters::make()->withAllOf(KodikAllOfFilter::GENRES, 'боевик')->toQuery(),
         );
 
         static::assertSame(
-            ['sort' => 'updated_at'],
-            KodikSearchFilters::make()->with(KodikCommonFilter::SORT, 'updated_at')->toQuery(),
+            ['has_field_and' => 'shikimori_id,kinopoisk_id'],
+            KodikSearchFilters::make()
+                ->withAllFields(KodikMaterialField::SHIKIMORI_ID, KodikMaterialField::KINOPOISK_ID)
+                ->toQuery(),
         );
+    }
+
+    public function test_with_all_of_joins_the_values_with_commas(): void
+    {
+        $query = KodikListFilters::make()
+            ->withAllOf(KodikAllOfFilter::ACTORS, 'Крис Хемсворт', 'Марк Руффало')
+            ->toQuery();
+
+        static::assertSame(['actors_and' => 'Крис Хемсворт,Марк Руффало'], $query);
     }
 
     public function test_builder_is_immutable(): void

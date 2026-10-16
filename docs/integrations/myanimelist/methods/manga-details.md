@@ -171,8 +171,8 @@ Authorization: Bearer <MAL_ACCESS_TOKEN>
   "related_anime": [
     {
       "node": {"id": 33354, "title": "Berserk: The Golden Age Arc", "main_picture": {...}},
-      "relation_type": "adaptation",
-      "relation_type_formatted": "Adaptation"
+      "relation_type": "alternative_version",
+      "relation_type_formatted": "Alternative version"
     }
   ],
   "related_manga": [

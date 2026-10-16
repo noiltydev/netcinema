@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\EntryLocale;
 use App\Enums\TranslationBalancer;
 use App\Enums\TranslationKind;
 use App\Models\Funteam;
@@ -22,12 +23,14 @@ class TranslationFactory extends Factory
      */
     public function definition(): array
     {
+        $locale = EntryLocale::RU;
+
         return [
             'funteam_id' => Funteam::factory(),
             'balancer' => fake()->randomElement(TranslationBalancer::cases()),
             'external_id' => fake()->unique()->uuid(),
             'kind' => fake()->randomElement(TranslationKind::cases()),
-            'locale' => 'ru',
+            'locale' => $locale->value,
         ];
     }
 }

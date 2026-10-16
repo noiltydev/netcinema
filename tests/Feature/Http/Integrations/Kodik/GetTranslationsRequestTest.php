@@ -31,7 +31,7 @@ class GetTranslationsRequestTest extends TestCase
         $response = $connector->send(new GetTranslationsRequest());
 
         Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
-            return $request->resolveEndpoint() === '/translations/v2' && $request->getMethod()->value === 'POST';
+            return $request->resolveEndpoint() === '/translations/v2' && $request->getMethod()->value === 'GET';
         });
 
         static::assertTrue($response->successful());

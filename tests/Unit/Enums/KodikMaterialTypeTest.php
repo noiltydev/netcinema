@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikMaterialType;
+use App\Enums\Kodik\KodikMaterialType;
 use PHPUnit\Framework\TestCase;
 
 class KodikMaterialTypeTest extends TestCase

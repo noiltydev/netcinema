@@ -29,12 +29,12 @@ no-isset = { enabled = false }
 prefer-arrow-function = { enabled = false }
 too-many-methods = { threshold = 14, exclude = ["tests/"] }
 
-# KodikFilter maps the Kodik API's filter surface one-to-one (34 query parameters), and
-# KodikMaterial is a flat mapper for a 21-field payload. Both are wide by nature, not by
-# accident, so the defaults of 20 cases / 15 complexity are raised rather than splitting
-# a one-to-one API mirror or adding indirection to a data mapper.
+# KodikMaterial is a flat mapper for a payload the API documents field by field, and
+# KodikMaterialType mirrors its 12 material types one-to-one. Both are wide by nature, not by
+# accident, so the default case threshold is raised rather than splitting a one-to-one API mirror
+# or adding indirection to a data mapper.
 too-many-enum-cases = { level = "warning", threshold = 40 }
-cyclomatic-complexity = { level = "warning", threshold = 30 }
+cyclomatic-complexity = { level = "warning", threshold = 33 }
 
 [analyzer]
 plugins = []

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikListFilter;
-use App\Enums\KodikSearchFilter;
-use App\Enums\KodikCommonMaterialFilter;
-use App\Enums\KodikSharedListSearchFilter;
+use App\Enums\Kodik\KodikAllOfFilter;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikCommonMaterialFilter;
+use App\Enums\Kodik\KodikListFilter;
+use App\Enums\Kodik\KodikSearchFilter;
+use App\Enums\Kodik\KodikSharedListSearchFilter;
 use PHPUnit\Framework\TestCase;
 
 class KodikSearchFilterTest extends TestCase
@@ -32,7 +33,6 @@ class KodikSearchFilterTest extends TestCase
         static::assertSame('shikimori_id', KodikSearchFilter::SHIKIMORI_ID->value);
         static::assertSame('season', KodikSearchFilter::SEASON->value);
         static::assertSame('episode', KodikSearchFilter::EPISODE->value);
-        static::assertSame('has_field_and', KodikSearchFilter::HAS_FIELD_AND->value);
         static::assertSame('prioritize_translations', KodikSearchFilter::PRIORITIZE_TRANSLATIONS->value);
         static::assertSame('unprioritize_translations', KodikSearchFilter::UNPRIORITIZE_TRANSLATIONS->value);
         static::assertSame('prioritize_translation_type', KodikSearchFilter::PRIORITIZE_TRANSLATION_TYPE->value);
@@ -57,7 +57,6 @@ class KodikSearchFilterTest extends TestCase
                 'shikimori_id',
                 'season',
                 'episode',
-                'has_field_and',
                 'prioritize_translations',
                 'unprioritize_translations',
                 'prioritize_translation_type',
@@ -70,16 +69,26 @@ class KodikSearchFilterTest extends TestCase
     {
         static::assertSame(
             [],
-            array_intersect(
-                KodikSearchFilter::values(),
-                array_merge(
-                    KodikCommonFilter::values(),
-                    KodikCommonMaterialFilter::values(),
-                    KodikSharedListSearchFilter::values(),
-                    KodikListFilter::values()
-                )
-            ),
+            array_intersect(KodikSearchFilter::values(), array_merge(
+                KodikCommonFilter::values(),
+                KodikAllOfFilter::values(),
+                KodikCommonMaterialFilter::values(),
+                KodikSharedListSearchFilter::values(),
+                KodikListFilter::values(),
+            )),
         );
+    }
+
+    public function test_has_field_and_is_common_to_every_endpoint_rather_than_search_only(): void
+    {
+        static::assertNull(KodikSearchFilter::tryFrom('has_field_and'));
+        static::assertSame('has_field_and', KodikAllOfFilter::HAS_FIELD->value);
+    }
+
+    public function test_list_only_keys_are_absent(): void
+    {
+        static::assertNull(KodikSearchFilter::tryFrom('sort'));
+        static::assertNull(KodikSearchFilter::tryFrom('order'));
     }
 
     public function test_undocumented_filter_has_no_case(): void

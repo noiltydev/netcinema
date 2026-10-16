@@ -42,7 +42,7 @@ class GetSearchRequestTest extends TestCase
         $response = $connector->send(new GetSearchRequest());
 
         Saloon::assertSent(static function (GetSearchRequest $request): bool {
-            return $request->resolveEndpoint() === '/search' && $request->getMethod()->value === 'POST';
+            return $request->resolveEndpoint() === '/search' && $request->getMethod()->value === 'GET';
         });
 
         static::assertTrue($response->successful());

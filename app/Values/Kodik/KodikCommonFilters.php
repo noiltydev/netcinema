@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Values\Kodik;
 
 use App\Enums\Contracts\KodikFilterKey;
-use App\Enums\KodikAnimeKind;
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikMaterialField;
-use App\Enums\KodikMaterialType;
-use App\Enums\KodikRatingMpaa;
-use App\Enums\KodikStatus;
-use BackedEnum;
+use App\Enums\Kodik\KodikAllOfFilter;
+use App\Enums\Kodik\KodikAnimeKind;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikMaterialField;
+use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikRatingMpaa;
+use App\Enums\Kodik\KodikStatus;
+use App\Values\Concerns\CommonQueryFilters;
 use InvalidArgumentException;
 
 /**
@@ -29,14 +30,7 @@ use InvalidArgumentException;
  */
 abstract readonly class KodikCommonFilters
 {
-    /**
-     * @param array<string, string|int> $query
-     * @param array<string> $allowedKeys
-     */
-    protected function __construct(
-        private array $query,
-        private array $allowedKeys,
-    ) {}
+    use CommonQueryFilters;
 
     /**
      * @throws InvalidArgumentException
@@ -54,6 +48,28 @@ abstract readonly class KodikCommonFilters
     public function withField(KodikMaterialField ...$fields): static
     {
         return $this->put(KodikCommonFilter::HAS_FIELD, self::commaSeparated($fields));
+    }
+
+    /**
+     * Restricts results to materials carrying all of the given external identifiers.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withAllFields(KodikMaterialField ...$fields): static
+    {
+        return $this->withAllOf(KodikAllOfFilter::HAS_FIELD, ...array_column($fields, 'value'));
+    }
+
+    /**
+     * Requires the material to hold every one of the given values, the counterpart of the plain
+     * filters that only require one of them. Values are free-form text rather than an enum
+     * because the API matches them case-insensitively against its own vocabulary.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withAllOf(KodikAllOfFilter $filter, string ...$values): static
+    {
+        return $this->put($filter, implode(',', $values));
     }
 
     /**
@@ -100,14 +116,6 @@ abstract readonly class KodikCommonFilters
     }
 
     /**
-     * @return array<string, string|int>
-     */
-    public function toQuery(): array
-    {
-        return $this->query;
-    }
-
-    /**
      * Escape hatch for filters without a dedicated method.
      *
      * @throws InvalidArgumentException
@@ -136,22 +144,5 @@ abstract readonly class KodikCommonFilters
         $query = [...$this->query, $keyName => self::normalizeValue($value)];
 
         return new static($query, $this->allowedKeys);
-    }
-
-    /**
-     * @param array<array-key, BackedEnum> $values
-     */
-    private static function commaSeparated(array $values): string
-    {
-        return implode(',', array_column($values, 'value'));
-    }
-
-    private static function normalizeValue(string|int|bool $value): string|int
-    {
-        if (is_bool($value)) {
-            return $value ? '1' : '0';
-        }
-
-        return $value;
     }
 }

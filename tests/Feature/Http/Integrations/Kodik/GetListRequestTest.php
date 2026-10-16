@@ -51,7 +51,7 @@ class GetListRequestTest extends TestCase
         $response = $connector->send(new GetListRequest());
 
         Saloon::assertSent(static function (GetListRequest $request): bool {
-            return $request->resolveEndpoint() === '/list' && $request->getMethod()->value === 'POST';
+            return $request->resolveEndpoint() === '/list' && $request->getMethod()->value === 'GET';
         });
 
         static::assertTrue($response->successful());

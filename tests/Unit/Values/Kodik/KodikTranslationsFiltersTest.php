@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values\Kodik;
 
-use App\Enums\KodikCommonFilter;
-use App\Enums\KodikMaterialType;
-use App\Enums\KodikStatus;
+use App\Enums\Kodik\KodikCommonFilter;
+use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikStatus;
 use App\Values\Kodik\KodikTranslationsFilters;
 use PHPUnit\Framework\TestCase;
 

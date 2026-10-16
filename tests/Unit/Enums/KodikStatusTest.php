@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enums;
 
-use App\Enums\KodikStatus;
+use App\Enums\Kodik\KodikStatus;
 use PHPUnit\Framework\TestCase;
 
 class KodikStatusTest extends TestCase

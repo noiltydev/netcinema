@@ -6,6 +6,7 @@ namespace Tests\Unit\Values\Kodik;
 
 use App\Values\Kodik\KodikMaterial;
 use App\Values\Kodik\KodikSearchData;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class KodikSearchDataTest extends TestCase
@@ -46,13 +47,12 @@ class KodikSearchDataTest extends TestCase
         static::assertSame([], $dto->results);
     }
 
-    public function test_from_array_handles_missing_fields(): void
+    public function test_from_array_rejects_a_payload_without_results(): void
     {
-        $dto = KodikSearchData::fromArray([]);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Required field is missing: results');
 
-        static::assertSame('', $dto->time);
-        static::assertSame(0, $dto->total);
-        static::assertSame([], $dto->results);
+        KodikSearchData::fromArray(['time' => '2ms', 'total' => 0]);
     }
 
     public function test_make_defaults_to_empty_payload(): void

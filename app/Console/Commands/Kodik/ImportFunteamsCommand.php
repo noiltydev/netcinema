@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Kodik;
 
-use App\Enums\KodikMaterialType;
+use App\Enums\Kodik\KodikMaterialType;
 use App\Services\FunteamService;
 use App\Services\KodikService;
 use App\Values\Kodik\KodikTranslationsFilters;
@@ -18,12 +18,14 @@ class ImportFunteamsCommand extends Command
 {
     public function handle(KodikService $kodikService, FunteamService $funteamService): int
     {
-        $res = $kodikService->getTranslations(KodikTranslationsFilters::make()->withTypes(
+        $filters = KodikTranslationsFilters::make()->withTypes(
             KodikMaterialType::ANIME,
             KodikMaterialType::ANIME_SERIAL,
-        ));
+        );
 
-        $translations = $res->results;
+        $response = $kodikService->getTranslations($filters);
+
+        $translations = $response->results;
 
         $progressBar = $this->output->createProgressBar(count($translations));
         $progressBar->setMessage('Importing funteams');
