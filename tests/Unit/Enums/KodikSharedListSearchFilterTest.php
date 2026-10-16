@@ -14,10 +14,12 @@ class KodikSharedListSearchFilterTest extends TestCase
 {
     public function test_enum_cases_match_documented_vocabulary(): void
     {
+        static::assertSame('limit', KodikSharedListSearchFilter::LIMIT->value);
         static::assertSame('camrip', KodikSharedListSearchFilter::CAMRIP->value);
         static::assertSame('with_seasons', KodikSharedListSearchFilter::WITH_SEASONS->value);
         static::assertSame('with_episodes', KodikSharedListSearchFilter::WITH_EPISODES->value);
         static::assertSame('with_episodes_data', KodikSharedListSearchFilter::WITH_EPISODES_DATA->value);
+        static::assertSame('with_material_data', KodikSharedListSearchFilter::WITH_MATERIAL_DATA->value);
         static::assertSame('with_page_links', KodikSharedListSearchFilter::WITH_PAGE_LINKS->value);
         static::assertSame('not_blocked_in', KodikSharedListSearchFilter::NOT_BLOCKED_IN->value);
         static::assertSame('not_blocked_for_me', KodikSharedListSearchFilter::NOT_BLOCKED_FOR_ME->value);
@@ -27,10 +29,12 @@ class KodikSharedListSearchFilterTest extends TestCase
     {
         static::assertSame(
             [
+                'limit',
                 'camrip',
                 'with_seasons',
                 'with_episodes',
                 'with_episodes_data',
+                'with_material_data',
                 'with_page_links',
                 'not_blocked_in',
                 'not_blocked_for_me',

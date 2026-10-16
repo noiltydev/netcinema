@@ -19,7 +19,7 @@ final readonly class KodikBlockedSeasons implements Arrayable
     private const string ALL_MARKER = 'all';
 
     /**
-     * @param array<string, list<string>> $series blocked series per season, empty where whole seasons are blocked
+     * @param array<int, list<string>> $series blocked series per season, empty where whole seasons are blocked
      */
     private function __construct(
         public bool $all,
@@ -27,7 +27,9 @@ final readonly class KodikBlockedSeasons implements Arrayable
     ) {}
 
     /**
-     * @param array<string, list<string>> $series
+     * Season numbers arrive as JSON object keys, which PHP stores as integers.
+     *
+     * @param array<int, list<string>> $series
      */
     public static function make(bool $all, array $series = []): self
     {
@@ -46,12 +48,14 @@ final readonly class KodikBlockedSeasons implements Arrayable
         $series = [];
 
         foreach ((array) $data as $number => $blocked) {
-            if (is_array($blocked)) {
-                $series[(string) $number] = array_values(array_map(
-                    static fn (mixed $episode): string => (string) $episode,
-                    $blocked,
-                ));
+            if (!is_array($blocked)) {
+                continue;
             }
+
+            $series[(int) $number] = array_values(array_map(
+                static fn (mixed $episode): string => (string) $episode,
+                $blocked,
+            ));
         }
 
         return self::make(all: false, series: $series);

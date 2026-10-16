@@ -22,13 +22,16 @@ parameters:
         # against the enum later gaining the case.
         -
             message: '#with null will always evaluate to true#'
-            path: tests/Unit/Enums/KodikMaterialFieldTest.php
-        -
-            message: '#with null will always evaluate to true#'
-            path: tests/Unit/Enums/KodikMaterialTypeTest.php
-        -
-            message: '#with null will always evaluate to true#'
-            path: tests/Unit/Enums/KodikSearchFilterTest.php
+            paths:
+                - tests/Unit/Enums/KodikAllOfFilterTest.php
+                - tests/Unit/Enums/KodikCatalogFilterTest.php
+                - tests/Unit/Enums/KodikCatalogSortTest.php
+                - tests/Unit/Enums/KodikCommonFilterTest.php
+                - tests/Unit/Enums/KodikListFilterTest.php
+                - tests/Unit/Enums/KodikListSortTest.php
+                - tests/Unit/Enums/KodikMaterialFieldTest.php
+                - tests/Unit/Enums/KodikMaterialTypeTest.php
+                - tests/Unit/Enums/KodikSearchFilterTest.php
 
     excludePaths:
         - ./routes/console.php

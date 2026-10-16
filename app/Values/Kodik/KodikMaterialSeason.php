@@ -14,7 +14,9 @@ use Illuminate\Contracts\Support\Arrayable;
 final readonly class KodikMaterialSeason implements Arrayable
 {
     /**
-     * @param array<string, KodikMaterialEpisode> $episodes
+     * Episode numbers arrive as JSON object keys, which PHP stores as integers.
+     *
+     * @param array<int, KodikMaterialEpisode> $episodes
      */
     private function __construct(
         public ?string $link,
@@ -22,7 +24,7 @@ final readonly class KodikMaterialSeason implements Arrayable
     ) {}
 
     /**
-     * @param array<string, KodikMaterialEpisode> $episodes
+     * @param array<int, KodikMaterialEpisode> $episodes
      */
     public static function make(?string $link, array $episodes = []): self
     {
@@ -37,7 +39,7 @@ final readonly class KodikMaterialSeason implements Arrayable
         $episodes = [];
 
         foreach ((array) ($data['episodes'] ?? []) as $number => $episode) {
-            $episodes[(string) $number] = KodikMaterialEpisode::fromArray($episode);
+            $episodes[(int) $number] = KodikMaterialEpisode::fromArray($episode);
         }
 
         return self::make(link: isset($data['link']) ? (string) $data['link'] : null, episodes: $episodes);

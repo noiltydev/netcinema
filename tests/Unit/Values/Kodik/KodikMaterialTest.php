@@ -7,7 +7,9 @@ namespace Tests\Unit\Values\Kodik;
 use App\Enums\Kodik\KodikMaterialType;
 use App\Enums\Kodik\KodikTranslationType;
 use App\Values\Kodik\KodikMaterial;
+use App\Values\Kodik\KodikMaterialSeasons;
 use App\Values\Kodik\KodikMaterialTranslation;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class KodikMaterialTest extends TestCase
@@ -70,6 +72,7 @@ class KodikMaterialTest extends TestCase
     {
         $material = KodikMaterial::fromArray([
             'id' => 'serial-452654',
+            'type' => 'anime-serial',
             'title' => 'Игра престолов',
             'camrip' => true,
             'lgbt' => false,
@@ -86,6 +89,7 @@ class KodikMaterialTest extends TestCase
     {
         $material = KodikMaterial::fromArray([
             'id' => 'movie-452654',
+            'type' => 'foreign-movie',
             'title' => 'Спортлото-82',
             'created_at' => '2017-12-03T09:12:49Z',
             'updated_at' => '2018-04-10T08:25:23Z',
@@ -99,20 +103,94 @@ class KodikMaterialTest extends TestCase
     {
         $material = KodikMaterial::fromArray([
             'id' => 'movie-452654',
+            'type' => 'foreign-movie',
             'title' => 'Спортлото-82',
         ]);
 
-        static::assertNull($material->type);
-        static::assertSame('', $material->typeValue);
         static::assertNull($material->link);
         static::assertNull($material->titleOrig);
         static::assertNull($material->otherTitle);
         static::assertNull($material->translation);
         static::assertNull($material->year);
         static::assertNull($material->camrip);
+        static::assertNull($material->lgbt);
         static::assertNull($material->createdAt);
+        static::assertNull($material->lastSeason);
+        static::assertNull($material->lastEpisode);
+        static::assertNull($material->episodesCount);
+        static::assertNull($material->blockedSeasons);
+        static::assertNull($material->seasons);
         static::assertSame([], $material->blockedCountries);
         static::assertSame([], $material->screenshots);
+    }
+
+    public function test_from_array_rejects_a_payload_without_a_required_field(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Required field is missing: type');
+
+        KodikMaterial::fromArray([
+            'id' => 'movie-452654',
+            'title' => 'Спортлото-82',
+        ]);
+    }
+
+    public function test_from_array_rejects_a_payload_without_an_id(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Required field is missing: id');
+
+        KodikMaterial::fromArray([
+            'type' => 'foreign-movie',
+            'title' => 'Спортлото-82',
+        ]);
+    }
+
+    public function test_from_array_reads_the_seasons_object(): void
+    {
+        $material = KodikMaterial::fromArray([
+            'id' => 'serial-452654',
+            'type' => 'anime-serial',
+            'title' => 'Игра престолов',
+            'seasons' => [
+                '5' => [
+                    'link' => 'http://kodikplayer.com/season/27856/hash/720p',
+                    'episodes' => ['1' => 'http://kodikplayer.com/seria/119601/hash/720p'],
+                ],
+            ],
+        ]);
+
+        static::assertInstanceOf(KodikMaterialSeasons::class, $material->seasons);
+        static::assertSame('http://kodikplayer.com/season/27856/hash/720p', $material->seasons->seasons[5]->link);
+    }
+
+    public function test_from_array_reads_blocked_seasons(): void
+    {
+        $material = KodikMaterial::fromArray([
+            'id' => 'serial-452654',
+            'type' => 'anime-serial',
+            'title' => 'Игра престолов',
+            'blocked_seasons' => ['5' => 'all', '7' => ['1', '2', '3', '5']],
+        ]);
+
+        static::assertFalse($material->blockedSeasons->all);
+        static::assertSame([7 => ['1', '2', '3', '5']], $material->blockedSeasons->series);
+    }
+
+    public function test_from_array_maps_the_serial_only_counters(): void
+    {
+        $material = KodikMaterial::fromArray([
+            'id' => 'serial-452654',
+            'type' => 'anime-serial',
+            'title' => 'Игра престолов',
+            'last_season' => 9,
+            'last_episode' => 4,
+            'episodes_count' => 119,
+        ]);
+
+        static::assertSame(9, $material->lastSeason);
+        static::assertSame(4, $material->lastEpisode);
+        static::assertSame(119, $material->episodesCount);
     }
 
     public function test_from_array_keeps_undocumented_type_as_raw_value(): void

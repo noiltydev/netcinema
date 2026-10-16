@@ -16,8 +16,6 @@ class KodikCommonFilterTest extends TestCase
         static::assertSame('translation_type', KodikCommonFilter::TRANSLATION_TYPE->value);
         static::assertSame('has_field', KodikCommonFilter::HAS_FIELD->value);
         static::assertSame('lgbt', KodikCommonFilter::LGBT->value);
-        static::assertSame('sort', KodikCommonFilter::SORT->value);
-        static::assertSame('with_material_data', KodikCommonFilter::WITH_MATERIAL_DATA->value);
         static::assertSame('countries', KodikCommonFilter::COUNTRIES->value);
         static::assertSame('genres', KodikCommonFilter::GENRES->value);
         static::assertSame('anime_genres', KodikCommonFilter::ANIME_GENRES->value);
@@ -56,8 +54,6 @@ class KodikCommonFilterTest extends TestCase
         static::assertContains('translation_type', $values);
         static::assertContains('has_field', $values);
         static::assertContains('lgbt', $values);
-        static::assertContains('sort', $values);
-        static::assertContains('with_material_data', $values);
         static::assertContains('countries', $values);
         static::assertContains('genres', $values);
         static::assertContains('anime_genres', $values);
@@ -85,6 +81,13 @@ class KodikCommonFilterTest extends TestCase
         static::assertContains('all_status', $values);
         static::assertContains('anime_studios', $values);
         static::assertContains('anime_licensed_by', $values);
-        static::assertCount(34, $values);
+        static::assertCount(32, $values);
+    }
+
+    public function test_endpoint_specific_keys_are_not_common_to_every_endpoint(): void
+    {
+        static::assertNull(KodikCommonFilter::tryFrom('sort'));
+        static::assertNull(KodikCommonFilter::tryFrom('with_material_data'));
+        static::assertNull(KodikCommonFilter::tryFrom('order'));
     }
 }

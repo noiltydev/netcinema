@@ -12,6 +12,7 @@ use App\Enums\Kodik\KodikSharedListSearchFilter;
 use App\Enums\Kodik\KodikTranslationType;
 use App\Values\Kodik\Concerns\HasBlockTranslations;
 use App\Values\Kodik\Concerns\HasCamrip;
+use App\Values\Kodik\Concerns\HasExternalIds;
 use App\Values\Kodik\Concerns\HasLimit;
 use App\Values\Kodik\Concerns\HasNotBlocked;
 use App\Values\Kodik\Concerns\HasSeasonsEpisodes;
@@ -31,6 +32,7 @@ final readonly class KodikSearchFilters extends KodikCommonFilters
     use HasCamrip;
     use HasSeasonsEpisodes;
     use HasNotBlocked;
+    use HasExternalIds;
 
     public static function make(): self
     {
@@ -106,66 +108,6 @@ final readonly class KodikSearchFilters extends KodikCommonFilters
     public function withPlayerLink(string $playerLink): static
     {
         return $this->put(KodikSearchFilter::PLAYER_LINK, $playerLink);
-    }
-
-    /**
-     * The external id filters below take one value each: the API rejects a comma separated list
-     * with "Неправильный формат", so the several-ids-at-once behaviour the endpoint documents
-     * needs a serialization this integration has not confirmed yet.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function withKinopoiskId(string $kinopoiskId): static
-    {
-        return $this->put(KodikSearchFilter::KINOPOISK_ID, $kinopoiskId);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withImdbId(string $imdbId): static
-    {
-        return $this->put(KodikSearchFilter::IMDB_ID, $imdbId);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withMdlId(string $mdlId): static
-    {
-        return $this->put(KodikSearchFilter::MDL_ID, $mdlId);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withWorldartAnimationId(string $worldartAnimationId): static
-    {
-        return $this->put(KodikSearchFilter::WORLDART_ANIMATION_ID, $worldartAnimationId);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withWorldartCinemaId(string $worldartCinemaId): static
-    {
-        return $this->put(KodikSearchFilter::WORLDART_CINEMA_ID, $worldartCinemaId);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withWorldartLink(string $worldartLink): static
-    {
-        return $this->put(KodikSearchFilter::WORLDART_LINK, $worldartLink);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withShikimoriId(string $shikimoriId): static
-    {
-        return $this->put(KodikSearchFilter::SHIKIMORI_ID, $shikimoriId);
     }
 
     /**

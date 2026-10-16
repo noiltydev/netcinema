@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature\Services;
 
 use App\Enums\Kodik\KodikAnimeKind;
+use App\Enums\Kodik\KodikCatalogSort;
 use App\Enums\Kodik\KodikCommonFilter;
 use App\Enums\Kodik\KodikListFilter;
+use App\Enums\Kodik\KodikListSort;
 use App\Enums\Kodik\KodikMaterialField;
 use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikOrder;
 use App\Enums\Kodik\KodikRatingMpaa;
+use App\Enums\Kodik\KodikSharedListSearchFilter;
 use App\Enums\Kodik\KodikStatus;
 use App\Http\Integrations\Kodik\KodikConnector;
 use App\Http\Integrations\Kodik\Requests\GetListRequest;
@@ -88,7 +92,7 @@ class KodikServiceTest extends TestCase
         $service->getTranslations(
             KodikTranslationsFilters::make()
                 ->withTypes(KodikMaterialType::ANIME_SERIAL)
-                ->with(KodikCommonFilter::SORT, 'title'),
+                ->withSort(KodikCatalogSort::TITLE),
         );
 
         Saloon::assertSent(static function (GetTranslationsRequest $request): bool {
@@ -116,7 +120,7 @@ class KodikServiceTest extends TestCase
         self::fakeTranslations();
 
         $service = new KodikService(new KodikConnector());
-        $service->getTranslations(KodikTranslationsFilters::make()->with(KodikListFilter::LIMIT, 100));
+        $service->getTranslations(KodikTranslationsFilters::make()->with(KodikSharedListSearchFilter::LIMIT, 100));
     }
 
     public function test_get_translations_propagates_api_errors(): void
@@ -196,9 +200,9 @@ class KodikServiceTest extends TestCase
         $service->getList(
             KodikListFilters::make()
                 ->with(KodikCommonFilter::TYPES, 'anime-serial')
-                ->with(KodikCommonFilter::SORT, 'updated_at')
-                ->with(KodikListFilter::LIMIT, 100)
-                ->with(KodikListFilter::ORDER, 'asc'),
+                ->withSort(KodikListSort::UPDATED_AT)
+                ->withLimit(100)
+                ->withOrder(KodikOrder::ASC),
         );
 
         Saloon::assertSent(static function (GetListRequest $request): bool {
@@ -209,6 +213,42 @@ class KodikServiceTest extends TestCase
                 && $request->query()->get('order') === 'asc'
             );
         });
+    }
+
+    public function test_get_translations_rejects_a_material_only_filter(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid filter key: with_material_data');
+
+        self::fakeTranslations();
+
+        $service = new KodikService(new KodikConnector());
+        $service->getTranslations(KodikTranslationsFilters::make()->with(
+            KodikSharedListSearchFilter::WITH_MATERIAL_DATA,
+            true,
+        ));
+    }
+
+    public function test_search_rejects_the_list_only_sort_and_order(): void
+    {
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Invalid filter key: sort');
+
+        $service = new KodikService(new KodikConnector());
+        $service->search(KodikSearchFilters::make()->with(KodikListFilter::SORT, 'updated_at'));
+    }
+
+    public function test_search_propagates_a_body_that_is_not_a_json_object(): void
+    {
+        Saloon::fake([
+            GetSearchRequest::class => MockResponse::make('<html>maintenance</html>'),
+        ]);
+
+        $service = new KodikService(new KodikConnector());
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $service->search(KodikSearchFilters::make()->withTitle('Спортлото-82'));
     }
 
     public function test_get_list_forwards_cursor(): void

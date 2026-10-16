@@ -14,14 +14,16 @@ use Illuminate\Contracts\Support\Arrayable;
 final readonly class KodikMaterialSeasons implements Arrayable
 {
     /**
-     * @param array<string, KodikMaterialSeason> $seasons
+     * @param array<int, KodikMaterialSeason> $seasons
      */
     private function __construct(
         public array $seasons,
     ) {}
 
     /**
-     * @param array<string, KodikMaterialSeason> $seasons
+     * Season numbers arrive as JSON object keys, which PHP stores as integers.
+     *
+     * @param array<int, KodikMaterialSeason> $seasons
      */
     public static function make(array $seasons = []): self
     {
@@ -36,7 +38,7 @@ final readonly class KodikMaterialSeasons implements Arrayable
         $seasons = [];
 
         foreach ($data as $number => $season) {
-            $seasons[(string) $number] = KodikMaterialSeason::fromArray((array) $season);
+            $seasons[(int) $number] = KodikMaterialSeason::fromArray((array) $season);
         }
 
         return self::make($seasons);
@@ -45,11 +47,6 @@ final readonly class KodikMaterialSeasons implements Arrayable
     /** @inheritdoc */
     public function toArray(): array
     {
-        return [
-            'seasons' => array_map(
-                static fn (KodikMaterialSeason $season): array => $season->toArray(),
-                $this->seasons,
-            ),
-        ];
+        return array_map(static fn (KodikMaterialSeason $season): array => $season->toArray(), $this->seasons);
     }
 }

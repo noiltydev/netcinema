@@ -7,12 +7,15 @@ namespace Tests\Unit\Values\Kodik;
 use App\Enums\Kodik\KodikAnimeKind;
 use App\Enums\Kodik\KodikCommonFilter;
 use App\Enums\Kodik\KodikListFilter;
+use App\Enums\Kodik\KodikListSort;
 use App\Enums\Kodik\KodikMaterialField;
 use App\Enums\Kodik\KodikMaterialType;
+use App\Enums\Kodik\KodikOrder;
 use App\Enums\Kodik\KodikRatingMpaa;
 use App\Enums\Kodik\KodikSharedListSearchFilter;
 use App\Enums\Kodik\KodikStatus;
 use App\Values\Kodik\KodikListFilters;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class KodikListFiltersTest extends TestCase
@@ -29,19 +32,40 @@ class KodikListFiltersTest extends TestCase
         static::assertSame(['limit' => 100], $query);
     }
 
+    public function test_with_limit_rejects_a_value_outside_the_documented_range(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Limit must be between 1 and 100, got 101.');
+
+        KodikListFilters::make()->withLimit(101);
+    }
+
+    public function test_with_limit_rejects_a_non_positive_value(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Limit must be between 1 and 100, got 0.');
+
+        KodikListFilters::make()->withLimit(0);
+    }
+
+    public function test_with_sort_and_order_write_their_own_keys(): void
+    {
+        $query = KodikListFilters::make()->withSort(KodikListSort::YEAR)->withOrder(KodikOrder::DESC)->toQuery();
+
+        static::assertSame(['sort' => 'year', 'order' => 'desc'], $query);
+    }
+
     public function test_escape_hatch_accepts_shared_and_list_filters(): void
     {
         $query = KodikListFilters::make()
             ->with(KodikCommonFilter::TYPES, 'anime-serial')
-            ->with(KodikCommonFilter::SORT, 'updated_at')
-            ->with(KodikListFilter::LIMIT, 100)
+            ->with(KodikSharedListSearchFilter::LIMIT, 100)
             ->with(KodikListFilter::ORDER, 'asc')
             ->toQuery();
 
         static::assertSame(
             [
                 'types' => 'anime-serial',
-                'sort' => 'updated_at',
                 'limit' => 100,
                 'order' => 'asc',
             ],
