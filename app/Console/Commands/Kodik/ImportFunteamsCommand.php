@@ -16,7 +16,7 @@ use Illuminate\Console\Command;
 #[Description('Populate the funteams table from Kodik translations')]
 class ImportFunteamsCommand extends Command
 {
-    public function handle(KodikService $kodikService, FunteamImportService $funteamService): int
+    public function handle(KodikService $kodikService, FunteamImportService $importService): int
     {
         $filters = KodikTranslationsFilters::make()->withTypes(
             KodikMaterialType::ANIME,
@@ -31,7 +31,7 @@ class ImportFunteamsCommand extends Command
         $progressBar->setMessage('Importing funteams');
         $progressBar->start();
 
-        $importedCount = $funteamService->importFromKodik($translations, $progressBar->advance(...));
+        $importedCount = $importService->importFromKodik($translations, $progressBar->advance(...));
 
         $progressBar->finish();
 
