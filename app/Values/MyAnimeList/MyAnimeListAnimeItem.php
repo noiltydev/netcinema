@@ -10,6 +10,11 @@ use Illuminate\Contracts\Support\Arrayable;
 /**
  * The anime payload every anime endpoint returns as a node.
  *
+ * Only id and title are always present: the caller drives which fields come back, so a field it
+ * never asked for is absent rather than null.
+ *
+ * @see docs/integrations/myanimelist/methods/anime-list.md
+ *
  * @implements Arrayable<string, mixed>
  *
  * @phpstan-consistent-constructor
@@ -21,23 +26,29 @@ final readonly class MyAnimeListAnimeItem implements Arrayable
     private function __construct(
         public int $id,
         public string $title,
-        public ?MyAnimeListAnimeItemMainPicture $mainPicture,
+        public ?MyAnimeListMainPicture $mainPicture,
+        public ?MyAnimeListAlternativeTitles $alternativeTitles,
     ) {}
 
-    public static function make(int $id, string $title, ?MyAnimeListAnimeItemMainPicture $mainPicture = null): self
-    {
-        return new self(id: $id, title: $title, mainPicture: $mainPicture);
+    public static function make(
+        int $id,
+        string $title,
+        ?MyAnimeListMainPicture $mainPicture = null,
+        ?MyAnimeListAlternativeTitles $alternativeTitles = null,
+    ): self {
+        return new self(id: $id, title: $title, mainPicture: $mainPicture, alternativeTitles: $alternativeTitles);
     }
 
     /**
-     * MyAnimeList sends no main_picture at all for entries that have no artwork.
+     * @param array<array-key, mixed> $data
      */
     public static function fromArray(array $data): self
     {
         return self::make(
             id: (int) self::required($data, 'id'),
             title: (string) self::required($data, 'title'),
-            mainPicture: self::mainPictureFrom($data),
+            mainPicture: self::nested($data, 'main_picture', MyAnimeListMainPicture::fromArray(...)),
+            alternativeTitles: self::nested($data, 'alternative_titles', MyAnimeListAlternativeTitles::fromArray(...)),
         );
     }
 
@@ -48,15 +59,20 @@ final readonly class MyAnimeListAnimeItem implements Arrayable
             'id' => $this->id,
             'title' => $this->title,
             'main_picture' => $this->mainPicture?->toArray(),
+            'alternative_titles' => $this->alternativeTitles?->toArray(),
         ];
     }
 
-    private static function mainPictureFrom(array $data): ?MyAnimeListAnimeItemMainPicture
+    /**
+     * @template T
+     *
+     * @param array<array-key, mixed>            $data
+     * @param callable(array<array-key, mixed>): T $map
+     *
+     * @return T|null
+     */
+    private static function nested(array $data, string $key, callable $map): mixed
     {
-        if (($data['main_picture'] ?? null) === null) {
-            return null;
-        }
-
-        return MyAnimeListAnimeItemMainPicture::fromArray(self::requiredArray($data, 'main_picture'));
+        return is_array($data[$key] ?? null) ? $map($data[$key]) : null;
     }
 }
