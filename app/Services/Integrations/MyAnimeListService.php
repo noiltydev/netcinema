@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Integrations;
 
 use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Http\Integrations\MyAnimeList\MyAnimeListConnector;

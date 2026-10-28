@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Integrations;
 
 use App\Http\Integrations\Kodik\KodikConnector;
 use App\Http\Integrations\Kodik\Requests\GetListRequest;

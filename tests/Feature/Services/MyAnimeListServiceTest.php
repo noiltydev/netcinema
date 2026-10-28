@@ -8,7 +8,7 @@ use App\Enums\MyAnimeList\MyAnimeListAnimeNodeField;
 use App\Enums\MyAnimeList\MyAnimeListRankingTypeAnimeFilter;
 use App\Http\Integrations\MyAnimeList\Requests\GetAnimeDetailsRequest;
 use App\Http\Integrations\MyAnimeList\Requests\GetAnimeRankingRequest;
-use App\Services\MyAnimeListService;
+use App\Services\Integrations\MyAnimeListService;
 use App\Values\MyAnimeList\MyAnimeListAnimeDetailsFilters;
 use App\Values\MyAnimeList\MyAnimeListAnimeRankingFilters;
 use App\Values\MyAnimeList\MyAnimeListFields;

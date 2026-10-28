@@ -194,7 +194,7 @@ class ImportFunteamsCommandTest extends TestCase
             static fn () => Artisan::call('kodik:funteams:import'),
             RuntimeException::class,
             sprintf(
-                'Kodik translation 735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
+                'Source kodik:735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
                 $linkedFunteam->id,
                 $funteam->id,
             ),

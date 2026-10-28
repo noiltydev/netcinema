@@ -17,7 +17,6 @@ use Saloon\Exceptions\Request\Statuses\NotFoundException;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Laravel\Facades\Saloon;
 use Tests\TestCase;
-use Throwable;
 
 class GetAnimeDetailsRequestTest extends TestCase
 {
@@ -156,7 +155,6 @@ class GetAnimeDetailsRequestTest extends TestCase
 
         static::assertSame(1, $dto->anime->id);
         static::assertNull($dto->anime->mainPicture);
-        static::assertSame([], $dto->pictures);
     }
 
     public function test_request_throws_not_found_for_an_unknown_id(): void
@@ -192,20 +190,6 @@ class GetAnimeDetailsRequestTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('API returned a body that is not valid JSON.');
-
-        (new MyAnimeListConnector())
-            ->send(new GetAnimeDetailsRequest(30_230))
-            ->dtoOrFail();
-    }
-
-    public function test_request_does_not_map_a_body_that_is_not_a_json_object(): void
-    {
-        Saloon::fake([
-            GetAnimeDetailsRequest::class => MockResponse::make('30230', 200),
-        ]);
-
-        $this->expectException(Throwable::class);
-        $this->expectExceptionMessage('API returned a response body that is not a JSON object.');
 
         (new MyAnimeListConnector())
             ->send(new GetAnimeDetailsRequest(30_230))

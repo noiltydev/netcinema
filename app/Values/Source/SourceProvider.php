@@ -19,6 +19,11 @@ final readonly class SourceProvider implements Arrayable
         return new self(providerName: $providerName, externalId: $externalId);
     }
 
+    public function key(): string
+    {
+        return sprintf('%s:%s', $this->providerName->value, $this->externalId);
+    }
+
     /** @inheritdoc */
     public function toArray(): array
     {

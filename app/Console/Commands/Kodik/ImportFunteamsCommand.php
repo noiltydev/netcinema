@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands\Kodik;
 
 use App\Enums\Kodik\KodikMaterialType;
-use App\Services\FunteamImportService;
-use App\Services\KodikService;
+use App\Services\FunteamImport\FunteamImportService;
+use App\Services\FunteamImport\KodikFunteamAdapter;
+use App\Services\Integrations\KodikService;
 use App\Values\Kodik\KodikTranslationsFilters;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -23,15 +24,14 @@ class ImportFunteamsCommand extends Command
             KodikMaterialType::ANIME_SERIAL,
         );
 
-        $response = $kodikService->getTranslations($filters);
+        $translations = $kodikService->getTranslations($filters)->results;
+        $funteams = (new KodikFunteamAdapter($translations))->funteams();
 
-        $translations = $response->results;
-
-        $progressBar = $this->output->createProgressBar(count($translations));
+        $progressBar = $this->output->createProgressBar($funteams->count());
         $progressBar->setMessage('Importing funteams');
         $progressBar->start();
 
-        $importedCount = $importService->importFromKodik($translations, $progressBar->advance(...));
+        $importedCount = $importService->import($funteams, $progressBar->advance(...));
 
         $progressBar->finish();
 
