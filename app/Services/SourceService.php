@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
-class SourceLinkService
+class SourceService
 {
     public function __construct(
         private readonly SourceRepository $sourceRepository,

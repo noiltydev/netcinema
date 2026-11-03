@@ -7,7 +7,7 @@ namespace Tests\Feature\Services;
 use App\Enums\SourceProviderName;
 use App\Models\Funteam;
 use App\Models\Source;
-use App\Services\FunteamImport\FunteamImportService;
+use App\Services\Funteam\ImportFunteamService;
 use App\Values\Funteam\FunteamImportData;
 use App\Values\Source\SourceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,9 +19,9 @@ class FunteamImportServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function service(): FunteamImportService
+    private function service(): ImportFunteamService
     {
-        return $this->app->make(FunteamImportService::class);
+        return $this->app->make(ImportFunteamService::class);
     }
 
     private function makeFunteam(

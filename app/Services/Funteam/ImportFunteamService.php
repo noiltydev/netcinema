@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Services\FunteamImport;
+namespace App\Services\Funteam;
 
 use App\Models\Funteam;
 use App\Repositories\FunteamRepository;
-use App\Services\SourceLinkService;
+use App\Services\SourceService;
 use App\Values\Funteam\FunteamImportData;
 use App\Values\Source\SourceProvider;
 use Carbon\CarbonInterface;
@@ -14,13 +14,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class FunteamImportService
+class ImportFunteamService
 {
     private const int UPSERT_CHUNK_SIZE = 100;
 
     public function __construct(
         private readonly FunteamRepository $funteamRepository,
-        private readonly SourceLinkService $sourceLinkService,
+        private readonly SourceService $sourceService,
     ) {}
 
     /**
@@ -71,7 +71,7 @@ class FunteamImportService
     {
         DB::transaction(function () use ($rows): void {
             $importedAt = now();
-            $linkedSourceableIds = $this->sourceLinkService->getLinkedSourceableIds(
+            $linkedSourceableIds = $this->sourceService->getLinkedSourceableIds(
                 Funteam::class,
                 $rows->flatMap(static fn (FunteamImportData $row): array => $row->sources),
             );
@@ -88,7 +88,7 @@ class FunteamImportService
                     continue;
                 }
 
-                $this->sourceLinkService->attachSources($funteam, $row->sources, $linkedSourceableIds, $importedAt);
+                $this->sourceService->attachSources($funteam, $row->sources, $linkedSourceableIds, $importedAt);
             }
         });
     }
