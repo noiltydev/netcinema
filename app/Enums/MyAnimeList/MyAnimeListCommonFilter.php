@@ -7,7 +7,7 @@ namespace App\Enums\MyAnimeList;
 use App\Enums\Contracts\MyAnimeListFilterKey;
 
 /**
- * Filters every MyAnimeList list endpoint accepts, whatever else it adds on top.
+ * Filters every MyAnimeList list and details endpoint accepts, whatever else it adds on top.
  */
 enum MyAnimeListCommonFilter: string implements MyAnimeListFilterKey
 {

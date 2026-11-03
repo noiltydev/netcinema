@@ -8,11 +8,13 @@ use App\Values\Concerns\ReadsRequiredFields;
 use Illuminate\Contracts\Support\Arrayable;
 
 /**
+ * One artwork entry, whether it is the node's main_picture or one of its pictures.
+ *
  * @implements Arrayable<string, mixed>
  *
  * @phpstan-consistent-constructor
  */
-final readonly class MyAnimeListAnimeItemMainPicture implements Arrayable
+final readonly class MyAnimeListMainPicture implements Arrayable
 {
     use ReadsRequiredFields;
 
@@ -27,14 +29,13 @@ final readonly class MyAnimeListAnimeItemMainPicture implements Arrayable
     }
 
     /**
-     * MyAnimeList sends no main_picture at all for entries that have no artwork.
+     * A node without artwork carries no picture at all, which the reader reports as an absent key
+     * rather than as a null picture.
+     *
+     * @param array<array-key, mixed> $data
      */
-    public static function fromArray(?array $data): ?self
+    public static function fromArray(array $data): self
     {
-        if ($data === null) {
-            return null;
-        }
-
         return self::make(
             medium: (string) self::required($data, 'medium'),
             large: isset($data['large']) ? (string) $data['large'] : null,

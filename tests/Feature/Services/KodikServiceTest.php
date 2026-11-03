@@ -19,7 +19,7 @@ use App\Http\Integrations\Kodik\KodikConnector;
 use App\Http\Integrations\Kodik\Requests\GetListRequest;
 use App\Http\Integrations\Kodik\Requests\GetSearchRequest;
 use App\Http\Integrations\Kodik\Requests\GetTranslationsRequest;
-use App\Services\KodikService;
+use App\Services\Integrations\KodikService;
 use App\Values\Kodik\KodikListData;
 use App\Values\Kodik\KodikListFilters;
 use App\Values\Kodik\KodikSearchData;

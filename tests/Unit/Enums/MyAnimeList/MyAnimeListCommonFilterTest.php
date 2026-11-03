@@ -33,6 +33,8 @@ class MyAnimeListCommonFilterTest extends TestCase
     public function test_every_key_reports_its_query_key(): void
     {
         static::assertSame('limit', MyAnimeListCommonFilter::LIMIT->queryKey());
+        static::assertSame('offset', MyAnimeListCommonFilter::OFFSET->queryKey());
+        static::assertSame('fields', MyAnimeListCommonFilter::FIELDS->queryKey());
         static::assertSame('nsfw', MyAnimeListCommonFilter::NSFW->queryKey());
         static::assertSame('q', MyAnimeListSearchFilter::Q->queryKey());
     }

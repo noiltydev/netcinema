@@ -119,6 +119,7 @@ class MyAnimeListAnimeRankingDataTest extends TestCase
                                 'medium' => 'https://cdn.myanimelist.net/images/anime/6/73245.jpg',
                                 'large' => 'https://cdn.myanimelist.net/images/anime/6/73245l.jpg',
                             ],
+                            'alternative_titles' => null,
                         ],
                         'ranking' => ['rank' => 1, 'previous_rank' => 2],
                     ],
@@ -130,5 +131,12 @@ class MyAnimeListAnimeRankingDataTest extends TestCase
             ],
             MyAnimeListAnimeRankingData::fromArray(self::rankingPayload())->toArray(),
         );
+    }
+
+    public function test_a_ranking_entry_round_trips_through_to_array(): void
+    {
+        $data = MyAnimeListAnimeRankingData::fromArray(self::rankingPayload());
+
+        static::assertSame($data->toArray(), MyAnimeListAnimeRankingData::fromArray($data->toArray())->toArray());
     }
 }

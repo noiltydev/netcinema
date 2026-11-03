@@ -27,4 +27,11 @@ class SourceProviderTest extends TestCase
             $provider->toArray(),
         );
     }
+
+    public function test_key_combines_the_provider_name_and_external_id(): void
+    {
+        $provider = SourceProvider::make(SourceProviderName::KODIK, '735');
+
+        static::assertSame('kodik:735', $provider->key());
+    }
 }

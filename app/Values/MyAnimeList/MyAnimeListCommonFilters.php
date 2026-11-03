@@ -13,12 +13,14 @@ use InvalidArgumentException;
  * Filters every MyAnimeList list and details endpoint accepts.
  *
  * Each endpoint scope is its own subclass so that a named builder only exists where the endpoint
- * understands the filter, which is also what makes with()'s rejection meaningful. with() is the
- * escape hatch for everything else: it accepts any key enum, and put() rejects the ones this
- * endpoint does not accept.
+ * understands the filter, which is also what makes with()'s rejection meaningful: withOffset() is
+ * available on a details scope and refuses to write, because that endpoint paginates nothing.
+ * with() is the escape hatch for everything else: it accepts any key enum, and put() rejects the
+ * ones this endpoint does not accept.
  *
  * @see MyAnimeListAnimeRankingFilters
  * @see MyAnimeListAnimeFilters
+ * @see MyAnimeListAnimeDetailsFilters
  *
  * @phpstan-consistent-constructor
  */
