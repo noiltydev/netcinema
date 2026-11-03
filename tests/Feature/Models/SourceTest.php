@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Models;
 
 use App\Enums\SourceProviderName;
+use App\Models\Anime;
 use App\Models\Funteam;
 use App\Models\Source;
 use Illuminate\Database\QueryException;
@@ -95,20 +96,38 @@ class SourceTest extends TestCase
         static::assertCount(2, $funteam->sources);
     }
 
-    public function test_the_same_external_id_may_be_shared_across_sourceables(): void
+    public function test_the_same_source_cannot_be_linked_to_two_funteams(): void
     {
-        $externalId = '42';
-
-        $first = Source::factory()->for(Funteam::factory(), 'sourceable')->createOne([
+        $firstFunteam = Funteam::factory()->createOne();
+        $secondFunteam = Funteam::factory()->createOne();
+        Source::factory()->for($firstFunteam, 'sourceable')->createOne([
             'provider_name' => SourceProviderName::IMDB,
-            'external_id' => $externalId,
-        ]);
-        $second = Source::factory()->for(Funteam::factory(), 'sourceable')->createOne([
-            'provider_name' => SourceProviderName::IMDB,
-            'external_id' => $externalId,
+            'external_id' => '42',
         ]);
 
-        static::assertFalse($first->sourceable->is($second->sourceable));
-        static::assertSame($externalId, $second->external_id);
+        $this->expectException(QueryException::class);
+
+        Source::factory()->for($secondFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::IMDB,
+            'external_id' => '42',
+        ]);
+    }
+
+    public function test_the_same_external_id_may_be_shared_across_sourceable_types(): void
+    {
+        $funteam = Funteam::factory()->createOne();
+        $anime = Anime::factory()->createOne();
+
+        Source::factory()->for($funteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::IMDB,
+            'external_id' => '42',
+        ]);
+        Source::factory()->for($anime, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::IMDB,
+            'external_id' => '42',
+        ]);
+
+        static::assertCount(1, $funteam->sources);
+        static::assertCount(1, $anime->sources);
     }
 }

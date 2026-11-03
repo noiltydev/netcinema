@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\FunteamImport;
 
 use App\Enums\SourceProviderName;
-use App\Services\FunteamImport\KodikFunteamAdapter;
+use App\Services\Funteam\KodikFunteamAdapter;
 use App\Values\Funteam\FunteamImportData;
 use App\Values\Kodik\KodikTranslation;
 use App\Values\Source\SourceProvider;

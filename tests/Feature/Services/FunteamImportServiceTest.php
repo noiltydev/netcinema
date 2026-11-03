@@ -7,7 +7,7 @@ namespace Tests\Feature\Services;
 use App\Enums\SourceProviderName;
 use App\Models\Funteam;
 use App\Models\Source;
-use App\Services\FunteamImport\FunteamImportService;
+use App\Services\Funteam\ImportFunteamService;
 use App\Values\Funteam\FunteamImportData;
 use App\Values\Source\SourceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,9 +19,9 @@ class FunteamImportServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function service(): FunteamImportService
+    private function service(): ImportFunteamService
     {
-        return $this->app->make(FunteamImportService::class);
+        return $this->app->make(ImportFunteamService::class);
     }
 
     private function makeFunteam(
@@ -41,7 +41,7 @@ class FunteamImportServiceTest extends TestCase
 
     public function test_import_links_every_imported_funteam_to_its_sources(): void
     {
-        $this->service()->import([
+        $this->service()->importFunteams([
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
             $this->makeFunteam('3df voice', SourceProviderName::KODIK, '824'),
         ]);
@@ -65,7 +65,7 @@ class FunteamImportServiceTest extends TestCase
 
     public function test_import_links_every_source_of_a_funteam_to_that_funteam(): void
     {
-        $this->service()->import([
+        $this->service()->importFunteams([
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735', '736'),
         ]);
 
@@ -79,7 +79,7 @@ class FunteamImportServiceTest extends TestCase
 
     public function test_import_merges_rows_with_the_same_slug_into_one_funteam(): void
     {
-        $this->service()->import([
+        $this->service()->importFunteams([
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
             $this->makeFunteam('2x2', SourceProviderName::MYANIMELIST, '42'),
         ]);
@@ -105,8 +105,8 @@ class FunteamImportServiceTest extends TestCase
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735', '736'),
         ];
 
-        $this->service()->import($funteams);
-        $this->service()->import($funteams);
+        $this->service()->importFunteams($funteams);
+        $this->service()->importFunteams($funteams);
 
         $this->assertDatabaseCount('funteams', 1);
         $this->assertDatabaseCount('sources', 2);
@@ -119,7 +119,7 @@ class FunteamImportServiceTest extends TestCase
             'slug' => '2x2',
         ]);
 
-        $this->service()->import([
+        $this->service()->importFunteams([
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
         ]);
 
@@ -141,7 +141,7 @@ class FunteamImportServiceTest extends TestCase
             'external_id' => '42',
         ]);
 
-        $this->service()->import([
+        $this->service()->importFunteams([
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
         ]);
 
@@ -164,8 +164,8 @@ class FunteamImportServiceTest extends TestCase
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
         ];
 
-        $this->service()->import($funteams);
-        $this->service()->import($funteams);
+        $this->service()->importFunteams($funteams);
+        $this->service()->importFunteams($funteams);
 
         $this->assertDatabaseCount('funteams', 1);
         $this->assertDatabaseCount('sources', 1);
@@ -175,75 +175,128 @@ class FunteamImportServiceTest extends TestCase
         ]);
     }
 
-    public function test_import_keeps_the_name_of_an_already_linked_funteam(): void
+    public function test_import_keeps_the_name_and_slug_of_a_funteam_found_by_source(): void
     {
-        $this->service()->import([
+        $this->service()->importFunteams([
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
         ]);
-        $this->service()->import([
-            $this->makeFunteam('2x2 renamed', SourceProviderName::KODIK, '735'),
+        $this->service()->importFunteams([
+            FunteamImportData::make(name: '2x2 renamed', slug: '2x2-renamed', sources: [SourceProvider::make(
+                SourceProviderName::KODIK,
+                '735',
+            )]),
         ]);
 
+        $this->assertDatabaseCount('funteams', 1);
         $this->assertDatabaseCount('sources', 1);
         $this->assertDatabaseHas('funteams', ['name' => '2x2', 'slug' => '2x2']);
+        $this->assertDatabaseMissing('funteams', ['slug' => '2x2-renamed']);
     }
 
-    public function test_import_throws_when_a_source_is_already_linked_to_another_funteam(): void
+    public function test_import_links_new_sources_to_the_funteam_found_by_an_existing_source(): void
     {
-        $funteam = Funteam::factory()->createOne([
-            'name' => '2x2',
-            'slug' => '2x2',
+        $this->service()->importFunteams([
+            $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
         ]);
-        $linkedFunteam = Funteam::factory()->createOne([
+        $this->service()->importFunteams([
+            FunteamImportData::make(name: '2x2', slug: 'different-slug', sources: [
+                SourceProvider::make(SourceProviderName::KODIK, '735'),
+                SourceProvider::make(SourceProviderName::KODIK, '736'),
+            ]),
+        ]);
+
+        /** @var Funteam $funteam */
+        $funteam = Funteam::query()->where('slug', '2x2')->sole();
+
+        $this->assertDatabaseCount('funteams', 1);
+        $this->assertDatabaseCount('sources', 2);
+        $this->assertDatabaseMissing('funteams', ['slug' => 'different-slug']);
+        static::assertEqualsCanonicalizing(['735', '736'], $funteam->sources()->pluck('external_id')->all());
+    }
+
+    public function test_import_links_the_row_to_the_funteam_that_owns_its_source(): void
+    {
+        $owner = Funteam::factory()->createOne([
             'name' => 'Other team',
             'slug' => 'other-team',
         ]);
-        $source = Source::factory()->for($linkedFunteam, 'sourceable')->createOne([
+        $source = Source::factory()->for($owner, 'sourceable')->createOne([
             'provider_name' => SourceProviderName::KODIK,
             'external_id' => '735',
         ]);
 
+        $this->service()->importFunteams([
+            $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
+        ]);
+
+        $this->assertDatabaseCount('funteams', 1);
+        $this->assertDatabaseCount('sources', 1);
+        $this->assertDatabaseMissing('funteams', ['slug' => '2x2']);
+        static::assertTrue($owner->sources()->sole()->is($source));
+        static::assertSame('Other team', $owner->refresh()->name);
+    }
+
+    public function test_import_throws_when_the_sources_of_a_row_are_linked_to_different_funteams(): void
+    {
+        $firstFunteam = Funteam::factory()->createOne([
+            'name' => 'First team',
+            'slug' => 'first-team',
+        ]);
+        $secondFunteam = Funteam::factory()->createOne([
+            'name' => 'Second team',
+            'slug' => 'second-team',
+        ]);
+        Source::factory()->for($firstFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '735',
+        ]);
+        Source::factory()->for($secondFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '736',
+        ]);
+
         $this->assertThrows(
-            fn () => $this->service()->import([
-                $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
+            fn () => $this->service()->importFunteams([
+                $this->makeFunteam('2x2', SourceProviderName::KODIK, '735', '736'),
             ]),
             RuntimeException::class,
-            sprintf(
-                'Source kodik:735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
-                $linkedFunteam->id,
-                $funteam->id,
-            ),
+            'The sources of funteam "2x2" are linked to different funteams.',
         );
 
-        $this->assertDatabaseCount('sources', 1);
-        static::assertTrue($linkedFunteam->sources()->sole()->is($source));
+        $this->assertDatabaseCount('funteams', 2);
+        $this->assertDatabaseCount('sources', 2);
+        $this->assertDatabaseMissing('funteams', ['slug' => '2x2']);
     }
 
-    public function test_import_rolls_back_the_chunk_when_a_source_is_already_linked_to_another_funteam(): void
+    public function test_import_rolls_back_the_chunk_when_the_sources_of_a_row_are_linked_to_different_funteams(): void
     {
-        Funteam::factory()->createOne([
-            'name' => '2x2',
-            'slug' => '2x2',
+        $firstFunteam = Funteam::factory()->createOne([
+            'name' => 'First team',
+            'slug' => 'first-team',
         ]);
-        $linkedFunteam = Funteam::factory()->createOne([
-            'name' => 'Other team',
-            'slug' => 'other-team',
+        $secondFunteam = Funteam::factory()->createOne([
+            'name' => 'Second team',
+            'slug' => 'second-team',
         ]);
-        Source::factory()->for($linkedFunteam, 'sourceable')->createOne([
+        Source::factory()->for($firstFunteam, 'sourceable')->createOne([
             'provider_name' => SourceProviderName::KODIK,
             'external_id' => '735',
         ]);
+        Source::factory()->for($secondFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '736',
+        ]);
 
         $this->assertThrows(
-            fn () => $this->service()->import([
+            fn () => $this->service()->importFunteams([
                 $this->makeFunteam('3df voice', SourceProviderName::KODIK, '824'),
-                $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
+                $this->makeFunteam('2x2', SourceProviderName::KODIK, '735', '736'),
             ]),
             RuntimeException::class,
         );
 
         $this->assertDatabaseCount('funteams', 2);
-        $this->assertDatabaseCount('sources', 1);
+        $this->assertDatabaseCount('sources', 2);
         $this->assertDatabaseMissing('funteams', ['slug' => '3df-voice']);
     }
 
@@ -251,7 +304,7 @@ class FunteamImportServiceTest extends TestCase
     {
         $processedCount = 0;
 
-        $importedCount = $this->service()->import([
+        $importedCount = $this->service()->importFunteams([
             $this->makeFunteam('2x2', SourceProviderName::KODIK, '735'),
             $this->makeFunteam('3df voice', SourceProviderName::KODIK, '824'),
         ], static function (int $count) use (&$processedCount): void {

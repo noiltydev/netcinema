@@ -82,7 +82,6 @@ class FunteamBuilderTest extends TestCase
         $imdbOnlyFunteam = Funteam::factory()->createOne();
 
         $this->giveSourceTo($kodikFunteam, SourceProviderName::KODIK, '735');
-        $this->giveSourceTo($kodikFunteam, SourceProviderName::IMDB, '42');
         $this->giveSourceTo($imdbOnlyFunteam, SourceProviderName::IMDB, '42');
 
         $found = Funteam::query()

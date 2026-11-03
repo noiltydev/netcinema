@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Services\FunteamImport\Contracts;
+namespace App\Services\Funteam\Contracts;
 
 use App\Values\Funteam\FunteamImportData;
 use Illuminate\Support\Collection;
 
-interface FunteamImportAdapter
+interface ImportFunteamAdapter
 {
     /**
      * @return Collection<int, FunteamImportData>

@@ -8,19 +8,19 @@ use App\Enums\SourceProviderName;
 use App\Models\Anime;
 use App\Models\Funteam;
 use App\Models\Source;
-use App\Services\SourceLinkService;
+use App\Services\SourceService;
 use App\Values\Source\SourceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
 use Tests\TestCase;
 
-class SourceLinkServiceTest extends TestCase
+class SourceServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function service(): SourceLinkService
+    private function service(): SourceService
     {
-        return $this->app->make(SourceLinkService::class);
+        return $this->app->make(SourceService::class);
     }
 
     public function test_attaches_missing_sources_to_the_sourceable(): void

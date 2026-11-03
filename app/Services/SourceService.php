@@ -13,14 +13,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
-class SourceLinkService
+class SourceService
 {
     public function __construct(
         private readonly SourceRepository $sourceRepository,
     ) {}
 
     /**
-     * @param class-string<Model> $sourceableClass
+     * @param class-string<Sourceable> $sourceableClass
      * @param iterable<SourceProvider> $sources
      *
      * @return Collection<string, int<0, max>>

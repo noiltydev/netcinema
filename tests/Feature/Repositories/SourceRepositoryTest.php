@@ -77,6 +77,27 @@ class SourceRepositoryTest extends TestCase
         static::assertSame($myAnimeListFunteam->id, $linkedSourceableIds->get('myanimelist:42'));
     }
 
+    public function test_does_not_match_providers_and_external_ids_from_different_sources(): void
+    {
+        $kodikFunteam = Funteam::factory()->createOne();
+        $myAnimeListFunteam = Funteam::factory()->createOne();
+        Source::factory()->for($kodikFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '42',
+        ]);
+        Source::factory()->for($myAnimeListFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::MYANIMELIST,
+            'external_id' => '735',
+        ]);
+
+        $linkedSourceableIds = $this->repository()->getSourceableIdsBySources(Funteam::class, collect([
+            SourceProvider::make(SourceProviderName::KODIK, '735'),
+            SourceProvider::make(SourceProviderName::MYANIMELIST, '42'),
+        ]));
+
+        static::assertCount(0, $linkedSourceableIds);
+    }
+
     public function test_returns_an_empty_collection_without_sources(): void
     {
         $linkedSourceableIds = $this->repository()->getSourceableIdsBySources(Funteam::class, collect());

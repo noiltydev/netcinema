@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Services\FunteamImport;
+namespace App\Services\Funteam;
 
 use App\Enums\SourceProviderName;
-use App\Services\FunteamImport\Contracts\FunteamImportAdapter;
+use App\Services\Funteam\Contracts\ImportFunteamAdapter;
 use App\Values\Funteam\FunteamImportData;
 use App\Values\Kodik\KodikTranslation;
 use App\Values\Source\SourceProvider;
 use Illuminate\Support\Collection;
 
-class KodikFunteamAdapter implements FunteamImportAdapter
+class KodikFunteamAdapter implements ImportFunteamAdapter
 {
     /**
      * @param array<int, KodikTranslation> $translations
