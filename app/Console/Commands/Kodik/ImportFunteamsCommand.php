@@ -31,7 +31,7 @@ class ImportFunteamsCommand extends Command
         $progressBar->setMessage('Importing funteams');
         $progressBar->start();
 
-        $importedCount = $importService->import($funteams, $progressBar->advance(...));
+        $importedCount = $importService->importFunteams($funteams, $progressBar->advance(...));
 
         $progressBar->finish();
 

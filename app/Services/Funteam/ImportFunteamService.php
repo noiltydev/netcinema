@@ -29,7 +29,7 @@ class ImportFunteamService
      *
      * @throws RuntimeException
      */
-    public function import(iterable $funteams, ?callable $onChunkImported = null): int
+    public function importFunteams(iterable $funteams, ?callable $onChunkImported = null): int
     {
         $rows = $this->mergeRowsBySlug($funteams);
 
@@ -76,7 +76,7 @@ class ImportFunteamService
                 $rows->flatMap(static fn (FunteamImportData $row): array => $row->sources),
             );
 
-            $this->upsertFunteams($rows, $importedAt, $linkedSourceableIds);
+            $this->upsertRows($rows, $importedAt, $linkedSourceableIds);
 
             /** @var Collection<string, Funteam> $funteamsBySlug */
             $funteamsBySlug = $this->funteamRepository->getManyBySlugs($rows->pluck('slug'))->keyBy('slug');
@@ -97,7 +97,7 @@ class ImportFunteamService
      * @param Collection<int, FunteamImportData> $rows
      * @param Collection<string, int<0, max>> $linkedSourceableIds
      */
-    private function upsertFunteams(
+    private function upsertRows(
         Collection $rows,
         CarbonInterface $importedAt,
         Collection $linkedSourceableIds,
