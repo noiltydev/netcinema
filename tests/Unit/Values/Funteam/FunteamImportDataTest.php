@@ -41,44 +41,4 @@ class FunteamImportDataTest extends TestCase
 
         FunteamImportData::make(name: '2x2', slug: '2x2', sources: []);
     }
-
-    public function test_merge_combines_and_deduplicates_the_sources_of_a_funteam(): void
-    {
-        $kodikSource = SourceProvider::make(SourceProviderName::KODIK, '735');
-        $myAnimeListSource = SourceProvider::make(SourceProviderName::MYANIMELIST, '42');
-
-        $merged = FunteamImportData::merge([
-            FunteamImportData::make(name: '2x2', slug: '2x2', sources: [$kodikSource]),
-            FunteamImportData::make(name: '2x2', slug: '2x2', sources: [$kodikSource, $myAnimeListSource]),
-        ]);
-
-        static::assertSame('2x2', $merged->name);
-        static::assertSame('2x2', $merged->slug);
-        static::assertEqualsCanonicalizing([$kodikSource, $myAnimeListSource], $merged->sources);
-    }
-
-    public function test_merge_rejects_rows_with_different_slugs(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cannot merge funteam import rows with different slugs.');
-
-        FunteamImportData::merge([
-            FunteamImportData::make(name: '2x2', slug: '2x2', sources: [SourceProvider::make(
-                SourceProviderName::KODIK,
-                '735',
-            )]),
-            FunteamImportData::make(name: '3df voice', slug: '3df-voice', sources: [SourceProvider::make(
-                SourceProviderName::KODIK,
-                '824',
-            )]),
-        ]);
-    }
-
-    public function test_merge_rejects_an_empty_row_list(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cannot merge an empty list of funteam import rows.');
-
-        FunteamImportData::merge([]);
-    }
 }

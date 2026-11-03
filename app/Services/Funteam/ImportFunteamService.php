@@ -31,7 +31,7 @@ class ImportFunteamService
      */
     public function importFunteams(iterable $funteams, ?callable $onChunkImported = null): int
     {
-        $rows = $this->mergeRowsBySlug($funteams);
+        $rows = collect($funteams);
 
         foreach ($rows->chunk(self::UPSERT_CHUNK_SIZE) as $chunk) {
             $this->importChunk($chunk);
@@ -45,24 +45,6 @@ class ImportFunteamService
     }
 
     /**
-     * @param iterable<FunteamImportData> $funteams
-     *
-     * @return Collection<int, FunteamImportData>
-     */
-    private function mergeRowsBySlug(iterable $funteams): Collection
-    {
-        return collect($funteams)
-            ->groupBy(static fn (FunteamImportData $data): string => $data->slug)
-            ->map(static function (Collection $group): FunteamImportData {
-                /** @var non-empty-list<FunteamImportData> $rows */
-                $rows = $group->values()->all();
-
-                return FunteamImportData::merge($rows);
-            })
-            ->values();
-    }
-
-    /**
      * @param Collection<int, FunteamImportData> $rows
      *
      * @throws RuntimeException
@@ -71,40 +53,29 @@ class ImportFunteamService
     {
         DB::transaction(function () use ($rows): void {
             $importedAt = now();
+
             $linkedSourceableIds = $this->sourceService->getLinkedSourceableIds(
                 Funteam::class,
                 $rows->flatMap(static fn (FunteamImportData $row): array => $row->sources),
             );
 
-            $this->upsertRows($rows, $importedAt, $linkedSourceableIds);
+            $unlinkedRows = $rows->reject(
+                static fn (FunteamImportData $row): bool => self::hasLinkedSource($row, $linkedSourceableIds),
+            );
 
-            /** @var Collection<string, Funteam> $funteamsBySlug */
-            $funteamsBySlug = $this->funteamRepository->getManyBySlugs($rows->pluck('slug'))->keyBy('slug');
-
-            foreach ($rows as $row) {
-                $funteam = $funteamsBySlug->get($row->slug);
-
-                if ($funteam === null) {
-                    continue;
-                }
-
-                $this->sourceService->attachSources($funteam, $row->sources, $linkedSourceableIds, $importedAt);
-            }
+            $this->upsertRows($unlinkedRows, $importedAt);
+            $this->attachSources($rows, $linkedSourceableIds, $importedAt);
         });
     }
 
     /**
      * @param Collection<int, FunteamImportData> $rows
-     * @param Collection<string, int<0, max>> $linkedSourceableIds
      */
-    private function upsertRows(
-        Collection $rows,
-        CarbonInterface $importedAt,
-        Collection $linkedSourceableIds,
-    ): void {
+    private function upsertRows(Collection $rows, CarbonInterface $importedAt): void
+    {
         /** @var array<int, array<string, mixed>> $items */
         $items = $rows
-            ->reject(static fn (FunteamImportData $row): bool => self::hasLinkedSource($row, $linkedSourceableIds))
+            ->unique('slug')
             ->map(static fn (FunteamImportData $row): array => [
                 'name' => $row->name,
                 'slug' => $row->slug,
@@ -119,6 +90,69 @@ class ImportFunteamService
         }
 
         Funteam::query()->upsert($items, ['slug'], ['name', 'updated_at']);
+    }
+
+    /**
+     * @param Collection<int, FunteamImportData> $rows
+     * @param Collection<string, int<0, max>> $linkedSourceableIds
+     */
+    private function attachSources(Collection $rows, Collection $linkedSourceableIds, CarbonInterface $importedAt): void
+    {
+        /** @var Collection<int, Funteam> $funteamsById */
+        $funteamsById = $this->funteamRepository
+            ->getMany($linkedSourceableIds->values()->unique()->values()->all())
+            ->keyBy(static fn (Funteam $funteam): int => (int) $funteam->getKey());
+
+        /** @var Collection<string, Funteam> $funteamsBySlug */
+        $funteamsBySlug = $this->funteamRepository
+            ->getManyBySlugs($rows->pluck('slug')->unique()->values())
+            ->keyBy('slug');
+
+        foreach ($rows as $row) {
+            $funteam = self::resolveFunteam($row, $linkedSourceableIds, $funteamsById, $funteamsBySlug);
+
+            if ($funteam === null) {
+                continue;
+            }
+
+            $funteamsById->put((int) $funteam->getKey(), $funteam);
+
+            $this->sourceService->attachSources($funteam, $row->sources, $linkedSourceableIds, $importedAt);
+        }
+    }
+
+    /**
+     * @param Collection<string, int<0, max>> $linkedSourceableIds
+     * @param Collection<int, Funteam> $funteamsById
+     * @param Collection<string, Funteam> $funteamsBySlug
+     *
+     * @throws RuntimeException
+     */
+    private static function resolveFunteam(
+        FunteamImportData $row,
+        Collection $linkedSourceableIds,
+        Collection $funteamsById,
+        Collection $funteamsBySlug,
+    ): ?Funteam {
+        $linkedFunteamIds = collect($row->sources)
+            ->map(static fn (SourceProvider $source): ?int => $linkedSourceableIds->get($source->key()))
+            ->filter(static fn (?int $id): bool => $id !== null)
+            ->unique()
+            ->values();
+
+        throw_if(
+            $linkedFunteamIds->count() > 1,
+            RuntimeException::class,
+            sprintf('The sources of funteam "%s" are linked to different funteams.', $row->slug),
+        );
+
+        $linkedFunteamId = $linkedFunteamIds->first();
+
+        if ($linkedFunteamId !== null) {
+            return $funteamsById->get($linkedFunteamId);
+        }
+
+        return $funteamsBySlug->get($row->slug);
     }
 
     /**

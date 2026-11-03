@@ -171,17 +171,13 @@ class ImportFunteamsCommandTest extends TestCase
         $this->assertDatabaseCount('sources', 2);
     }
 
-    public function test_fails_when_a_kodik_translation_is_already_linked_to_another_funteam(): void
+    public function test_links_a_kodik_translation_to_the_funteam_that_already_owns_it(): void
     {
-        $funteam = Funteam::factory()->createOne([
-            'name' => '2x2',
-            'slug' => '2x2',
-        ]);
-        $linkedFunteam = Funteam::factory()->createOne([
+        $owner = Funteam::factory()->createOne([
             'name' => 'Other team',
             'slug' => 'other-team',
         ]);
-        Source::factory()->for($linkedFunteam, 'sourceable')->createOne([
+        $source = Source::factory()->for($owner, 'sourceable')->createOne([
             'provider_name' => SourceProviderName::KODIK,
             'external_id' => '735',
         ]);
@@ -190,17 +186,47 @@ class ImportFunteamsCommandTest extends TestCase
             ['id' => 735, 'title' => '2x2', 'count' => 26],
         ]);
 
+        $this->artisan('kodik:funteams:import')->assertSuccessful();
+
+        $this->assertDatabaseCount('funteams', 1);
+        $this->assertDatabaseCount('sources', 1);
+        $this->assertDatabaseMissing('funteams', ['slug' => '2x2']);
+        static::assertTrue($owner->sources()->sole()->is($source));
+        static::assertSame('Other team', $owner->refresh()->name);
+    }
+
+    public function test_fails_when_the_translations_of_a_funteam_are_linked_to_different_funteams(): void
+    {
+        $firstFunteam = Funteam::factory()->createOne([
+            'name' => 'First team',
+            'slug' => 'first-team',
+        ]);
+        $secondFunteam = Funteam::factory()->createOne([
+            'name' => 'Second team',
+            'slug' => 'second-team',
+        ]);
+        Source::factory()->for($firstFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '735',
+        ]);
+        Source::factory()->for($secondFunteam, 'sourceable')->createOne([
+            'provider_name' => SourceProviderName::KODIK,
+            'external_id' => '736',
+        ]);
+
+        $this->fakeKodikTranslations([
+            ['id' => 735, 'title' => '2x2', 'count' => 26],
+            ['id' => 736, 'title' => '2x2.Subtitles', 'count' => 4],
+        ]);
+
         $this->assertThrows(
             static fn () => Artisan::call('kodik:funteams:import'),
             RuntimeException::class,
-            sprintf(
-                'Source kodik:735 is already linked to funteam #%d and cannot be linked to funteam #%d.',
-                $linkedFunteam->id,
-                $funteam->id,
-            ),
+            'The sources of funteam "2x2" are linked to different funteams.',
         );
 
-        $this->assertDatabaseCount('sources', 1);
+        $this->assertDatabaseCount('funteams', 2);
+        $this->assertDatabaseCount('sources', 2);
     }
 
     public function test_succeeds_without_translations(): void

@@ -20,7 +20,7 @@ class SourceService
     ) {}
 
     /**
-     * @param class-string<Model> $sourceableClass
+     * @param class-string<Sourceable> $sourceableClass
      * @param iterable<SourceProvider> $sources
      *
      * @return Collection<string, int<0, max>>
